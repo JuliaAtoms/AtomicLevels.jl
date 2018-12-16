@@ -252,4 +252,32 @@ function +(a::Configuration{I,R}, b::Configuration{I,R}) where {I,R}
     Configuration(orbitals, occupancy, states)
 end
 
-export Configuration, @c_str, num_electrons, core, peel, active, inactive, bound, continuum, parity
+"""
+    ⊗(::Union{Configuration, Vector{Configuration}}, ::Union{Configuration, Vector{Configuration}})
+
+Given two collections of `Configuration`s, it creates an array of `Configuration`s with all
+possible juxtapositions of configurations from each collection.
+
+# Examples
+
+```jldoctest
+julia> [c"1s", c"2s"] ⊗ [c"2p-", c"2p"]
+4-element Array{Configuration{Int64,Rational{Int64}},1}:
+ 1s 2p⁻
+ 1s 2p
+ 2s 2p⁻
+ 2s 2p
+
+julia> c"1s" ⊗ [c"2s2", c"2s 2p-"]
+2-element Array{Configuration{Int64,Rational{Int64}},1}:
+ 1s 2s²
+ 1s 2s 2p⁻
+```
+"""
+function ⊗(a::Vector{T}, b::Vector{T}) where {T <: Configuration}
+    [x+y for x in a for y in b]
+end
+⊗(a::Union{T,Vector{T}}, b::T) where {T <: Configuration} = a ⊗ [b]
+⊗(a::T, b::Vector{T}) where {T <: Configuration} = [a] ⊗ b
+
+export Configuration, @c_str, num_electrons, core, peel, active, inactive, bound, continuum, parity, ⊗

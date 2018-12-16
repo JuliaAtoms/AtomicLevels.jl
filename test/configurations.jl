@@ -115,4 +115,15 @@
         @test_throws ArgumentError c"[He]*" + c"1s"
         @test_throws ArgumentError c"1si" + c"1s"
     end
+
+    @testset "Configuration juxtapositions" begin
+        @test c"" ⊗ c"" == [c""]
+        @test c"1s" ⊗ c"" == [c"1s"]
+        @test c"" ⊗ c"1s" == [c"1s"]
+        @test c"1s" ⊗ c"2s" == [c"1s 2s"]
+        @test c"1s" ⊗ [c"2s", c"2p-", c"2p"] == [c"1s 2s", c"1s 2p-", c"1s 2p"]
+        @test [c"1s", c"2s"] ⊗ c"2p-" == [c"1s 2p-", c"2s 2p-"]
+        @test [c"1s", c"2s"] ⊗ [c"2p-", c"2p"] == [c"1s 2p-", c"1s 2p", c"2s 2p-", c"2s 2p"]
+        @test [c"1s 2s"] ⊗ [c"2p-2", c"2p4"] == [c"1s 2s 2p-2", c"1s 2s 2p4"]
+    end
 end
