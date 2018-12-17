@@ -126,4 +126,36 @@
         @test [c"1s", c"2s"] ⊗ [c"2p-", c"2p"] == [c"1s 2p-", c"1s 2p", c"2s 2p-", c"2s 2p"]
         @test [c"1s 2s"] ⊗ [c"2p-2", c"2p4"] == [c"1s 2s 2p-2", c"1s 2s 2p4"]
     end
+
+    @testset "Non-relativistic orbitals" begin
+        import AtomicLevels: configurations_from_nrorbital
+        @test configurations_from_nrorbital(1, 0, 1) == [c"1s"]
+        @test configurations_from_nrorbital(1, 0, 2) == [c"1s2"]
+        @test configurations_from_nrorbital(2, 0, 2) == [c"2s2"]
+
+        @test configurations_from_nrorbital(2, 1, 1) == [c"2p-", c"2p"]
+        @test configurations_from_nrorbital(2, 1, 2) == [c"2p-2", c"2p- 2p", c"2p2"]
+        @test configurations_from_nrorbital(2, 1, 3) == [c"2p-2 2p1", c"2p- 2p2", c"2p3"]
+        @test configurations_from_nrorbital(2, 1, 4) == [c"2p-2 2p2", c"2p- 2p3", c"2p4"]
+        @test configurations_from_nrorbital(2, 1, 5) == [c"2p-2 2p3", c"2p- 2p4"]
+        @test configurations_from_nrorbital(2, 1, 6) == [c"2p-2 2p4"]
+
+        @test configurations_from_nrorbital(4, 2, 10) == [c"4d-4 4d6"]
+        @test configurations_from_nrorbital(4, 2, 5) == [c"4d-4 4d1", c"4d-3 4d2", c"4d-2 4d3", c"4d-1 4d4", c"4d5"]
+
+        @test_throws ArgumentError configurations_from_nrorbital(1, 2, 1)
+        @test_throws ArgumentError configurations_from_nrorbital(1, 0, 3)
+
+        @test configurations_from_nrorbital(o"1s", 2) == [c"1s2"]
+        @test configurations_from_nrorbital(o"2p", 2) == [c"2p-2", c"2p- 2p", c"2p2"]
+        @test_throws ArgumentError configurations_from_nrorbital(o"2p-", 2)
+        @test_throws ArgumentError configurations_from_nrorbital(o"3d", 20)
+
+        @test rcs"1s" == [c"1s"]
+        @test rcs"2s2" == [c"2s2"]
+        @test rcs"2p4" == [c"2p-2 2p2", c"2p- 2p3", c"2p4"]
+        @test rcs"4d5" == [c"4d-4 4d1", c"4d-3 4d2", c"4d-2 4d3", c"4d-1 4d4", c"4d5"]
+
+        @test c"1s2" ⊗ rcs"2p1" == [c"1s2 2p-", c"1s2 2p"]
+    end
 end

@@ -280,4 +280,101 @@ end
 ⊗(a::Union{T,Vector{T}}, b::T) where {T <: Configuration} = a ⊗ [b]
 ⊗(a::T, b::Vector{T}) where {T <: Configuration} = [a] ⊗ b
 
-export Configuration, @c_str, num_electrons, core, peel, active, inactive, bound, continuum, parity, ⊗
+"""
+    configurations_from_nrorbital(n, ℓ, occupancy)
+
+Generate all `Configuration`s corresponding to the non-relativistic `nℓ` orbital with the
+given occupancy.
+
+# Examples
+
+```jldoctest
+julia> configurations_from_nrorbital(3, 1, 2)
+3-element Array{Configuration{Int64,Rational{Int64}},1}:
+ 3p⁻²
+ 3p⁻ 3p
+ 3p²
+```
+"""
+function configurations_from_nrorbital(n::I, ℓ::I, occupancy::I) where {I <: Integer}
+    ℓ + 1 > n && throw(ArgumentError("ℓ=$ℓ too high for given n=$n"))
+    occupancy > 2*(2ℓ + 1) && throw(ArgumentError("occupancy=$occupancy too high for given ℓ=$ℓ"))
+
+    degeneracy_ℓm, degeneracy_ℓp = 2ℓ, 2ℓ + 2 # degeneracies of nℓ- and nℓ orbitals
+    nlow_min = max(occupancy - degeneracy_ℓp, 0)
+    nlow_max = min(degeneracy_ℓm, occupancy)
+    confs = Configuration{Int,Rational{Int}}[]
+    for nlow = nlow_max:-1:nlow_min
+        nhigh = occupancy - nlow
+        conf = if nlow == 0
+            Configuration([Orbital(n, ℓ, ℓ + 1//2)], [nhigh])
+        elseif nhigh == 0
+            Configuration([Orbital(n, ℓ, ℓ - 1//2)], [nlow])
+        else
+            Configuration(
+                [Orbital(n, ℓ, ℓ - 1//2), Orbital(n, ℓ, ℓ + 1//2)],
+                [nlow, nhigh]
+            )
+        end
+        push!(confs, conf)
+    end
+    return confs
+end
+
+"""
+    configurations_from_nrorbital(orbital::Orbital, occupancy)
+
+Generate all `Configuration`s corresponding to the non-relativistic version of the `orbital`.
+
+Only `Orbital`s with `j > ℓ` are allowed as input (i.e. the ℓ- orbitals are disallowed).
+
+# Examples
+
+```jldoctest
+julia> configurations_from_nrorbital(o"3p", 2)
+3-element Array{Configuration{Int64,Rational{Int64}},1}:
+ 3p⁻²
+ 3p⁻ 3p
+ 3p²
+```
+"""
+function configurations_from_nrorbital(orbital::Orbital, occupation::Integer)
+    orbital.j < orbital.ℓ && throw(ArgumentError("Can't use ℓ- orbital ($orbital) as input."))
+    configurations_from_nrorbital(orbital.n, orbital.ℓ, occupation)
+end
+
+function configurations_from_nrstring(orb_str::AbstractString)
+    m = match(r"^([0-9]+)([a-z]+)([0-9]+)?$", orb_str)
+    m === nothing && throw(ArgumentError("Invalid orbital string: $(orb_str)"))
+    n = parse(Int, m[1])
+    ℓi = findfirst(m[2], spectroscopic)
+    isnothing(ℓi) && throw(ArgumentError("Invalid spectroscopic label: $(m[2]) in $(orb_str)"))
+    ℓ = first(ℓi) - 1
+    occupancy = isnothing(m[3]) ? 1 : parse(Int, m[3])
+    return configurations_from_nrorbital(n, ℓ, occupancy)
+end
+
+"""
+    @rcs_str -> Vector{Configuration}
+
+Construct a `Vector` of all `Configuration`s corresponding to the non-relativistic `nℓ`
+orbital with the given occupancy from the input string.
+
+The string is assumed to have the following syntax: `\$(n)\$(ℓ)\$(occupancy)`, where `n`
+and `occupancy` are integers, and `ℓ` is in spectroscopic notation.
+
+# Examples
+
+```jldoctest
+julia> rcs"3p2"
+3-element Array{Configuration{Int64,Rational{Int64}},1}:
+ 3p⁻²
+ 3p⁻ 3p
+ 3p²
+```
+"""
+macro rcs_str(s)
+    configurations_from_nrstring(s)
+end
+
+export Configuration, @c_str, num_electrons, core, peel, active, inactive, bound, continuum, parity, ⊗, @rcs_str
