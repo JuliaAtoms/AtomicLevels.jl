@@ -38,7 +38,10 @@ function Base.show(io::IO, csf::CSF{<:RelativisticOrbital,HalfInteger})
     c = core(csf.config)
     p = peel(csf.config)
     nc = length(c)
-    nc > 0 && show(io, csf.config) && write(io, " ")
+    if nc > 0
+        show(io, c)
+        write(io, " ")
+    end
 
     for (i,(orb,occ,state)) in enumerate(p)
         show(io, orb)

@@ -6,6 +6,11 @@ using Parameters
 using BlockBandedMatrices
 using WignerSymbols
 
+if VERSION < v"1.1-DEV"
+    isnothing(::Nothing) = true
+    isnothing(::Any) = false
+end
+
 include("common.jl")
 include("parity.jl")
 include("halfinteger.jl")
