@@ -42,6 +42,10 @@
         @test fill(rc"1s 2s 2p- 2p") == rc"1s2 2s2 2p-2 2p4"
         @test close(c"1s2") == c"1s2c"
         @test_throws ArgumentError close(c"1s")
+
+        # Tests for #19
+        @test c"10s2" == Configuration([o"10s"], [2], [:open])
+        @test c"9999l32" == Configuration([o"9999l"], [32], [:open])
     end
 
     @testset "Number of electrons" begin

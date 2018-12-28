@@ -169,8 +169,8 @@ function core_configuration(::Type{O}, element::AbstractString, state::AbstractS
 end
 
 function parse_orbital(::Type{O}, orb_str) where {O<:AbstractOrbital}
-    m = match(r"^([0-9]+|.([a-z]|\[[0-9]+\])[-]{0,1})([0-9]*)([*ci]{0,1})$",orb_str)
-    orbital_from_string(O, m[1]),m[3]=="" ? 1 : parse(Int, m[3]),state_sym(m[4])
+    m = match(r"^(([0-9]+|.)([a-z]|\[[0-9]+\])[-]{0,1})([0-9]*)([*ci]{0,1})$", orb_str)
+    orbital_from_string(O, m[1]) , (m[4] == "") ? 1 : parse(Int, m[4]), state_sym(m[5])
 end
 
 function Base.parse(::Type{Configuration{O}}, conf_str::AbstractString) where {O<:AbstractOrbital}
