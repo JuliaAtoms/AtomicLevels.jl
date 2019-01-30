@@ -5,3 +5,6 @@
 .juliahistory
 .ipynb_checkpoints
 ltxpng
+
+docs/build/
+docs/Manifest.toml
