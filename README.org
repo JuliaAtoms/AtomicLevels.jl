@@ -3,7 +3,7 @@
 #+EMAIL: stefanos.carlstrom@gmail.com
 
 [[https://travis-ci.org/JuliaAtoms/AtomicLevels.jl][https://travis-ci.org/JuliaAtoms/AtomicLevels.jl.svg?branch=master]]
-[[https://ci.appveyor.com/project/jagot/atomiclevels-jl-41gd4][https://img.shields.io/appveyor/ci/jagot/atomiclevels-jl-41gd4.svg?logo=appveyor]]
+[[https://ci.appveyor.com/project/juliaatoms/atomiclevels-jl-41gd4][https://img.shields.io/appveyor/ci/juliaatoms/atomiclevels-jl-41gd4.svg?logo=appveyor]]
 [[https://codecov.io/gh/JuliaAtoms/AtomicLevels.jl][https://codecov.io/gh/JuliaAtoms/AtomicLevels.jl/branch/master/graph/badge.svg]]
 
 #+PROPERTY: header-args:julia :session *julia-README*
