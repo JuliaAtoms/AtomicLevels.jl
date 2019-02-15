@@ -58,7 +58,7 @@ using .GRASPParser
         0
         n
         =#
-        compare_with_grasp("rcsf.out.1") do
+        compare_with_grasp("rcsf.out.1.txt") do
             csfs(rc"1s2 2s2" ⊗ rcs"2p2")
         end
 
@@ -72,7 +72,7 @@ using .GRASPParser
         0
         n
         =#
-        compare_with_grasp("rcsf.out.2") do
+        compare_with_grasp("rcsf.out.2.txt") do
             csfs(rc"3s1" ⊗ rcs"3p3" ⊗ rcs"3d4")
         end
 
@@ -86,7 +86,7 @@ using .GRASPParser
         0
         n
         =#
-        compare_with_grasp("rcsf.out.3") do
+        compare_with_grasp("rcsf.out.3.txt") do
             csfs(rc"[Ne]* 3s1" ⊗ rcs"3p2" ⊗ rcs"3d2")
         end
 
@@ -100,7 +100,7 @@ using .GRASPParser
         2
         n
         =#
-        compare_with_grasp("rcsf.out.4") do
+        compare_with_grasp("rcsf.out.4.txt") do
             csfs(excited_configurations(rc"1s2", ro"2s", ro"2p-", ro"2p"))
         end
 
@@ -114,7 +114,7 @@ using .GRASPParser
         2
         n
         =#
-        compare_with_grasp("rcsf.out.5") do
+        compare_with_grasp("rcsf.out.5.txt") do
             excited_configurations(
                 rc"1s2",
                 ro"2s", ro"2p-", ro"2p", ro"3s", ro"3p-", ro"3p", ro"3d-", ro"3d"
