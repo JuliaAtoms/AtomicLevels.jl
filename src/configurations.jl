@@ -418,6 +418,25 @@ function Base.:(+)(a::Configuration{O₁}, b::Configuration{O₂}) where {O<:Abs
 end
 
 """
+    delete!(c::Configuration, o::AbstractOrbital)
+
+Remove the orbital `o` from the configuration `c`.
+
+```jldoctest
+julia> delete!(c"[Ar] 4s2 3d10 4p2", o"4s")
+[Ar]ᶜ 3d¹⁰ 4p²
+```
+"""
+function Base.delete!(c::Configuration{O}, o::O) where O <: AbstractOrbital
+    idx = findfirst(isequal(o), [co[1] for co in c])
+    idx === nothing && return c
+    deleteat!(c.orbitals, idx)
+    deleteat!(c.occupancy, idx)
+    deleteat!(c.states, idx)
+    return c
+end
+
+"""
     ⊗(::Union{Configuration, Vector{Configuration}}, ::Union{Configuration, Vector{Configuration}})
 
 Given two collections of `Configuration`s, it creates an array of `Configuration`s with all

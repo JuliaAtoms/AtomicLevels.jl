@@ -152,6 +152,11 @@
         @test c"1s 2s" - o"1s" == c"2s"
         @test c"[Ne]" - o"2s" == c"[He] 2s 2p6c"
         @test -(c"1s2 2s", o"1s", 2) == c"2s"
+
+        @test delete!(c"1s 2s", o"1s") == c"2s"
+        @test delete!(c"1s2 2s", o"1s") == c"2s"
+        @test delete!(c"[Ne]", o"2p") == c"1s2c 2s2c"
+        @test delete!(rc"[Ne]", ro"2p-") == rc"1s2c 2s2c 2p4c"
     end
 
     @testset "Configuration additions" begin
