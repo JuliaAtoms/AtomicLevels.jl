@@ -132,29 +132,56 @@ function Base.show(io::IO, config::Configuration{O}) where O
         write(io, "∅")
         return
     end
+    noble_core_name = get_noble_core_name(config)
+    core_config = core(config)
+    ncc = length(core_config)
+    if !isnothing(noble_core_name)
+        write(io, "[$(noble_core_name)]ᶜ")
+        ngc = length(get_noble_gas(O, noble_core_name))
+        core_config = core(config)
+        if ncc > ngc
+            write(io, ' ')
+            write_orbitals(io, core_config[ngc+1:end])
+        end
+        nc > ncc && write(io, ' ')
+    elseif ncc > 0
+        write_orbitals(io, core_config)
+    end
+    write_orbitals(io, peel(config))
+end
+
+"""
+    get_noble_core_name(config::Configuration)
+
+Returns the name of the noble gas with the most electrons whose configuration still forms
+the first part of the closed part of `config`,, or `nothing` if no such element is found.
+
+```jldoctest
+julia> AtomicLevels.get_noble_core_name(c"[He] 2s2")
+He
+
+julia> AtomicLevels.get_noble_core_name(c"1s2c 2s2c 2p6c 3s2c")
+Ne
+
+julia> AtomicLevels.get_noble_core_name(c"1s2") === nothing
+true
+```
+"""
+function get_noble_core_name(config::Configuration{O}) where O
+    nc = length(config)
+    nc == 0 && return nothing
     core_config = core(config)
     ncc = length(core_config)
     if length(core_config) > 0
-        core_printed = false
         for gas in ["Rn", "Xe", "Kr", "Ar", "Ne", "He"]
             gas_cfg = get_noble_gas(O, gas)
             ngc = length(gas_cfg)
             if ncc ≥ ngc && issimilar(core_config[1:length(gas_cfg)], gas_cfg)
-                write(io, "[$(gas)]ᶜ")
-                if ncc > ngc
-                    write(io, " ")
-                    write_orbitals(io, core_config[ngc+1:end])
-                end
-                nc > ncc && write(io, " ")
-                core_printed = true
-                break
+                return gas
             end
         end
-        if !core_printed
-            write_orbitals(io, core_config)
-        end
     end
-    write_orbitals(io, peel(config))
+    return nothing
 end
 
 function state_sym(state::AbstractString)

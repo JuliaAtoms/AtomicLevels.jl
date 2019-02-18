@@ -311,4 +311,17 @@
                             spin_configurations(c"1s ks")[3]) ==
                                 [SpinOrbital(o"1s",0,true)=>SpinOrbital(o"ks",0,true)]
     end
+
+    @testset "Internal utilities" begin
+        @test AtomicLevels.get_noble_core_name(c"1s2 2s2 2p6") === nothing
+        @test AtomicLevels.get_noble_core_name(c"1s2c 2s2 2p6") === "He"
+        @test AtomicLevels.get_noble_core_name(c"1s2c 2s2c 2p6c") === "Ne"
+        @test AtomicLevels.get_noble_core_name(c"[He] 2s2 2p6c 3s2c 3p6c") === "He"
+        for gas in ["Rn", "Xe", "Kr", "Ar", "Ne", "He"]
+            c = parse(Configuration{Orbital}, "[$gas]")
+            @test AtomicLevels.get_noble_core_name(c) === gas
+            rc = parse(Configuration{RelativisticOrbital}, "[$gas]")
+            @test AtomicLevels.get_noble_core_name(rc) === gas
+        end
+    end
 end
