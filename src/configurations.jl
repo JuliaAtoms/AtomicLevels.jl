@@ -89,9 +89,6 @@ issimilar(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbita
 Base.:(==)(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbital} =
     issimilar(a, b) && a.states == b.states
 
-noble_gases = Dict(Orbital => Dict{String,Configuration{<:Orbital}}(),
-                   RelativisticOrbital => Dict{String,Configuration{<:RelativisticOrbital}}())
-
 """
     fill(configuration)
 
@@ -107,13 +104,6 @@ function Base.close(config::Configuration)
     map(config) do (orb,occ,state)
         orb,occ,:closed
     end |> Configuration
-end
-
-# This construct is needed since when showing configurations, they
-# will be specialized on the Orbital parameterization, which we cannot
-# index noble_gases with.
-for O in [:Orbital,:RelativisticOrbital]
-    @eval get_noble_gas(::Type{O}, k) where {O<:$O} = noble_gases[$O][k]
 end
 
 function write_orbitals(io::IO, config::Configuration)
@@ -154,7 +144,7 @@ end
     get_noble_core_name(config::Configuration)
 
 Returns the name of the noble gas with the most electrons whose configuration still forms
-the first part of the closed part of `config`,, or `nothing` if no such element is found.
+the first part of the closed part of `config`, or `nothing` if no such element is found.
 
 ```jldoctest
 julia> AtomicLevels.get_noble_core_name(c"[He] 2s2")
@@ -173,7 +163,7 @@ function get_noble_core_name(config::Configuration{O}) where O
     core_config = core(config)
     ncc = length(core_config)
     if length(core_config) > 0
-        for gas in ["Rn", "Xe", "Kr", "Ar", "Ne", "He"]
+        for gas in Iterators.reverse(noble_gases)
             gas_cfg = get_noble_gas(O, gas)
             ngc = length(gas_cfg)
             if ncc ≥ ngc && issimilar(core_config[1:length(gas_cfg)], gas_cfg)
@@ -195,9 +185,9 @@ function state_sym(state::AbstractString)
 end
 
 function core_configuration(::Type{O}, element::AbstractString, state::AbstractString) where {O<:AbstractOrbital}
-    element ∉ keys(noble_gases[O]) && throw(ArgumentError("Unknown noble gas $(element)"))
+    element ∉ keys(noble_gases_configurations[O]) && throw(ArgumentError("Unknown noble gas $(element)"))
     state = state_sym(state == "" ? "c" : state) # By default, we'd like cores to be frozen
-    core_config = noble_gases[O][element]
+    core_config = noble_gases_configurations[O][element]
     Configuration(core_config.orbitals, core_config.occupancy,
                   [state for o in core_config.orbitals])
 end
@@ -260,17 +250,6 @@ julia> rc"[Ne] 3s 3p-2 3p4"
 """
 macro rc_str(conf_str)
     parse(Configuration{RelativisticOrbital}, conf_str)
-end
-
-for O in [Orbital,RelativisticOrbital]
-    for gas in ("He" => "1s2",
-                "Ne" => "[He] 2s2 2p6",
-                "Ar" => "[Ne] 3s2 3p6",
-                "Kr" => "[Ar] 3d10 4s2 4p6",
-                "Xe" => "[Kr] 4d10 5s2 5p6",
-                "Rn" => "[Xe] 4f14 5d10 6s2 6p6")
-        noble_gases[O][gas[1]] = parse(Configuration{O},gas[2])
-    end
 end
 
 Base.getindex(conf::Configuration{O}, i::Integer) where O =
@@ -652,6 +631,32 @@ function substitutions(src::Configuration{A}, dst::Configuration{B}) where {A<:S
     new = [j for j ∈ 1:num_electrons(dst)
            if j ∉ same]
     [mo => dst.orbitals[j] for (mo,j) in zip(missing, new)]
+end
+
+# We need to declare noble_gases first, with empty entries for Orbital and RelativisticOrbital
+# since parse(Configuration, ...) uses it.
+const noble_gases_configurations = Dict(
+    O => Dict{String,Configuration{<:O}}()
+    for O in [Orbital, RelativisticOrbital]
+)
+const noble_gases_configuration_strings = [
+    "He" => "1s2",
+    "Ne" => "[He] 2s2 2p6",
+    "Ar" => "[Ne] 3s2 3p6",
+    "Kr" => "[Ar] 3d10 4s2 4p6",
+    "Xe" => "[Kr] 4d10 5s2 5p6",
+    "Rn" => "[Xe] 4f14 5d10 6s2 6p6",
+]
+const noble_gases = [gas for (gas, _) in noble_gases_configuration_strings]
+for (gas, configuration) in noble_gases_configuration_strings, O in [Orbital, RelativisticOrbital]
+    noble_gases_configurations[O][gas] = parse(Configuration{O}, configuration)
+end
+
+# This construct is needed since when showing configurations, they
+# will be specialized on the Orbital parameterization, which we cannot
+# index noble_gases with.
+for O in [Orbital, RelativisticOrbital]
+    @eval get_noble_gas(::Type{<:$O}, k) = noble_gases_configurations[$O][k]
 end
 
 export Configuration, @c_str, @rc_str,
