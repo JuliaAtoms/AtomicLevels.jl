@@ -50,7 +50,16 @@
 
     @testset "Number of electrons" begin
         @test num_electrons(c"[He]") == 2
+        @test num_electrons(rc"[Xe]") == 54
         @test num_electrons(c"[Xe]") == 54
+        @test num_electrons(rc"[Xe]") == 54
+
+        @test num_electrons(c"[Xe]", o"1s") == 2
+        @test num_electrons(rc"[Xe]", ro"1s") == 2
+        @test num_electrons(c"[Ne] 3s 3p", o"3p") == 1
+        @test num_electrons(rc"[Kr] Af-2 Bf5", ro"Bf") == 5
+        @test num_electrons(c"[Kr]", ro"5s") == 0
+        @test num_electrons(rc"[Rn]", ro"As") == 0
     end
 
     @testset "Access subsets" begin

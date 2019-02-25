@@ -286,7 +286,7 @@ function Base.isless(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:Abs
 end
 
 """
-    num_electrons(conf::Configuration) -> Int
+    num_electrons(c::Configuration) -> Int
 
 Return the number of electrons in the configuration.
 
@@ -298,7 +298,30 @@ julia> num_electrons(rc"[Kr] 5s2 5p-2 5p2")
 42
 ```
 """
-num_electrons(conf::Configuration) = sum(conf.occupancy)
+num_electrons(c::Configuration) = sum(c.occupancy)
+
+"""
+    num_electrons(c::Configuration, o::AbstractOrbital) -> Int
+
+Returns the number of electrons on orbital `o` in configuration `c`. If `o` is not part of
+the configuration, returns `0`.
+
+```jldoctest
+julia> num_electrons(c"1s 2s2", o"2s")
+2
+
+julia> num_electrons(rc"[Rn] Qf-5 Pf3", ro"Qf-")
+5
+
+julia> num_electrons(c"[Ne]", o"3s")
+0
+```
+"""
+function num_electrons(c::Configuration, o::AbstractOrbital)
+    idx = findfirst(isequal(o), c.orbitals)
+    isnothing(idx) && return 0
+    c.occupancy[idx]
+end
 
 Base.in(orb::O, conf::Configuration{O}) where {O<:AbstractOrbital} =
     orb ∈ conf.orbitals
