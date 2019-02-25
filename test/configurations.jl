@@ -50,7 +50,7 @@
 
     @testset "Number of electrons" begin
         @test num_electrons(c"[He]") == 2
-        @test num_electrons(rc"[Xe]") == 54
+        @test num_electrons(rc"[He]") == 2
         @test num_electrons(c"[Xe]") == 54
         @test num_electrons(rc"[Xe]") == 54
 

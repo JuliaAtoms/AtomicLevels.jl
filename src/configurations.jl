@@ -422,7 +422,7 @@ end
 """
     delete!(c::Configuration, o::AbstractOrbital)
 
-Remove the orbital `o` from the configuration `c`.
+Remove the entire subshell corresponding to orbital `o` from configuration `c`.
 
 ```jldoctest
 julia> delete!(c"[Ar] 4s2 3d10 4p2", o"4s")
