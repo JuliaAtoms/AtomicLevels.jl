@@ -165,7 +165,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "AtomicLevels.num_electrons",
     "category": "method",
-    "text": "num_electrons(conf::Configuration) -> Int\n\nReturn the number of electrons in the configuration.\n\njulia> num_electrons(c\"1s2\")\n2\n\njulia> num_electrons(rc\"[Kr] 5s2 5p-2 5p2\")\n42\n\n\n\n\n\n"
+    "text": "num_electrons(c::Configuration) -> Int\n\nReturn the number of electrons in the configuration.\n\njulia> num_electrons(c\"1s2\")\n2\n\njulia> num_electrons(rc\"[Kr] 5s2 5p-2 5p2\")\n42\n\n\n\n\n\n"
 },
 
 {
@@ -249,6 +249,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "internals/#AtomicLevels.get_noble_core_name-Union{Tuple{Configuration{O}}, Tuple{O}} where O",
+    "page": "Internals",
+    "title": "AtomicLevels.get_noble_core_name",
+    "category": "method",
+    "text": "get_noble_core_name(config::Configuration)\n\nReturns the name of the noble gas with the most electrons whose configuration still forms the first part of the closed part of config, or nothing if no such element is found.\n\njulia> AtomicLevels.get_noble_core_name(c\"[He] 2s2\")\nHe\n\njulia> AtomicLevels.get_noble_core_name(c\"1s2c 2s2c 2p6c 3s2c\")\nNe\n\njulia> AtomicLevels.get_noble_core_name(c\"1s2\") === nothing\ntrue\n\n\n\n\n\n"
+},
+
+{
     "location": "internals/#AtomicLevels.kappa_to_j-Tuple{Integer}",
     "page": "Internals",
     "title": "AtomicLevels.kappa_to_j",
@@ -294,6 +302,14 @@ var documenterSearchIndex = {"docs": [
     "title": "Base.:-",
     "category": "method",
     "text": "-(configuration::Configuration, orbital::AbstractOrbital[, n=1])\n\nRemove n electrons in the orbital orbital from the configuration configuration. If the orbital had previously been :closed or :inactive, it will now be :open.\n\n\n\n\n\n"
+},
+
+{
+    "location": "internals/#Base.delete!-Union{Tuple{O}, Tuple{Configuration{O},O}} where O<:AtomicLevels.AbstractOrbital",
+    "page": "Internals",
+    "title": "Base.delete!",
+    "category": "method",
+    "text": "delete!(c::Configuration, o::AbstractOrbital)\n\nRemove the entire subshell corresponding to orbital o from configuration c.\n\njulia> delete!(c\"[Ar] 4s2 3d10 4p2\", o\"4s\")\n[Ar]ᶜ 3d¹⁰ 4p²\n\n\n\n\n\n"
 },
 
 {
