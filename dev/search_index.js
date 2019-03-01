@@ -313,6 +313,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "internals/#Base.fill!-Tuple{Configuration}",
+    "page": "Internals",
+    "title": "Base.fill!",
+    "category": "method",
+    "text": "fill!(c::Configuration)\n\nSets all the occupancies in configuration c to maximum, as determined by the degeneracy function.\n\nSee also: fill\n\n\n\n\n\n"
+},
+
+{
     "location": "internals/#Base.fill-Tuple{Configuration}",
     "page": "Internals",
     "title": "Base.fill",

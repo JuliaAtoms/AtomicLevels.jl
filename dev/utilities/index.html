@@ -3,11 +3,11 @@
 even
 
 julia&gt; convert(Parity, -1)
-odd</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/7900a763be3436922b3dc8dce78660e9de8b5817/src/parity.jl#L1-L16">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="AtomicLevels.@p_str" href="#AtomicLevels.@p_str"><code>AtomicLevels.@p_str</code></a> — <span class="docstring-category">Macro</span>.</div><div><div><pre><code class="language-none">@p_str</code></pre><p>A string macro to easily construct <a href="#AtomicLevels.Parity"><code>Parity</code></a> values.</p><pre><code class="language-julia-repl">julia&gt; p&quot;even&quot;
+odd</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/6d3627c5c3ceb7d637ab664821992f0b3acc8b80/src/parity.jl#L1-L16">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="AtomicLevels.@p_str" href="#AtomicLevels.@p_str"><code>AtomicLevels.@p_str</code></a> — <span class="docstring-category">Macro</span>.</div><div><div><pre><code class="language-none">@p_str</code></pre><p>A string macro to easily construct <a href="#AtomicLevels.Parity"><code>Parity</code></a> values.</p><pre><code class="language-julia-repl">julia&gt; p&quot;even&quot;
 even
 
 julia&gt; p&quot;odd&quot;
-odd</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/7900a763be3436922b3dc8dce78660e9de8b5817/src/parity.jl#L21-L33">source</a></section><p>The parity values also define an algebra and an ordering:</p><pre><code class="language-julia-repl">julia&gt; p&quot;odd&quot; &lt; p&quot;even&quot;
+odd</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/6d3627c5c3ceb7d637ab664821992f0b3acc8b80/src/parity.jl#L21-L33">source</a></section><p>The parity values also define an algebra and an ordering:</p><pre><code class="language-julia-repl">julia&gt; p&quot;odd&quot; &lt; p&quot;even&quot;
 true
 
 julia&gt; p&quot;even&quot; * p&quot;odd&quot;
