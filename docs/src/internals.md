@@ -5,7 +5,7 @@
 
 ```@meta
 CurrentModule = AtomicLevels
-DocTestSetup = begin
+DocTestSetup = quote
     using AtomicLevels
 end
 ```

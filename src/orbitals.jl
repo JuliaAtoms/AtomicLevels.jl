@@ -19,16 +19,34 @@ nisless(an::Symbol, bn::I) where {I<:Integer} = false
 """
     struct Orbital{N <: AtomicLevels.MQ} <: AbstractOrbital
 
-Represents an orbital with just the angular quantum number `ℓ`.
+Label for an atomic orbital with a principal quantum number `n::N` and orbital angular
+momentum `ℓ`.
 
-The type parameter has to be such that it can represent a proper main quantum number (i.e. a
-subtype of [`AtomicLevels.MQ`](@ref)).
+The type parameter `N` has to be such that it can represent a proper principal quantum number
+(i.e. a subtype of [`AtomicLevels.MQ`](@ref)).
+
+# Constructors
+
+    Orbital(n::Int, ℓ::Int)
+    Orbital(n::Symbol, ℓ::Int)
+
+Construct an orbital label with principal quantum number `n` and orbital angular momentum `ℓ`.
+If the principal quantum number `n` is an integer, it has to positive and the angular momentum
+must satisfy `0 <= ℓ < n`.
+
+```jldoctest
+julia> Orbital(1, 0)
+1s
+
+julia> Orbital(:K, 2)
+Kd
+```
 """
 struct Orbital{N<:MQ} <: AbstractOrbital
     n::N
     ℓ::Int
     function Orbital(n::Int, ℓ::Int)
-        n ≥ 1 || throw(ArgumentError("Invalid main quantum number $(n)"))
+        n ≥ 1 || throw(ArgumentError("Invalid principal quantum number $(n)"))
         0 ≤ ℓ && ℓ < n || throw(ArgumentError("Angular quantum number has to be ∈ [0,$(n-1)] when n = $(n)"))
         new{Int}(n, ℓ)
     end
@@ -121,6 +139,7 @@ julia> isbound(o"ks")
 false
 ```
 """
+function isbound end
 isbound(::Orbital{Int}) = true
 isbound(::Orbital{Symbol}) = false
 
@@ -252,11 +271,52 @@ function assert_orbital_ℓj(ℓ::Integer, j::Real)
     return
 end
 
+"""
+    struct RelativisticOrbital{N <: AtomicLevels.MQ} <: AbstractOrbital
+
+Label for an atomic orbital with a principal quantum number `n::N` and well-defined total
+angular momentum ``j``. The angular component of the orbital is labelled by the ``(\\ell, j)``
+pair, conventionally written as ``\\ell_j`` (e.g. ``p_{3/2}``).
+
+The ``\\ell`` and ``j`` can not be arbitrary, but must satisfy ``j = \\ell \\pm 1/2``.
+Internally, the ``\\kappa`` quantum number, which is a unique integer corresponding to every
+physical ``(\\ell, j)`` pair, is used to label each allowed pair.
+When ``j = \\ell \\pm 1/2``, the corresponding ``\\kappa = \\mp(j + 1/2)``.
+
+When printing and parsing `RelativisticOrbital`s, the notation `nℓ` and `nℓ-` is used (e.g.
+`2p` and `2p-`), corresponding to the orbitals with ``j = \\ell + 1/2`` and
+``j = \\ell - 1/2``, respectively.
+
+The type parameter `N` has to be such that it can represent a proper principal quantum number
+(i.e. a subtype of [`AtomicLevels.MQ`](@ref)).
+
+# Constructors
+
+    RelativisticOrbital(n::Integer, κ::Integer)
+    RelativisticOrbital(n::Symbol, κ::Integer)
+    RelativisticOrbital(n, ℓ::Integer, j::Real)
+
+Construct an orbital label with the quantum numbers `n` and `κ`.
+If the principal quantum number `n` is an integer, it has to positive and the orbital angular
+momentum must satisfy `0 <= ℓ < n`.
+Instead of `κ`, valid `ℓ` and `j` values can also be specified instead.
+
+```jldoctest
+julia> RelativisticOrbital(1, 0, 1//2)
+1s
+
+julia> RelativisticOrbital(2, -1)
+2s
+
+julia> RelativisticOrbital(:K, 2, 3//2)
+Kd⁻
+```
+"""
 struct RelativisticOrbital{N<:MQ} <: AbstractOrbital
     n::N
     κ::Int
     function RelativisticOrbital(n::Integer, κ::Integer)
-        n ≥ 1 || throw(ArgumentError("Invalid main quantum number $(n)"))
+        n ≥ 1 || throw(ArgumentError("Invalid principal quantum number $(n)"))
         κ == zero(κ) && throw(ArgumentError("κ can not be zero"))
         ℓ = kappa_to_ℓ(κ)
         0 ≤ ℓ && ℓ < n || throw(ArgumentError("Angular quantum number has to be ∈ [0,$(n-1)] when n = $(n)"))
@@ -326,10 +386,40 @@ function orbital_from_string(::Type{O}, orb_str::AbstractString) where {O<:Abstr
     end
 end
 
+"""
+    @o_str -> Orbital
+
+A string macro to construct an [`Orbital`](@ref) from the canonical string representation.
+
+```jldoctest
+julia> o"1s"
+1s
+
+julia> o"Fd"
+Fd
+```
+"""
 macro o_str(orb_str)
     orbital_from_string(Orbital, orb_str)
 end
 
+"""
+    @ro_str -> RelativisticOrbital
+
+A string macro to construct an [`RelativisticOrbital`](@ref) from the canonical string
+representation.
+
+```jldoctest
+julia> ro"1s"
+1s
+
+julia> ro"2p-"
+2p⁻
+
+julia> ro"Kf-"
+Kf⁻
+```
+"""
 macro ro_str(orb_str)
     orbital_from_string(RelativisticOrbital, orb_str)
 end
@@ -352,10 +442,47 @@ function orbitals_from_string(::Type{O}, orbs_str::AbstractString) where {O<:Abs
     end |> o -> vcat(o...) |> sort
 end
 
+"""
+    @os_str -> Vector{Orbital}
+
+Can be used to easily construct a list of [`Orbital`](@ref)s.
+
+```jldoctest
+julia> os"5[d] 6[s-p] k[7-10]"
+7-element Array{Orbital,1}:
+ 5d
+ 6s
+ 6p
+ kk
+ kl
+ km
+ kn
+```
+"""
 macro os_str(orbs_str)
     orbitals_from_string(Orbital, orbs_str)
 end
 
+"""
+    @ros_str -> Vector{RelativisticOrbital}
+
+Can be used to easily construct a list of [`RelativisticOrbital`](@ref)s.
+
+```jldoctest
+julia> ros"2[s-p] 3[p] k[0-d]"
+10-element Array{RelativisticOrbital,1}:
+ 2s
+ 2p⁻
+ 2p
+ 3p⁻
+ 3p
+ ks
+ kp⁻
+ kp
+ kd⁻
+ kd
+```
+"""
 macro ros_str(orbs_str)
     orbitals_from_string(RelativisticOrbital, orbs_str)
 end
@@ -368,6 +495,17 @@ function kappa_from_string(κ_str)
     ℓj_to_kappa(ℓ, j)
 end
 
+"""
+    @κ_str -> Int
+
+A string macro to convert the canonical string representation of a ``\\ell_j`` angular label
+(i.e. `ℓ-` or `ℓ`) into the corresponding ``\\kappa`` quantum number.
+
+```jldoctest
+julia> κ"s", κ"p-", κ"p"
+(-1, 1, -2)
+```
+"""
 macro κ_str(κ_str)
     kappa_from_string(κ_str)
 end

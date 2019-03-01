@@ -32,6 +32,13 @@ julia> -p"odd"
 even
 ```
 
+The exported [`parity`](@ref) function is overloaded for many of the types in AtomicLevels,
+defining a uniform API to determine the parity of an object.
+
+```@docs
+parity
+```
+
 ```@meta
 DocTestSetup = nothing
 ```

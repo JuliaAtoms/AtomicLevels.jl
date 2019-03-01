@@ -4,6 +4,23 @@
 Represents a configuration -- a set of orbitals and their associated occupation number.
 Furthermore, each orbital can be in one of the following _states_: `:open`, `:closed` or
 `:inactive`.
+
+# Constructors
+
+    Configuration(orbitals :: Vector{<:AbstractOrbital}, occupancy :: Vector{Int}, states :: Vector{Symbol})
+    Configuration(orbitals :: Vector{Tuple{<:AbstractOrbital, Int, Symbol}})
+
+In the first case, the paramaters of each orbital have to be passed as separate vectors, and
+the orbitals and occupancy have to be of the same length. The `states` vector can be shorter
+and then the latter orbitals that were not explicitly specified by `states` are assumed to
+be `:open`.
+
+The second constructor allows you to pass a vector of tuples instead, where each tuple is a
+triplet `(orbital :: AbstractOrbital, occupancy :: Int, state :: Symbol)` corresponding to
+each orbital.
+
+In all cases, all the orbitals have to be distinct. The orbitals in the configuration will
+be sorted according to the ordering defined for the particular [`AbstractOrbital`](@ref).
 """
 struct Configuration{O<:AbstractOrbital}
     orbitals::Vector{O}
@@ -90,9 +107,12 @@ Base.:(==)(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbit
     issimilar(a, b) && a.states == b.states
 
 """
-    fill(configuration)
+    fill(c::Configuration)
 
-Ensure all orbitals are at their maximum occupancy.
+Returns a corresponding configuration where the orbitals are completely filled (as
+determined by [`degeneracy`](@ref)).
+
+See also: [`fill!`](@ref)
 """
 Base.fill(config::Configuration) = fill!(deepcopy(config))
 
@@ -109,6 +129,13 @@ function Base.fill!(config::Configuration)
     return config
 end
 
+"""
+    close(c::Configuration)
+
+Return a corresponding configuration where where all the orbitals are marked `:closed`.
+
+See also: [`close!`](@ref)
+"""
 Base.close(config::Configuration) = close!(deepcopy(config))
 
 """
@@ -168,10 +195,10 @@ the first part of the closed part of `config`, or `nothing` if no such element i
 
 ```jldoctest
 julia> AtomicLevels.get_noble_core_name(c"[He] 2s2")
-He
+"He"
 
 julia> AtomicLevels.get_noble_core_name(c"1s2c 2s2c 2p6c 3s2c")
-Ne
+"Ne"
 
 julia> AtomicLevels.get_noble_core_name(c"1s2") === nothing
 true
@@ -343,20 +370,145 @@ function num_electrons(c::Configuration, o::AbstractOrbital)
     c.occupancy[idx]
 end
 
+"""
+    in(o::AbstractOrbital, c::Configuration) -> Bool
+
+Checks if orbital `o` is part of configuration `c`.
+
+```jldoctest
+julia> in(o"2s", c"1s2 2s2")
+true
+
+julia> o"2p" ∈ c"1s2 2s2"
+false
+```
+"""
 Base.in(orb::O, conf::Configuration{O}) where {O<:AbstractOrbital} =
     orb ∈ conf.orbitals
 
+"""
+    filter(f, c::Configuration) -> Configuration
+
+Filter out the orbitals from configuration `c` for which the predicate `f` returns `false`.
+The predicate `f` needs to take three arguments: `orbital`, `occupancy` and `state`.
+
+```julia
+julia> filter((o,occ,s) -> o.ℓ == 1, c"[Kr]")
+2p⁶ᶜ 3p⁶ᶜ 4p⁶ᶜ
+```
+"""
 Base.filter(f::Function, conf::Configuration) =
     conf[filter(j -> f(conf[j]...), eachindex(conf.orbitals))]
 
+"""
+    core(::Configuration) -> Configuration
+
+Return the core configuration (i.e. the sub-configuration of all the orbitals that are
+marked `:closed`).
+
+```jldoctest
+julia> core(c"1s2c 2s2c 2p6c 3s2")
+[Ne]ᶜ
+
+julia> core(c"1s2 2s2")
+∅
+
+julia> core(c"1s2 2s2c 2p6c")
+2s²ᶜ 2p⁶ᶜ
+```
+"""
 core(conf::Configuration) = filter((orb,occ,state) -> state == :closed, conf)
+
+"""
+    peel(::Configuration) -> Configuration
+
+Return the non-core part of the configuration (i.e. orbitals not marked `:closed`).
+
+```jldoctest
+julia> peel(c"1s2c 2s2c 2p3")
+2p³
+
+julia> peel(c"[Ne] 3s 3p3")
+3s 3p³
+```
+"""
 peel(conf::Configuration) = filter((orb,occ,state) -> state != :closed, conf)
+
+"""
+    inactive(::Configuration) -> Configuration
+
+Return the part of the configuration marked `:inactive`.
+
+```jldoctest
+julia> inactive(c"1s2c 2s2i 2p3i 3s2")
+2s²ⁱ 2p³ⁱ
+```
+"""
 inactive(conf::Configuration) = filter((orb,occ,state) -> state == :inactive, conf)
+
+"""
+    active(::Configuration) -> Configuration
+
+Return the part of the configuration marked `:open`.
+
+```jldoctest
+julia> active(c"1s2c 2s2i 2p3i 3s2")
+3s²
+```
+"""
 active(conf::Configuration) = filter((orb,occ,state) -> state != :inactive, peel(conf))
+
+"""
+    bound(::Configuration) -> Configuration
+
+Return the bound part of the configuration (see also [`isbound`](@ref)).
+
+```jldoctest
+julia> bound(c"1s2 2s2 2p4 Ks2 Kp1")
+1s² 2s² 2p⁴
+```
+"""
 bound(conf::Configuration) = filter((orb,occ,state) -> isbound(orb), conf)
+
+"""
+    continuum(::Configuration) -> Configuration
+
+Return the non-bound (continuum) part of the configuration (see also [`isbound`](@ref)).
+
+```jldoctest
+julia> continuum(c"1s2 2s2 2p4 Ks2 Kp1")
+Ks² Kp
+```
+"""
 continuum(conf::Configuration) = filter((orb,occ,state) -> !isbound(orb), peel(conf))
 
+"""
+    parity(::Configuration) -> Parity
+
+Return the parity of the configuration.
+
+```jldoctest
+julia> parity(c"1s 2p")
+odd
+
+julia> parity(c"1s 2p2")
+even
+```
+
+See also: [`Parity`](@ref)
+"""
 parity(conf::Configuration) = mapreduce(o -> parity(o[1])^o[2], *, conf)
+
+"""
+    count(::Configuration) -> Int
+
+Return the number of electrons in the configuration.
+
+```jldoctest
+julia> count(c"[Kr] 5s")
+37
+```
+"""
 Base.count(conf::Configuration) = mapreduce(o -> o[2], +, conf)
 
 function Base.replace(conf::Configuration{O₁}, orbs::Pair{O₂,O₃}) where {O<:AbstractOrbital,O₁<:O,O₂<:O,O₃<:O}
@@ -420,12 +572,26 @@ function Base.:(-)(configuration::Configuration{O₁}, orbital::O₂, n::Int=1) 
     Configuration(orbitals, occupancy, states)
 end
 
+"""
+    +(::Configuration, ::Configuration)
+
+Add two configurations together. If both configuration have an orbital, the number of
+electrons gets added together, but in this case the status of the orbitals must match.
+
+```jldoctest
+julia> c"1s" + c"2s"
+1s 2s
+
+julia> c"1s" + c"1s"
+1s²
+```
+"""
 function Base.:(+)(a::Configuration{O₁}, b::Configuration{O₂}) where {O<:AbstractOrbital,O₁<:O,O₂<:O}
     orbitals = promote_type(O₁,O₂)[]
     append!(orbitals, a.orbitals)
     occupancy = copy(a.occupancy)
     states = copy(a.states)
- for (orb,occ,state) in b
+    for (orb,occ,state) in b
         i = findfirst(isequal(orb), orbitals)
         if isnothing(i)
             push!(orbitals, orb)
@@ -467,17 +633,17 @@ possible juxtapositions of configurations from each collection.
 # Examples
 
 ```jldoctest
-julia> [c"1s", c"2s"] ⊗ [c"2p-", c"2p"]
-4-element Array{Configuration{RelativisticOrbital},1}:
+julia> c"1s" ⊗ [c"2s2", c"2s 2p"]
+2-element Array{Configuration{Orbital{Int64}},1}:
+ 1s 2s²
+ 1s 2s 2p
+
+julia> [rc"1s", rc"2s"] ⊗ [rc"2p-", rc"2p"]
+4-element Array{Configuration{RelativisticOrbital{Int64}},1}:
  1s 2p⁻
  1s 2p
  2s 2p⁻
  2s 2p
-
-julia> c"1s" ⊗ [c"2s2", c"2s 2p-"]
-2-element Array{Configuration{RelativisticOrbital},1}:
- 1s 2s²
- 1s 2s 2p⁻
 ```
 """
 ⊗(a::Vector{<:Configuration}, b::Vector{<:Configuration}) =
@@ -496,8 +662,8 @@ non-relativistic orbital with `n` and `ℓ` quantum numbers, with given occupanc
 # Examples
 
 ```jldoctest
-julia> rconfigurations_from_orbital(3, 1, 2)
-3-element Array{Configuration{RelativisticOrbital},1}:
+julia> AtomicLevels.rconfigurations_from_orbital(3, 1, 2)
+3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:
  3p⁻²
  3p⁻ 3p
  3p²
@@ -538,8 +704,8 @@ non-relativistic version of the `orbital` with a given occupancy.
 # Examples
 
 ```jldoctest
-julia> rconfigurations_from_orbital(o"3p", 2)
-3-element Array{Configuration{RelativisticOrbital},1}:
+julia> AtomicLevels.rconfigurations_from_orbital(o"3p", 2)
+3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:
  3p⁻²
  3p⁻ 3p
  3p²
@@ -571,7 +737,7 @@ and `occupancy` are integers, and `ℓ` is in spectroscopic notation.
 
 ```jldoctest
 julia> rcs"3p2"
-3-element Array{Configuration{Int64},1}:
+3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:
  3p⁻²
  3p⁻ 3p
  3p²
@@ -585,11 +751,14 @@ end
 """
     spin_configurations(configuration)
 
-Generate all possible configurations of spin-orbitals from
-`configuration`, i.e. all permissible values for the quantum numbers
-`n`, `ℓ`, `mℓ`, `ms` for each electron. Example:
+Generate all possible configurations of spin-orbitals from `configuration`, i.e. all
+permissible values for the quantum numbers `n`, `ℓ`, `mℓ`, `ms` for each electron. Example:
 
-    spin_configuration(c"1s2") -> 1s₀α 1s₀β
+```jldoctest
+julia> spin_configurations(c"1s2")
+1-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:
+ 1s²
+```
 """
 function spin_configurations(c::Configuration{O}) where {O<:Orbital}
     states = Dict{Orbital,Symbol}()
@@ -609,8 +778,8 @@ end
 """
     spin_configurations(configurations)
 
-For each configuration in `configurations`, generate all possible
-configurations of spin-orbitals.
+For each configuration in `configurations`, generate all possible configurations of
+spin-orbitals.
 """
 spin_configurations(cs::Vector{<:Configuration}) =
     sort(vcat(map(spin_configurations, cs)...))

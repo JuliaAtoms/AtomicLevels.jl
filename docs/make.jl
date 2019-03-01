@@ -12,6 +12,7 @@ makedocs(
         "Other utilities" => "utilities.md",
         "Internals" => "internals.md",
     ],
+    assets = ["assets/latex.js"],
 )
 
 deploydocs(repo = "github.com/JuliaAtoms/AtomicLevels.jl.git")
