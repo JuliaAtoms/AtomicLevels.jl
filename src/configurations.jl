@@ -94,16 +94,36 @@ Base.:(==)(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbit
 
 Ensure all orbitals are at their maximum occupancy.
 """
-function Base.fill(config::Configuration)
-    map(config) do (orb,occ,state)
-        orb,degeneracy(orb),state
-    end |> Configuration
+Base.fill(config::Configuration) = fill!(deepcopy(config))
+
+"""
+    fill!(c::Configuration)
+
+Sets all the occupancies in configuration `c` to maximum, as determined by the
+[`degeneracy`](@ref) function.
+
+See also: [`fill`](@ref)
+"""
+function Base.fill!(config::Configuration)
+    config.occupancy .= (degeneracy(o) for o in config.orbitals)
+    return config
 end
 
-function Base.close(config::Configuration)
-    map(config) do (orb,occ,state)
-        orb,occ,:closed
-    end |> Configuration
+Base.close(config::Configuration) = close!(deepcopy(config))
+
+"""
+    close!(c::Configuration)
+
+Marks all the orbitals in configuration `c` to be closed.
+
+See also: [`close`](@ref)
+"""
+function close!(config::Configuration)
+    if any(occ != degeneracy(o) for (o, occ, _) in config)
+        throw(ArgumentError("Can't close $config due to unfilled orbitals."))
+    end
+    config.states .= :closed
+    return config
 end
 
 function write_orbitals(io::IO, config::Configuration)
@@ -684,4 +704,4 @@ end
 
 export Configuration, @c_str, @rc_str,
     num_electrons, core, peel, active, inactive, bound, continuum, parity, ⊗, @rcs_str,
-    spin_configurations, substitutions
+    spin_configurations, substitutions, close!

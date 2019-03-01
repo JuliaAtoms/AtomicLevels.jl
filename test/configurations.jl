@@ -41,7 +41,22 @@
         @test fill(c"1s 2s 2p") == c"1s2 2s2 2p6"
         @test fill(rc"1s 2s 2p- 2p") == rc"1s2 2s2 2p-2 2p4"
         @test close(c"1s2") == c"1s2c"
+        let c = c"1s2c 2s 2p"
+            @test fill!(c) == c"1s2c 2s2 2p6"
+            @test c == c"1s2c 2s2 2p6"
+            @test close!(c) == c"[Ne]"
+            @test c == c"[Ne]"
+        end
+        let c = rc"1s2c 2s 2p- 2p2"
+            @test fill!(c) == rc"1s2c 2s2 2p-2 2p4"
+            @test c == rc"1s2c 2s2 2p-2 2p4"
+            @test close!(c) == rc"[Ne]"
+            @test c == rc"[Ne]"
+        end
         @test_throws ArgumentError close(c"1s")
+        @test_throws ArgumentError close(rc"1s2 2s")
+        @test_throws ArgumentError close!(c"1s")
+        @test_throws ArgumentError close!(rc"1s2 2s")
 
         # Tests for #19
         @test c"10s2" == Configuration([o"10s"], [2], [:open])
