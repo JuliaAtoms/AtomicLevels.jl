@@ -6,10 +6,9 @@ DocTestSetup = quote
 end
 ```
 
-We define a configuration to be a set of orbitals with their associated occupation (i.e.
-the number of electron on that orbital).
-We can represent a particular configuration with an instance of the [`Configuration`](@ref)
-type.
+We define a configuration to be a set of orbitals with their associated occupation (i.e. the
+number of electron on that orbital). We can represent a particular configuration with an
+instance of the [`Configuration`](@ref) type.
 
 ```@docs
 Configuration

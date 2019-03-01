@@ -8,7 +8,7 @@ end
 
 Atomic orbitals, i.e. single particle states with well-defined orbital or total angular
 momentum, are usually the basic building blocks of atomic states. AtomicLevels provides
-types and methods to label orbital
+various types and methods to conveniently label the orbitals.
 
 ## Orbital types
 
