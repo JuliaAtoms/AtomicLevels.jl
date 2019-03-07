@@ -1,4 +1,5 @@
-function single_excitations!(excitations::Vector{<:Configuration},
+function single_excitations!(fun::Function,
+                             excitations::Vector{<:Configuration},
                              ref_set::Configuration,
                              orbitals::Vector{O},
                              min_occupancy::Vector{Int},
@@ -21,14 +22,15 @@ function single_excitations!(excitations::Vector{<:Configuration},
                 j = findfirst(isequal(subs_orb), ref_set.orbitals)
                 k = findfirst(isequal(subs_orb), config.orbitals)
                 !isnothing(j) && !isnothing(k) && config.occupancy[k] == max_occupancy[j] && continue
-                excited_config = replace(config, orb=>subs_orb)
+                excited_config = replace(config, orb=>fun(subs_orb,orb))
                 excited_config ∉ excitations && push!(excitations, excited_config)
             end
         end
     end
 end
 
-function excited_configurations(ref_set::Configuration{O₁},
+function excited_configurations(fun::Function,
+                                ref_set::Configuration{O₁},
                                 orbitals::O₂...;
                                 min_excitations::Int=zero(Int),
                                 max_excitations::Union{Int,Symbol}=:doubles,
@@ -66,7 +68,7 @@ function excited_configurations(ref_set::Configuration{O₁},
     excitations = Configuration[ref_set_peel]
     excite_from = 1
     for i in 1:max_excitations
-        single_excitations!(excitations, ref_set_peel, orbitals,
+        single_excitations!(fun, excitations, ref_set_peel, orbitals,
                             min_occupancy, max_occupancy, excite_from)
         excite_from = length(excitations)-excite_from
     end
@@ -74,6 +76,14 @@ function excited_configurations(ref_set::Configuration{O₁},
 
     [ref_set_core + e for e in excitations]
 end
+
+excited_configurations(ref_set::Configuration,
+                       orbitals...;
+                       kwargs...) =
+                           excited_configurations((subs_orb,orb)->subs_orb,
+                                                  ref_set, orbitals...;
+                                                  kwargs...)
+
 
 ion_continuum(neutral::Configuration{<:Orbital{<:Integer}},
               continuum_orbitals::Vector{Orbital{Symbol}},

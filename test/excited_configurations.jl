@@ -32,6 +32,19 @@ using .GRASPParser
         @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", min_occupancy=[-1,0,0])
         @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", max_occupancy=[3,2,4])
     end
+
+    @testset "Custom substitutions" begin
+        @test excited_configurations(c"1s2 2s2", os"k[s-p]"...,
+                                     max_excitations=:singles, keep_parity=false) do a,b
+                                         Orbital(Symbol("{$b}"), a.ℓ)
+                                     end == [
+                                         c"1s2 2s2",
+                                         replace(c"1s2 2s2", o"1s" => Orbital(Symbol("{1s}"), 0)),
+                                         replace(c"1s2 2s2", o"1s" => Orbital(Symbol("{1s}"), 1)),
+                                         replace(c"1s2 2s2", o"2s" => Orbital(Symbol("{2s}"), 0)),
+                                         replace(c"1s2 2s2", o"2s" => Orbital(Symbol("{2s}"), 1))
+                                     ]
+    end
     
     @testset "Ion–continuum" begin
         ic = ion_continuum(c"1s2", os"k[s-d]")
