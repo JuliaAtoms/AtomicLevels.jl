@@ -34,7 +34,9 @@ using .GRASPParser
     end
     
     @testset "Ion–continuum" begin
-        @test ion_continuum(c"1s2", os"k[s-d]") == [c"1s2", c"1s ks", c"1s kp", c"1s kd"]
+        ic = ion_continuum(c"1s2", os"k[s-d]")
+        @test ic == [c"1s2", c"1s ks", c"1s kp", c"1s kd"]
+        @test spin_configurations(ic) isa Vector{<:Configuration{<:SpinOrbital}}
     end
     
     @testset "GRASP comparisons" begin

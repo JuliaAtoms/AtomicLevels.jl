@@ -766,7 +766,7 @@ function spin_configurations(c::Configuration{O}) where {O<:Orbital}
         states[orb] = state
         sorbs = spin_orbitals(orb)
         comb = collect(combinations(sorbs, occ))
-        O == Orbital ? Vector{Vector{SpinOrbital}}(comb) : comb
+        Vector{Vector{SpinOrbital{<:Orbital}}}(comb)
     end
     map(allchoices(orbitals)) do choice
         c = vcat(choice...)
