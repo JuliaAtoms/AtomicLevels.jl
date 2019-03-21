@@ -1,5 +1,6 @@
 using AtomicLevels
 using UnicodeFun
+using Combinatorics: combinations
 using Test
 
 @testset "Terms" begin
@@ -155,6 +156,63 @@ using Test
         # test_orbital_terms("h11" => [2(S36 P107 D173 F233 G283 H325 I353 K370 L376 M371 N357 O335 Q307 R275 T241 U207 V173 W142 X114 Y88 Z68 2150 2236 2325 2417 2511 267 274 282 29 30) 4 (S37 P89 D157 F199 G253 H277 I309 K313 L323 M308 N300 O271 Q251 R216 T190 U155 V131 W101 X81 Y59 Z45 2130 2222 2313 249 255 263 27 28) 6 (S12 P35 D55 F76 G90 H101 I109 K111 L109 M105 N97 O87 Q77 R65 T53 U43 V33 W24 X18 Y12 Z8 215 223 2324) 8(S4 P4 D12 F11 G17 H15 I19 K16 L18 M14 N14 O10 Q10 R6 T6 U3 V3WX) 10(PDFGHIKLMN) 12S])
 
         @test_throws ArgumentError terms(o"2p", 7)
+
+        @testset "Reference implementation" begin
+            # This is an independent implementation that calculates all the terms (L, S) terms
+            # of a given ℓ^w orbital is LS coupling. It works by considering the distribution
+            # of the M_L and M_S quantum numbers of the many-particle basis states of the ℓ^w
+            # orbital. It is much less performant than the implementation of terms() in AtomicLevels.
+            function ls_terms_reference(ℓ::Integer, w::Integer, parity::Parity)
+                ℓ >= 0 || throw(DomainError("ℓ must be non-negative"))
+                w >= 1 || throw(DomainError("w must be positive"))
+                # First, let's build a histogram of (M_L, M_S) values of all the product
+                # basis states.
+                lsbasis = [(ml, ms) for ms = HalfInteger(-1,2):HalfInteger(1,2), ml = -ℓ:ℓ]
+                @assert length(lsbasis) == 2*(2ℓ+1)
+                Lmax, Smax = w * ℓ, w * HalfInteger(1,2)
+                NL, NS = convert(Int, 2*Lmax + 1), convert(Int, 2*Smax + 1)
+                hist =  zeros(Int, NL, NS)
+                for c in combinations(1:length(lsbasis), w)
+                    ML, MS = 0, 0
+                    for i in c
+                        ML += lsbasis[i][1]
+                        MS += lsbasis[i][2]
+                    end
+                    i = convert(Int, ML + Lmax) + 1
+                    j = convert(Int, MS + Smax) + 1
+                    hist[i, j] += 1
+                end
+                # Find the valid (L, S) terms by removing maximal rectangular bases from the
+                # 2D histogram. The width and breadth of the rectangles determines the (L,S)
+                # term that generates the corresponding (M_L, M_S) values.
+                terms = Term[]
+                Lmid, Smid = div(NL, 2) + (isodd(NL) ? 1 : 0), div(NS, 2) + (isodd(NS) ? 1 : 0)
+                for i = 1:Lmid
+                    while !all(hist[i,:] .== 0)
+                        is = i:(NL-i+1)
+                        for j = 1:Smid
+                            js = j:(NS-j+1)
+                            any(hist[is, js] .== 0) && continue
+                            L = convert(HalfInteger, Lmax - i + 1)
+                            S = convert(HalfInteger, Smax - j + 1)
+                            push!(terms, Term(L, S, parity))
+                            hist[is, js] .-= 1
+                            break
+                        end
+                    end
+                    @assert all(hist[NL-i+1, :] .== 0) # make sure everything is symmetric
+                end
+                return terms
+            end
+
+            # We can't go too high in ℓ, since ls_terms_reference becomes quite slow.
+            for ℓ = 0:5, w = 1:(4ℓ+2)
+                o = Orbital(:X, ℓ)
+                p = parity(o)^w
+                reference_terms = ls_terms_reference(ℓ, w, p)
+                @test sort(terms(o, w)) == sort(reference_terms)
+            end
+        end
     end
 
     @testset "Count terms" begin
