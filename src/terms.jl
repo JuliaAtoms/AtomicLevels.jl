@@ -4,8 +4,13 @@ struct Term
     L::HalfInteger
     S::HalfInteger
     parity::Parity
+    function Term(L::HalfInteger, S::HalfInteger, parity::Parity)
+        L >= 0 || throw(DomainError(L, "Term symbol can not have negative L"))
+        S >= 0 || throw(DomainError(S, "Term symbol can not have negative S"))
+        new(L, S, parity)
+    end
 end
-Term(L::Real, S::Real, parity::Integer) =
+Term(L::Real, S::Real, parity::Union{Parity,Integer}) =
     Term(convert(HalfInteger, L), convert(HalfInteger, S), convert(Parity, parity))
 
 function Base.parse(::Type{Term}, s::AbstractString)

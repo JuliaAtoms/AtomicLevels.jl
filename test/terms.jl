@@ -1,6 +1,7 @@
 using AtomicLevels
 using UnicodeFun
 using Combinatorics: combinations
+using WignerSymbols
 using Test
 
 @testset "Terms" begin
@@ -17,6 +18,11 @@ using Test
         @test T"1[54]" == Term(54, 0, p"even")
         @test T"1[3/2]" == Term(3//2, 0, p"even")
         @test T"2[3/2]o" == Term(3//2, 1//2, p"odd")
+        @test T"2Z" == Term(20, 1//2, p"even")
+
+        @test_throws DomainError Term(HalfInteger(-1,2), HalfInteger(1,2), p"even")
+        @test_throws DomainError Term(3//2, -1//2, p"odd")
+        @test_throws DomainError Term(-2, 1//2, 1)
 
         @test_throws ArgumentError parse(Term, "1[4/3]")
         @test_throws ArgumentError parse(Term, "1[43/]")
