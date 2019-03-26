@@ -8,6 +8,7 @@ makedocs(
         "Home" => "index.md",
         "Orbitals" => "orbitals.md",
         "Configurations" => "configurations.md",
+        "Term symbols" => "terms.md",
         "CSFs" => "csfs.md",
         "Other utilities" => "utilities.md",
         "Internals" => "internals.md",
