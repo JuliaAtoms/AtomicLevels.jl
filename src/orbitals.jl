@@ -1,3 +1,8 @@
+"""
+    abstract type AbstractOrbital
+
+Abstract supertype of all orbital types.
+"""
 abstract type AbstractOrbital end
 
 """
