@@ -57,6 +57,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "orbitals/#AtomicLevels.AbstractOrbital",
+    "page": "Orbitals",
+    "title": "AtomicLevels.AbstractOrbital",
+    "category": "type",
+    "text": "abstract type AbstractOrbital\n\nAbstract supertype of all orbital types.\n\n\n\n\n\n"
+},
+
+{
     "location": "orbitals/#AtomicLevels.SpinOrbital",
     "page": "Orbitals",
     "title": "AtomicLevels.SpinOrbital",
@@ -101,7 +109,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Orbitals",
     "title": "Orbital types",
     "category": "section",
-    "text": "AtomicLevels provides two basic types for labelling atomic orbitals: Orbital and RelativisticOrbital. Stricly speaking, these types do not label orbitals, but groups of orbitals with the same angular symmetry and radial behaviour (i.e. a subshell).Orbital\nRelativisticOrbitalThe SpinOrbital type can be used to fully qualify all the quantum numbers (that is, also m_ell and m_s) of an Orbital. It represent a since, distinct orbital.SpinOrbitalThe string macros @o_str and @ro_str can be used to conveniently contruct orbitals, while @os_str and @ros_str can be used to construct whole lists of them very easily.@o_str\n@ro_str\n@os_str\n@ros_str"
+    "text": "AtomicLevels provides two basic types for labelling atomic orbitals: Orbital and RelativisticOrbital. Stricly speaking, these types do not label orbitals, but groups of orbitals with the same angular symmetry and radial behaviour (i.e. a subshell).All orbitals are subtypes of AbstractOrbital. Types and methods that work on generic orbitals can dispatch on that.Orbital\nRelativisticOrbital\nAbstractOrbitalThe SpinOrbital type can be used to fully qualify all the quantum numbers (that is, also m_ell and m_s) of an Orbital. It represent a since, distinct orbital.SpinOrbitalThe string macros @o_str and @ro_str can be used to conveniently contruct orbitals, while @os_str and @ros_str can be used to construct whole lists of them very easily.@o_str\n@ro_str\n@os_str\n@ros_str"
 },
 
 {
@@ -222,6 +230,14 @@ var documenterSearchIndex = {"docs": [
     "title": "AtomicLevels.num_electrons",
     "category": "method",
     "text": "num_electrons(c::Configuration) -> Int\n\nReturn the number of electrons in the configuration.\n\njulia> num_electrons(c\"1s2\")\n2\n\njulia> num_electrons(rc\"[Kr] 5s2 5p-2 5p2\")\n42\n\n\n\n\n\n"
+},
+
+{
+    "location": "configurations/#AtomicLevels.num_electrons-Tuple{Configuration,AbstractOrbital}",
+    "page": "Configurations",
+    "title": "AtomicLevels.num_electrons",
+    "category": "method",
+    "text": "num_electrons(c::Configuration, o::AbstractOrbital) -> Int\n\nReturns the number of electrons on orbital o in configuration c. If o is not part of the configuration, returns 0.\n\njulia> num_electrons(c\"1s 2s2\", o\"2s\")\n2\n\njulia> num_electrons(rc\"[Rn] Qf-5 Pf3\", ro\"Qf-\")\n5\n\njulia> num_electrons(c\"[Ne]\", o\"3s\")\n0\n\n\n\n\n\n"
 },
 
 {
@@ -365,7 +381,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "Interface",
     "category": "section",
-    "text": "For example, it is possible to index into a configuration, including with a range of indices, returning a sub-configuration consisting of only those orbitals. With an integer index, an (orbital, occupancy, state) tuple is returned.julia> config = c\"1s2c 2si 2p3\"\n[He]ᶜ 2sⁱ 2p³\n\njulia> config[2]\n(2s, 1, :inactive)\n\njulia> config[1:2]\n[He]ᶜ 2sⁱ\n\njulia> config[[3,1]]\n[He]ᶜ 2p³The configuration can also be iterated over. Each item is a (orbital, occupancy, state) tuple.julia> for (o, nelec, s) in config\n           @show o, nelec, s\n       end\n(o, nelec, s) = (1s, 2, :closed)\n(o, nelec, s) = (2s, 1, :inactive)\n(o, nelec, s) = (2p, 3, :open)Various other methods exist to manipulate or transform configurations or to query them for information.num_electrons(::Configuration)\nBase.delete!\nBase.:(+)\nBase.:(-)\nBase.close\nclose!\nBase.fill\nBase.fill!\nBase.in\nBase.filter\nBase.count\ncore\npeel\nactive\ninactive\nbound\ncontinuum\nparity(::Configuration)"
+    "text": "For example, it is possible to index into a configuration, including with a range of indices, returning a sub-configuration consisting of only those orbitals. With an integer index, an (orbital, occupancy, state) tuple is returned.julia> config = c\"1s2c 2si 2p3\"\n[He]ᶜ 2sⁱ 2p³\n\njulia> config[2]\n(2s, 1, :inactive)\n\njulia> config[1:2]\n[He]ᶜ 2sⁱ\n\njulia> config[[3,1]]\n[He]ᶜ 2p³The configuration can also be iterated over. Each item is a (orbital, occupancy, state) tuple.julia> for (o, nelec, s) in config\n           @show o, nelec, s\n       end\n(o, nelec, s) = (1s, 2, :closed)\n(o, nelec, s) = (2s, 1, :inactive)\n(o, nelec, s) = (2p, 3, :open)Various other methods exist to manipulate or transform configurations or to query them for information.num_electrons(::Configuration)\nnum_electrons(::Configuration, ::AtomicLevels.AbstractOrbital)\nBase.delete!\nBase.:(+)\nBase.:(-)\nBase.close\nclose!\nBase.fill\nBase.fill!\nBase.in\nBase.filter\nBase.count\ncore\npeel\nactive\ninactive\nbound\ncontinuum\nparity(::Configuration)"
 },
 
 {
@@ -397,7 +413,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "AtomicLevels.spin_configurations",
     "category": "function",
-    "text": "spin_configurations(configuration)\n\nGenerate all possible configurations of spin-orbitals from configuration, i.e. all permissible values for the quantum numbers n, ℓ, mℓ, ms for each electron. Example:\n\njulia> spin_configurations(c\"1s2\")\n1-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:\n 1s²\n\n\n\n\n\nspin_configurations(configurations)\n\nFor each configuration in configurations, generate all possible configurations of spin-orbitals.\n\n\n\n\n\n"
+    "text": "spin_configurations(configuration)\n\nGenerate all possible configurations of spin-orbitals from configuration, i.e. all permissible values for the quantum numbers n, ℓ, mℓ, ms for each electron. Example:\n\njulia> spin_configurations(c\"1s2\")\n1-element Array{Configuration{SpinOrbital},1}:\n 1s²\n\n\n\n\n\nspin_configurations(configurations)\n\nFor each configuration in configurations, generate all possible configurations of spin-orbitals.\n\n\n\n\n\n"
 },
 
 {
@@ -414,6 +430,70 @@ var documenterSearchIndex = {"docs": [
     "title": "Spin configurations",
     "category": "section",
     "text": "spin_configurations\nsubstitutionsDocTestSetup = nothing"
+},
+
+{
+    "location": "terms/#",
+    "page": "Term symbols",
+    "title": "Term symbols",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "terms/#AtomicLevels.Term",
+    "page": "Term symbols",
+    "title": "AtomicLevels.Term",
+    "category": "type",
+    "text": "struct Term\n\nRepresent a term symbol ^2S+1L_J with specific parity in LS-coupling. As determining valid J values is simple for given S and L (L - S leq J leq L+S), it is not specified.\n\nConstructors\n\nTerm(L::Real, S::Real, parity::Union{Parity,Integer})\n\nConstructs a Term object with the given L and S quantum numbers and parity. L and S both have to be convertible to HalfIntegers and parity must be of type Parity or ±1.\n\n\n\n\n\n"
+},
+
+{
+    "location": "terms/#AtomicLevels.@T_str",
+    "page": "Term symbols",
+    "title": "AtomicLevels.@T_str",
+    "category": "macro",
+    "text": "@T_str -> Term\n\nConstructs a Term object out of its canonical string representation.\n\njulia> T\"1S\"\n¹S\n\njulia> T\"4Po\"\n⁴Pᵒ\n\njulia> T\"2[3/2]o\"\n²[3/2]ᵒ\n\n\n\n\n\n"
+},
+
+{
+    "location": "terms/#AtomicLevels.terms",
+    "page": "Term symbols",
+    "title": "AtomicLevels.terms",
+    "category": "function",
+    "text": "terms(orb::Orbital, w::Int=one(Int))\n\nReturns a list of valid LS term symbols\n\n\n\n\n\nterms(o::RelativisticOrbital, w = 1) -> Vector{HalfInteger}\n\nReturns a sorted list of valid J values of w equivalent jj-coupled particles on orbital o (i.e. o^w).\n\nWhen there are degeneracies (i.e. multiple states with the same J and M quantum numbers), the corresponding J value is repeated in the output array.\n\n\n\n\n\n"
+},
+
+{
+    "location": "terms/#AtomicLevels.count_terms",
+    "page": "Term symbols",
+    "title": "AtomicLevels.count_terms",
+    "category": "function",
+    "text": "count_terms(orb, occ, term)\n\nCount how many times term occurs among the valid terms of orb^occ. For example:\n\njulia> count_terms(o\"1s\", 2, T\"1S\")\n1\n\n\n\n\n\n"
+},
+
+{
+    "location": "terms/#AtomicLevels.IntermediateTerm",
+    "page": "Term symbols",
+    "title": "AtomicLevels.IntermediateTerm",
+    "category": "type",
+    "text": "struct IntermediateTerm\n\nRepresents a term together with its seniority quantum number.\n\n\n\n\n\n"
+},
+
+{
+    "location": "terms/#AtomicLevels.intermediate_terms",
+    "page": "Term symbols",
+    "title": "AtomicLevels.intermediate_terms",
+    "category": "function",
+    "text": "intermediate_terms(orb::Orbital, w::Int=one(Int))\n\nGenerates all IntermediateTerm for a given non-relativstic orbital orb and occupation w.\n\n\n\n\n\n"
+},
+
+{
+    "location": "terms/#Term-symbols-1",
+    "page": "Term symbols",
+    "title": "Term symbols",
+    "category": "section",
+    "text": "DocTestSetup = quote\n    using AtomicLevels\nendAtomicLevels provides types and methods to work and determine term symbols. The \"Term symbol\" and \"Angular momentum coupling\" Wikipedia articles give a good basic overview of the terminology.For term symbols in LS coupling, AtomicLevels provides the Term type.TermThe Term objects can also be constructed with the @T_str string macro.@T_strThe terms function can be used to generate all possible term symbols. In the case of relativistic orbitals, the term symbols are simply the valid J values, represented with the HalfInteger type.terms\ncount_termsThe L and S quantum numbers are not, in general, sufficient to uniquely identify a term. The IntermediateTerm type allows one to specify an additional quantum number which would uniquely identify the term.IntermediateTerm\nintermediate_termsDocTestSetup = nothing"
 },
 
 {
@@ -545,7 +625,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "internals/#Base.:+-Union{Tuple{O₂}, Tuple{O₁}, Tuple{O}, Tuple{Configuration{O₁},Configuration{O₂}}} where O₂<:O where O₁<:O where O<:AtomicLevels.AbstractOrbital",
+    "location": "internals/#Base.:+-Union{Tuple{O₂}, Tuple{O₁}, Tuple{O}, Tuple{Configuration{O₁},Configuration{O₂}}} where O₂<:O where O₁<:O where O<:AbstractOrbital",
     "page": "Internals",
     "title": "Base.:+",
     "category": "method",
@@ -553,7 +633,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "internals/#Base.:--Union{Tuple{O₂}, Tuple{O₁}, Tuple{O}, Tuple{Configuration{O₁},O₂}, Tuple{Configuration{O₁},O₂,Int64}} where O₂<:O where O₁<:O where O<:AtomicLevels.AbstractOrbital",
+    "location": "internals/#Base.:--Union{Tuple{O₂}, Tuple{O₁}, Tuple{O}, Tuple{Configuration{O₁},O₂}, Tuple{Configuration{O₁},O₂,Int64}} where O₂<:O where O₁<:O where O<:AbstractOrbital",
     "page": "Internals",
     "title": "Base.:-",
     "category": "method",
@@ -577,7 +657,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "internals/#Base.delete!-Union{Tuple{O}, Tuple{Configuration{O},O}} where O<:AtomicLevels.AbstractOrbital",
+    "location": "internals/#Base.delete!-Union{Tuple{O}, Tuple{Configuration{O},O}} where O<:AbstractOrbital",
     "page": "Internals",
     "title": "Base.delete!",
     "category": "method",
@@ -609,7 +689,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "internals/#Base.in-Union{Tuple{O}, Tuple{O,Configuration{O}}} where O<:AtomicLevels.AbstractOrbital",
+    "location": "internals/#Base.in-Union{Tuple{O}, Tuple{O,Configuration{O}}} where O<:AbstractOrbital",
     "page": "Internals",
     "title": "Base.in",
     "category": "method",
