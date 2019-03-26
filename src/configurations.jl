@@ -20,8 +20,7 @@ triplet `(orbital :: AbstractOrbital, occupancy :: Int, state :: Symbol)` corres
 each orbital.
 
 In all cases, all the orbitals have to be distinct. The orbitals in the configuration will
-be sorted according to the ordering defined for the particular [`AbstractOrbital`](@ref
-AtomicLevels.AbstractOrbital).
+be sorted according to the ordering defined for the particular [`AbstractOrbital`](@ref).
 """
 struct Configuration{O<:AbstractOrbital}
     orbitals::Vector{O}

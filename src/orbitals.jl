@@ -515,4 +515,4 @@ macro κ_str(κ_str)
     kappa_from_string(κ_str)
 end
 
-export Orbital, SpinOrbital, RelativisticOrbital, @o_str, @ro_str, @os_str, @ros_str, degeneracy, symmetry, isbound, mℓrange, spin_orbitals, @κ_str
+export AbstractOrbital, Orbital, SpinOrbital, RelativisticOrbital, @o_str, @ro_str, @os_str, @ros_str, degeneracy, symmetry, isbound, mℓrange, spin_orbitals, @κ_str

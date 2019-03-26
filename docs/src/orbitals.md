@@ -17,9 +17,13 @@ AtomicLevels provides two basic types for labelling atomic orbitals: [`Orbital`]
 groups of orbitals with the same angular symmetry and radial behaviour (i.e. a
 [subshell](https://en.wikipedia.org/wiki/Electron_shell#Subshells)).
 
+All orbitals are subtypes of [`AbstractOrbital`](@ref). Types and methods that work on
+generic orbitals can dispatch on that.
+
 ```@docs
 Orbital
 RelativisticOrbital
+AbstractOrbital
 ```
 
 The [`SpinOrbital`](@ref) type can be used to fully qualify all the quantum numbers (that
