@@ -20,7 +20,8 @@ triplet `(orbital :: AbstractOrbital, occupancy :: Int, state :: Symbol)` corres
 each orbital.
 
 In all cases, all the orbitals have to be distinct. The orbitals in the configuration will
-be sorted according to the ordering defined for the particular [`AbstractOrbital`](@ref).
+be sorted according to the ordering defined for the particular [`AbstractOrbital`](@ref
+AtomicLevels.AbstractOrbital).
 """
 struct Configuration{O<:AbstractOrbital}
     orbitals::Vector{O}
@@ -756,7 +757,7 @@ permissible values for the quantum numbers `n`, `ℓ`, `mℓ`, `ms` for each ele
 
 ```jldoctest
 julia> spin_configurations(c"1s2")
-1-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:
+1-element Array{Configuration{SpinOrbital},1}:
  1s²
 ```
 """

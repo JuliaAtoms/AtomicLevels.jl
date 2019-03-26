@@ -59,6 +59,7 @@ information.
 
 ```@docs
 num_electrons(::Configuration)
+num_electrons(::Configuration, ::AtomicLevels.AbstractOrbital)
 Base.delete!
 Base.:(+)
 Base.:(-)
