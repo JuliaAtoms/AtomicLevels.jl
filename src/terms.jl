@@ -1,5 +1,20 @@
 # * Term symbols
 
+"""
+    struct Term
+
+Represent a term symbol ``{}^{2S+1}L_{J}`` with specific parity in LS-coupling. As determining
+valid ``J`` values is simple for given ``S`` and ``L`` (``|L - S| \\leq J \\leq L+S``), it
+is not specified.
+
+# Constructors
+
+    Term(L::Real, S::Real, parity::Union{Parity,Integer})
+
+Constructs a `Term` object with the given ``L`` and ``S`` quantum numbers and parity. `L`
+and `S` both have to be convertible to `HalfInteger`s and `parity` must be of type
+[`Parity`](@ref) or `±1`.
+"""
 struct Term
     L::HalfInteger
     S::HalfInteger
@@ -35,6 +50,22 @@ function Base.parse(::Type{Term}, s::AbstractString)
     Term(L, S, m[3] == "o" ? p"odd" : p"even")
 end
 
+"""
+    @T_str -> Term
+
+Constructs a [`Term`](@ref) object out of its canonical string representation.
+
+```jldoctest
+julia> T"1S"
+¹S
+
+julia> T"4Po"
+⁴Pᵒ
+
+julia> T"2[3/2]o"
+²[3/2]ᵒ
+```
+"""
 macro T_str(s::AbstractString)
     parse(Term, s)
 end
@@ -66,19 +97,24 @@ function xu_terms(ℓ::Int, w::Int, p::Parity)
     vcat(vcat(ts...)...)
 end
 
-function terms(orb::Orbital, occ::Int)
+"""
+    terms(orb::Orbital, w::Int=one(Int))
+
+Returns a list of valid LS term symbols
+"""
+function terms(orb::Orbital, w::Int=one(Int))
     ℓ = orb.ℓ
     g = degeneracy(orb)
-    occ > g && throw(ArgumentError("Invalid occupancy $occ for $orb with degeneracy $g"))
-    (occ > g/2 && occ != g) && (occ = g - occ)
+    w > g && throw(DomainError(w, "Invalid occupancy $w for $orb with degeneracy $g"))
+    (w > g/2 && w != g) && (w = g - w)
 
-    p = parity(orb)^occ
-    if occ == 1
+    p = parity(orb)^w
+    if w == 1
         [Term(ℓ,1//2,p)] # Single electron
-    elseif ℓ == 0 && occ == 2 || occ == degeneracy(orb) || occ == 0
+    elseif ℓ == 0 && w == 2 || w == degeneracy(orb) || w == 0
         [Term(0,0,p"even")] # Filled ℓ shell
     else
-        xu_terms(ℓ, occ, p) # All other cases
+        xu_terms(ℓ, w, p) # All other cases
     end
 end
 
@@ -93,11 +129,11 @@ end
 """
     count_terms(orb, occ, term)
 
-Count how many times `term` occurs among the valid terms of
-`orb`^`occ`. Example:
+Count how many times `term` occurs among the valid terms of `orb`^`occ`. For example:
 
-```
-count_terms(o"1s", 2, T"1S") # 1
+```jldoctest
+julia> count_terms(o"1s", 2, T"1S")
+1
 ```
 """
 function count_terms(orb::Orbital, occ::Int, term::Term)
@@ -132,7 +168,11 @@ function Base.show(io::IO, term::Term)
 end
 
 # * Intermediate terms, seniority
+"""
+    struct IntermediateTerm
 
+Represents a term together with its seniority quantum number.
+"""
 struct IntermediateTerm
     term::Term
     seniority::Int
@@ -155,6 +195,12 @@ Base.isless(a::IntermediateTerm, b::IntermediateTerm) =
     a.seniority < b.seniority ||
     a.seniority == b.seniority && a.term < b.term
 
+"""
+    intermediate_terms(orb::Orbital, w::Int=one(Int))
+
+Generates all [`IntermediateTerm`](@ref) for a given non-relativstic orbital `orb` and
+occupation `w`.
+"""
 function intermediate_terms(orb::Orbital, w::Int=one(Int))
     ts = terms(orb, w)
     its = map(unique(ts)) do t

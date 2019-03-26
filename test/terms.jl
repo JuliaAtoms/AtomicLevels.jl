@@ -172,7 +172,7 @@ using Test
             "10(PDFGHIKLMN)", "12S"
         ])
 
-        @test_throws ArgumentError terms(o"2p", 7)
+        @test_throws DomainError terms(o"2p", 7)
 
         @testset "Reference implementation" begin
             # This is an independent implementation that calculates all the terms (L, S) terms
