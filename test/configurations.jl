@@ -61,6 +61,23 @@
         # Tests for #19
         @test c"10s2" == Configuration([o"10s"], [2], [:open])
         @test c"9999l32" == Configuration([o"9999l"], [32], [:open])
+
+        # Hashing
+        let c1a = c"1s 2s", c1b = c"1s 2s", c2 = c"1s 2p"
+            @test c1a == c1b
+            @test isequal(c1a, c1b)
+            @test c1a != c2
+            @test !isequal(c1a, c2)
+
+            @test hash(c1a) == hash(c1a)
+            @test hash(c1a) == hash(c1b)
+
+            # If hashing is not properly implemented, unique fails to detect all equal pairs
+            @test unique([c1a, c1b]) == [c1a]
+            @test unique([c1a, c1a]) == [c1a]
+            @test unique([c1a, c1a, c1b]) == [c1a]
+            @test length(unique([c1a, c2, c1a, c1b, c2])) == 2
+        end
     end
 
     @testset "Number of electrons" begin
