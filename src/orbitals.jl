@@ -67,6 +67,13 @@ struct Orbital{N<:MQ} <: AbstractOrbital
     end
 end
 
+"""
+    mqtype(::Orbital{MQ}) = MQ
+
+Returns the main quantum number type of an [`Orbital`](@ref).
+"""
+mqtype(::Orbital{MQ}) where MQ = MQ
+
 Base.show(io::IO, orb::Orbital{N}) where N =
     write(io, "$(orb.n)$(spectroscopic_label(orb.ℓ))")
 
@@ -363,6 +370,13 @@ struct RelativisticOrbital{N<:MQ} <: AbstractOrbital
     end
 end
 RelativisticOrbital(n::MQ, ℓ::Integer, j::Real) = RelativisticOrbital(n, ℓj_to_kappa(ℓ, j))
+
+"""
+    mqtype(::RelativisticOrbital{MQ}) = MQ
+
+Returns the main quantum number type of a [`RelativisticOrbital`](@ref).
+"""
+mqtype(::RelativisticOrbital{MQ}) where MQ = MQ
 
 Base.propertynames(::RelativisticOrbital) = (fieldnames(RelativisticOrbital)..., :j, :ℓ)
 function Base.getproperty(o::RelativisticOrbital, s::Symbol)

@@ -261,4 +261,11 @@ using Random
         @test "$(soα)" == "1s₀α"
         @test "$(po₊β)" == "2p₁β"
     end
+
+    @testset "Internal methods" begin
+        @test AtomicLevels.mqtype(o"2s") == Int
+        @test AtomicLevels.mqtype(o"ks") == Symbol
+        @test AtomicLevels.mqtype(ro"2s") == Int
+        @test AtomicLevels.mqtype(ro"ks") == Symbol
+    end
 end

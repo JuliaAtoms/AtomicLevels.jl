@@ -77,6 +77,7 @@ inactive
 bound
 continuum
 parity(::Configuration)
+nonrelconfiguration
 ```
 
 ## Generating configuration lists
