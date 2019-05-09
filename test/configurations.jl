@@ -358,6 +358,12 @@
                                 [SpinOrbital(o"1s",0,true)=>SpinOrbital(o"ks",0,true)]
     end
 
+    @testset "Configuration transformations" begin
+        @test nonrelconfiguration(rc"1s2 2p-2 2s 2p2 3s2 3p-") == c"1s2 2s 2p4 3s2 3p"
+        @test nonrelconfiguration(rc"1s2 ks2") == c"1s2 ks2"
+        @test nonrelconfiguration(rc"kp-2 kp4 lp-2 lp") == c"kp6 lp3"
+    end
+
     @testset "Internal utilities" begin
         @test AtomicLevels.get_noble_core_name(c"1s2 2s2 2p6") === nothing
         @test AtomicLevels.get_noble_core_name(c"1s2c 2s2 2p6") === "He"

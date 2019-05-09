@@ -873,6 +873,37 @@ for O in [Orbital, RelativisticOrbital]
     @eval get_noble_gas(::Type{<:$O}, k) = noble_gases_configurations[$O][k]
 end
 
+"""
+    nonrelconfiguration(c::Configuration{<:RelativisticOrbital}) -> Configuration{<:Orbital}
+
+Reduces a relativistic configuration down to the corresponding non-relativistic configuration.
+
+```jldoctest
+julia> c = rc"1s2 2p-2 2s 2p2 3s2 3p-"
+1s² 2s 2p⁻² 2p² 3s² 3p⁻
+
+julia> nonrelconfiguration(c)
+1s² 2s 2p⁴ 3s² 3p
+```
+"""
+function nonrelconfiguration(c::Configuration{<:RelativisticOrbital})
+    mq = Union{mqtype.(c.orbitals)...}
+    nrorbitals, nroccupancies, nrstates = Orbital{<:mq}[], Int[], Symbol[]
+    for (orbital, occupancy, state) in c
+        nrorbital = Orbital(orbital.n, orbital.ℓ)
+        nridx = findfirst(isequal(nrorbital), nrorbitals)
+        if isnothing(nridx)
+            push!(nrorbitals, nrorbital)
+            push!(nroccupancies, occupancy)
+            push!(nrstates, state)
+        else
+            nrstates[nridx] == state || throw(ArgumentError("Mismatching states for $(nrorbital). Previously found $(nrstates[nridx]), but $(orbital) has $(state)"))
+            nroccupancies[nridx] += occupancy
+        end
+    end
+    Configuration(nrorbitals, nroccupancies, nrstates)
+end
+
 export Configuration, @c_str, @rc_str,
     num_electrons, core, peel, active, inactive, bound, continuum, parity, ⊗, @rcs_str,
-    spin_configurations, substitutions, close!
+    spin_configurations, substitutions, close!, nonrelconfiguration
