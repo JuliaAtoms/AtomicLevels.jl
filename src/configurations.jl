@@ -106,6 +106,8 @@ issimilar(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbita
 Base.:(==)(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbital} =
     issimilar(a, b) && a.states == b.states
 
+Base.hash(c::Configuration) = hash(c.orbitals) ⊻ hash(c.occupancy) ⊻ hash(c.states)
+
 """
     fill(c::Configuration)
 
