@@ -30,6 +30,13 @@ momentum `ℓ`.
 The type parameter `N` has to be such that it can represent a proper principal quantum number
 (i.e. a subtype of [`AtomicLevels.MQ`](@ref)).
 
+# Properties
+
+The following properties are part of the public API:
+
+* `.n :: N` -- principal quantum number ``n``
+* `.ℓ :: Int` -- the orbital angular momentum ``\\ell``
+
 # Constructors
 
     Orbital(n::Int, ℓ::Int)
@@ -295,6 +302,29 @@ When printing and parsing `RelativisticOrbital`s, the notation `nℓ` and `nℓ-
 The type parameter `N` has to be such that it can represent a proper principal quantum number
 (i.e. a subtype of [`AtomicLevels.MQ`](@ref)).
 
+# Properties
+
+The following properties are part of the public API:
+
+* `.n :: N` -- principal quantum number ``n``
+* `.κ :: Int` -- ``\\kappa`` quantum number
+* `.ℓ :: Int` -- the orbital angular momentum label ``\\ell``
+* `.j :: HalfInteger` -- total angular momentum ``j``
+
+```jldoctest
+julia> orb = ro"5g-"
+5g⁻
+
+julia> orb.n
+5
+
+julia> orb.j
+7/2
+
+julia> orb.ℓ
+4
+```
+
 # Constructors
 
     RelativisticOrbital(n::Integer, κ::Integer)
@@ -334,6 +364,12 @@ struct RelativisticOrbital{N<:MQ} <: AbstractOrbital
 end
 RelativisticOrbital(n::MQ, ℓ::Integer, j::Real) = RelativisticOrbital(n, ℓj_to_kappa(ℓ, j))
 
+Base.propertynames(::RelativisticOrbital) = (fieldnames(RelativisticOrbital)..., :j, :ℓ)
+function Base.getproperty(o::RelativisticOrbital, s::Symbol)
+    s === :j ? kappa_to_j(o.κ) :
+    s === :ℓ ? kappa_to_ℓ(o.κ) :
+    getfield(o, s)
+end
 
 function Base.show(io::IO, orb::RelativisticOrbital)
     write(io, "$(orb.n)$(spectroscopic_label(kappa_to_ℓ(orb.κ)))")

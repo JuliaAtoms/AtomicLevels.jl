@@ -78,6 +78,39 @@ using Random
         @test_throws ArgumentError RelativisticOrbital(1, 0, 3//2)
     end
 
+    @testset "Properties" begin
+        let o = o"3d"
+            @test o.n == 3
+            @test o.ℓ == 2
+        end
+        let o = o"ks"
+            @test o.n == :k
+            @test o.ℓ == 0
+        end
+
+        @test propertynames(o"1s") == (:n , :ℓ)
+        @test propertynames(ro"1s") == (:n, :κ, :j, :ℓ)
+
+        let o = ro"3d"
+            @test o.n == 3
+            @test o.κ == -3
+            @test o.j == 5//2
+            @test o.ℓ == 2
+        end
+        let o = ro"ks"
+            @test o.n == :k
+            @test o.κ == -1
+            @test o.j == 1//2
+            @test o.ℓ == 0
+        end
+        let o = ro"2p-"
+            @test o.n == 2
+            @test o.κ == 1
+            @test o.j == 1//2
+            @test o.ℓ == 1
+        end
+    end
+
     @testset "Order" begin
         @test sort(shuffle([o"1s", o"2s", o"2p", o"3s", o"3p"])) ==
             [o"1s", o"2s", o"2p", o"3s", o"3p"]
