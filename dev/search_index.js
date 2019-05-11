@@ -45,7 +45,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Orbitals",
     "title": "AtomicLevels.Orbital",
     "category": "type",
-    "text": "struct Orbital{N <: AtomicLevels.MQ} <: AbstractOrbital\n\nLabel for an atomic orbital with a principal quantum number n::N and orbital angular momentum ℓ.\n\nThe type parameter N has to be such that it can represent a proper principal quantum number (i.e. a subtype of AtomicLevels.MQ).\n\nConstructors\n\nOrbital(n::Int, ℓ::Int)\nOrbital(n::Symbol, ℓ::Int)\n\nConstruct an orbital label with principal quantum number n and orbital angular momentum ℓ. If the principal quantum number n is an integer, it has to positive and the angular momentum must satisfy 0 <= ℓ < n.\n\njulia> Orbital(1, 0)\n1s\n\njulia> Orbital(:K, 2)\nKd\n\n\n\n\n\n"
+    "text": "struct Orbital{N <: AtomicLevels.MQ} <: AbstractOrbital\n\nLabel for an atomic orbital with a principal quantum number n::N and orbital angular momentum ℓ.\n\nThe type parameter N has to be such that it can represent a proper principal quantum number (i.e. a subtype of AtomicLevels.MQ).\n\nProperties\n\nThe following properties are part of the public API:\n\n.n :: N – principal quantum number n\n.ℓ :: Int – the orbital angular momentum ell\n\nConstructors\n\nOrbital(n::Int, ℓ::Int)\nOrbital(n::Symbol, ℓ::Int)\n\nConstruct an orbital label with principal quantum number n and orbital angular momentum ℓ. If the principal quantum number n is an integer, it has to positive and the angular momentum must satisfy 0 <= ℓ < n.\n\njulia> Orbital(1, 0)\n1s\n\njulia> Orbital(:K, 2)\nKd\n\n\n\n\n\n"
 },
 
 {
@@ -53,7 +53,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Orbitals",
     "title": "AtomicLevels.RelativisticOrbital",
     "category": "type",
-    "text": "struct RelativisticOrbital{N <: AtomicLevels.MQ} <: AbstractOrbital\n\nLabel for an atomic orbital with a principal quantum number n::N and well-defined total angular momentum j. The angular component of the orbital is labelled by the (ell j) pair, conventionally written as ell_j (e.g. p_32).\n\nThe ell and j can not be arbitrary, but must satisfy j = ell pm 12. Internally, the kappa quantum number, which is a unique integer corresponding to every physical (ell j) pair, is used to label each allowed pair. When j = ell pm 12, the corresponding kappa = mp(j + 12).\n\nWhen printing and parsing RelativisticOrbitals, the notation nℓ and nℓ- is used (e.g. 2p and 2p-), corresponding to the orbitals with j = ell + 12 and j = ell - 12, respectively.\n\nThe type parameter N has to be such that it can represent a proper principal quantum number (i.e. a subtype of AtomicLevels.MQ).\n\nConstructors\n\nRelativisticOrbital(n::Integer, κ::Integer)\nRelativisticOrbital(n::Symbol, κ::Integer)\nRelativisticOrbital(n, ℓ::Integer, j::Real)\n\nConstruct an orbital label with the quantum numbers n and κ. If the principal quantum number n is an integer, it has to positive and the orbital angular momentum must satisfy 0 <= ℓ < n. Instead of κ, valid ℓ and j values can also be specified instead.\n\njulia> RelativisticOrbital(1, 0, 1//2)\n1s\n\njulia> RelativisticOrbital(2, -1)\n2s\n\njulia> RelativisticOrbital(:K, 2, 3//2)\nKd⁻\n\n\n\n\n\n"
+    "text": "struct RelativisticOrbital{N <: AtomicLevels.MQ} <: AbstractOrbital\n\nLabel for an atomic orbital with a principal quantum number n::N and well-defined total angular momentum j. The angular component of the orbital is labelled by the (ell j) pair, conventionally written as ell_j (e.g. p_32).\n\nThe ell and j can not be arbitrary, but must satisfy j = ell pm 12. Internally, the kappa quantum number, which is a unique integer corresponding to every physical (ell j) pair, is used to label each allowed pair. When j = ell pm 12, the corresponding kappa = mp(j + 12).\n\nWhen printing and parsing RelativisticOrbitals, the notation nℓ and nℓ- is used (e.g. 2p and 2p-), corresponding to the orbitals with j = ell + 12 and j = ell - 12, respectively.\n\nThe type parameter N has to be such that it can represent a proper principal quantum number (i.e. a subtype of AtomicLevels.MQ).\n\nProperties\n\nThe following properties are part of the public API:\n\n.n :: N – principal quantum number n\n.κ :: Int – kappa quantum number\n.ℓ :: Int – the orbital angular momentum label ell\n.j :: HalfInteger – total angular momentum j\n\njulia> orb = ro\"5g-\"\n5g⁻\n\njulia> orb.n\n5\n\njulia> orb.j\n7/2\n\njulia> orb.ℓ\n4\n\nConstructors\n\nRelativisticOrbital(n::Integer, κ::Integer)\nRelativisticOrbital(n::Symbol, κ::Integer)\nRelativisticOrbital(n, ℓ::Integer, j::Real)\n\nConstruct an orbital label with the quantum numbers n and κ. If the principal quantum number n is an integer, it has to positive and the orbital angular momentum must satisfy 0 <= ℓ < n. Instead of κ, valid ℓ and j values can also be specified instead.\n\njulia> RelativisticOrbital(1, 0, 1//2)\n1s\n\njulia> RelativisticOrbital(2, -1)\n2s\n\njulia> RelativisticOrbital(:K, 2, 3//2)\nKd⁻\n\n\n\n\n\n"
 },
 
 {
@@ -377,11 +377,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "configurations/#AtomicLevels.nonrelconfiguration",
+    "page": "Configurations",
+    "title": "AtomicLevels.nonrelconfiguration",
+    "category": "function",
+    "text": "nonrelconfiguration(c::Configuration{<:RelativisticOrbital}) -> Configuration{<:Orbital}\n\nReduces a relativistic configuration down to the corresponding non-relativistic configuration.\n\njulia> c = rc\"1s2 2p-2 2s 2p2 3s2 3p-\"\n1s² 2s 2p⁻² 2p² 3s² 3p⁻\n\njulia> nonrelconfiguration(c)\n1s² 2s 2p⁴ 3s² 3p\n\n\n\n\n\n"
+},
+
+{
     "location": "configurations/#Interface-1",
     "page": "Configurations",
     "title": "Interface",
     "category": "section",
-    "text": "For example, it is possible to index into a configuration, including with a range of indices, returning a sub-configuration consisting of only those orbitals. With an integer index, an (orbital, occupancy, state) tuple is returned.julia> config = c\"1s2c 2si 2p3\"\n[He]ᶜ 2sⁱ 2p³\n\njulia> config[2]\n(2s, 1, :inactive)\n\njulia> config[1:2]\n[He]ᶜ 2sⁱ\n\njulia> config[[3,1]]\n[He]ᶜ 2p³The configuration can also be iterated over. Each item is a (orbital, occupancy, state) tuple.julia> for (o, nelec, s) in config\n           @show o, nelec, s\n       end\n(o, nelec, s) = (1s, 2, :closed)\n(o, nelec, s) = (2s, 1, :inactive)\n(o, nelec, s) = (2p, 3, :open)Various other methods exist to manipulate or transform configurations or to query them for information.num_electrons(::Configuration)\nnum_electrons(::Configuration, ::AtomicLevels.AbstractOrbital)\nBase.delete!\nBase.:(+)\nBase.:(-)\nBase.close\nclose!\nBase.fill\nBase.fill!\nBase.in\nBase.filter\nBase.count\ncore\npeel\nactive\ninactive\nbound\ncontinuum\nparity(::Configuration)"
+    "text": "For example, it is possible to index into a configuration, including with a range of indices, returning a sub-configuration consisting of only those orbitals. With an integer index, an (orbital, occupancy, state) tuple is returned.julia> config = c\"1s2c 2si 2p3\"\n[He]ᶜ 2sⁱ 2p³\n\njulia> config[2]\n(2s, 1, :inactive)\n\njulia> config[1:2]\n[He]ᶜ 2sⁱ\n\njulia> config[[3,1]]\n[He]ᶜ 2p³The configuration can also be iterated over. Each item is a (orbital, occupancy, state) tuple.julia> for (o, nelec, s) in config\n           @show o, nelec, s\n       end\n(o, nelec, s) = (1s, 2, :closed)\n(o, nelec, s) = (2s, 1, :inactive)\n(o, nelec, s) = (2p, 3, :open)Various other methods exist to manipulate or transform configurations or to query them for information.num_electrons(::Configuration)\nnum_electrons(::Configuration, ::AtomicLevels.AbstractOrbital)\nBase.delete!\nBase.:(+)\nBase.:(-)\nBase.close\nclose!\nBase.fill\nBase.fill!\nBase.in\nBase.filter\nBase.count\ncore\npeel\nactive\ninactive\nbound\ncontinuum\nparity(::Configuration)\nnonrelconfiguration"
 },
 
 {
@@ -598,6 +606,22 @@ var documenterSearchIndex = {"docs": [
     "title": "AtomicLevels.kappa_to_ℓ",
     "category": "method",
     "text": "kappa_to_ℓ(κ::Integer) :: Integer\n\nCalculate the ℓ quantum number corresponding to the κ quantum number.\n\nNote: κ and ℓ values are always integers.\n\n\n\n\n\n"
+},
+
+{
+    "location": "internals/#AtomicLevels.mqtype-Union{Tuple{Orbital{MQ}}, Tuple{MQ}} where MQ",
+    "page": "Internals",
+    "title": "AtomicLevels.mqtype",
+    "category": "method",
+    "text": "mqtype(::Orbital{MQ}) = MQ\n\nReturns the main quantum number type of an Orbital.\n\n\n\n\n\n"
+},
+
+{
+    "location": "internals/#AtomicLevels.mqtype-Union{Tuple{RelativisticOrbital{MQ}}, Tuple{MQ}} where MQ",
+    "page": "Internals",
+    "title": "AtomicLevels.mqtype",
+    "category": "method",
+    "text": "mqtype(::RelativisticOrbital{MQ}) = MQ\n\nReturns the main quantum number type of a RelativisticOrbital.\n\n\n\n\n\n"
 },
 
 {
