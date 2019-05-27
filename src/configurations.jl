@@ -758,8 +758,15 @@ permissible values for the quantum numbers `n`, `ℓ`, `mℓ`, `ms` for each ele
 
 ```jldoctest
 julia> spin_configurations(c"1s2")
-1-element Array{Configuration{SpinOrbital},1}:
+1-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:
  1s²
+
+julia> spin_configurations(c"1s ks")
+4-element Array{Configuration{SpinOrbital},1}:
+ 1s₀α ks₀α
+ 1s₀β ks₀α
+ 1s₀α ks₀β
+ 1s₀β ks₀β
 ```
 """
 function spin_configurations(c::Configuration{O}) where {O<:Orbital}
@@ -767,15 +774,17 @@ function spin_configurations(c::Configuration{O}) where {O<:Orbital}
     orbitals = map(c) do (orb,occ,state)
         states[orb] = state
         sorbs = spin_orbitals(orb)
-        comb = collect(combinations(sorbs, occ))
-        Vector{Vector{SpinOrbital{<:Orbital}}}(comb)
+        collect(combinations(sorbs, occ))
     end
-    map(allchoices(orbitals)) do choice
+    map(Iterators.product(orbitals...)) do choice
         c = vcat(choice...)
         s = [states[orb.orb] for orb in c]
         Configuration(c, ones(Int,length(c)), s)
-    end
+    end |> vec
 end
+
+Base.convert(::Type{Configuration{SpinOrbital}}, c::Configuration{SpinOrbital{Orbital{T}}}) where T =
+    Configuration(Vector{SpinOrbital}(c.orbitals), c.occupancy, c.states)
 
 """
     spin_configurations(configurations)
@@ -783,8 +792,11 @@ end
 For each configuration in `configurations`, generate all possible configurations of
 spin-orbitals.
 """
-spin_configurations(cs::Vector{<:Configuration}) =
+spin_configurations(cs::Vector{Configuration{Orbital{T}}}) where T =
     sort(vcat(map(spin_configurations, cs)...))
+
+spin_configurations(cs::Vector{<:Configuration}) =
+    sort(Vector{Configuration{SpinOrbital}}(vcat(map(spin_configurations, cs)...)))
 
 function Base.show(io::IO, c::Configuration{<:SpinOrbital})
     orbitals = Dict{Orbital, Vector{<:SpinOrbital}}()

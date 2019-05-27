@@ -261,19 +261,22 @@
 
         @test spin_configurations(c"1s2") ==
             [Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"1s",0,false)], [1, 1])]
+        @test spin_configurations(c"1s2") isa Vector{Configuration{SpinOrbital{Orbital{Int}}}}
+        @test spin_configurations(c"ks2") isa Vector{Configuration{SpinOrbital{Orbital{Symbol}}}}
+        @test spin_configurations(c"1s ks") isa Vector{Configuration{SpinOrbital}}
 
         @test spin_configurations(c"1s 2p") ==
             [Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",-1,true)], [1, 1]),
-             Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",-1,false)], [1, 1]),
-             Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",0,true)], [1, 1]),
-             Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",0,false)], [1, 1]),
-             Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",1,true)], [1, 1]),
-             Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",1,false)], [1, 1]),
              Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"2p",-1,true)], [1, 1]),
+             Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",-1,false)], [1, 1]),
              Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"2p",-1,false)], [1, 1]),
+             Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",0,true)], [1, 1]),
              Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"2p",0,true)], [1, 1]),
+             Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",0,false)], [1, 1]),
              Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"2p",0,false)], [1, 1]),
+             Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",1,true)], [1, 1]),
              Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"2p",1,true)], [1, 1]),
+             Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",1,false)], [1, 1]),
              Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"2p",1,false)], [1, 1])]
 
         @test spin_configurations(
@@ -321,16 +324,16 @@
 
         @test string.(spin_configurations(c"[Kr] 5s2 5p5 ks")) ==
             ["[Kr]ᶜ 5s² 5p₋₁² 5p₀² 5p₁α ks₀α",
-             "[Kr]ᶜ 5s² 5p₋₁² 5p₀² 5p₁α ks₀β",
              "[Kr]ᶜ 5s² 5p₋₁² 5p₀² 5p₁β ks₀α",
-             "[Kr]ᶜ 5s² 5p₋₁² 5p₀² 5p₁β ks₀β",
              "[Kr]ᶜ 5s² 5p₋₁² 5p₀α 5p₁² ks₀α",
-             "[Kr]ᶜ 5s² 5p₋₁² 5p₀α 5p₁² ks₀β",
              "[Kr]ᶜ 5s² 5p₋₁² 5p₀β 5p₁² ks₀α",
-             "[Kr]ᶜ 5s² 5p₋₁² 5p₀β 5p₁² ks₀β",
              "[Kr]ᶜ 5s² 5p₋₁α 5p₀² 5p₁² ks₀α",
-             "[Kr]ᶜ 5s² 5p₋₁α 5p₀² 5p₁² ks₀β",
              "[Kr]ᶜ 5s² 5p₋₁β 5p₀² 5p₁² ks₀α",
+             "[Kr]ᶜ 5s² 5p₋₁² 5p₀² 5p₁α ks₀β",
+             "[Kr]ᶜ 5s² 5p₋₁² 5p₀² 5p₁β ks₀β",
+             "[Kr]ᶜ 5s² 5p₋₁² 5p₀α 5p₁² ks₀β",
+             "[Kr]ᶜ 5s² 5p₋₁² 5p₀β 5p₁² ks₀β",
+             "[Kr]ᶜ 5s² 5p₋₁α 5p₀² 5p₁² ks₀β",
              "[Kr]ᶜ 5s² 5p₋₁β 5p₀² 5p₁² ks₀β"]
 
         @test string.(spin_configurations(c"[Kr] 5s2 5p4")) ==
@@ -354,7 +357,7 @@
                             spin_configurations(c"1s2")[1]) == []
 
         @test substitutions(spin_configurations(c"1s2")[1],
-                            spin_configurations(c"1s ks")[3]) ==
+                            spin_configurations(c"1s ks")[2]) ==
                                 [SpinOrbital(o"1s",0,true)=>SpinOrbital(o"ks",0,true)]
     end
 
