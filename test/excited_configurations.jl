@@ -45,6 +45,14 @@ using .GRASPParser
                                          replace(c"1s2 2s2", o"2s" => Orbital(Symbol("{2s}"), 1))
                                      ]
     end
+
+    @testset "Doubles excitations of spin-configurations" begin
+        gst = spin_configurations(Configuration(o"1s", 2, :open, false))[1]
+        orbitals = reduce(vcat, spin_orbitals.(os"2[s]"))
+        cs = excited_configurations(gst, orbitals...)
+        @test cs[2:3] == [replace(gst, gst.orbitals[1]=>o) for o in orbitals]
+        @test cs[4:5] == [replace(gst, gst.orbitals[2]=>o) for o in orbitals]
+    end
     
     @testset "Ion–continuum" begin
         ic = ion_continuum(c"1s2", os"k[s-d]")

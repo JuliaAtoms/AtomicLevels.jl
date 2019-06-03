@@ -13,7 +13,8 @@ function single_excitations!(fun::Function,
             # occupancy, we continue.
             i = findfirst(isequal(orb), ref_set.orbitals)
             !isnothing(i) && occ == min_occupancy[i] && continue
-            for subs_orb ∈ orbitals
+            for new_orb ∈ orbitals
+                subs_orb = fun(new_orb, orb)
                 subs_orb == orb && continue
                 # If the proposed substitution orbital is among those
                 # from the reference set and already present in the
@@ -22,7 +23,12 @@ function single_excitations!(fun::Function,
                 j = findfirst(isequal(subs_orb), ref_set.orbitals)
                 k = findfirst(isequal(subs_orb), config.orbitals)
                 !isnothing(j) && !isnothing(k) && config.occupancy[k] == max_occupancy[j] && continue
-                excited_config = replace(config, orb=>fun(subs_orb,orb))
+                # Likewise, if the proposed substitution orbital is
+                # already at its maximum, due to the degeneracy, we
+                # continue.
+                !isnothing(k) && config.occupancy[k] == degeneracy(subs_orb) && continue
+
+                excited_config = replace(config, orb=>subs_orb)
                 excited_config ∉ excitations && push!(excitations, excited_config)
             end
         end
