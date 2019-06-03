@@ -379,4 +379,33 @@
             @test AtomicLevels.get_noble_core_name(rc) === gas
         end
     end
+
+    @testset "Unsorted configurations" begin
+        @testset "Spatial orbitals" begin
+            # Sorted case
+            a = Configuration([o"1s", o"2s"], [1,1], [:open, :open], true)
+            @test replace(a, o"1s" => o"2p").orbitals == [o"2s", o"2p"]
+
+            b = Configuration([o"1s", o"2s"], [1,1], [:open, :open], false)
+            c = replace(b, o"1s" => o"2p")
+            @test c.orbitals == [o"2p", o"2s"]
+            @test "$c" == "2p 2s"
+
+            d = c"[He]" + Configuration([o"2p"], [1], [:open], false) + c"2s"
+            @test core(d) == c"[He]"
+            @test peel(d) == c
+        end
+
+        @testset "Spin orbitals" begin
+            orbs = [spin_orbitals(o) for o in [o"1s", o"2s"]]
+
+            a = spin_configurations(Configuration(o"1s", 2, :open, true))[1]
+            @test replace(a, orbs[1][1]=>orbs[2][1]).orbitals == [orbs[1][2], orbs[2][1]]
+
+            b = spin_configurations(Configuration(o"1s", 2, :open, false))[1]
+            c = replace(b, orbs[1][1]=>orbs[2][1])
+            @test c.orbitals == [orbs[2][1], orbs[1][2]]
+            @test "$c" == "2s₀α 1s₀β"
+        end
+    end
 end
