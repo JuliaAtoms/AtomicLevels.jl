@@ -333,7 +333,7 @@ end
 Base.getindex(conf::Configuration{O}, i::Integer) where O =
     (conf.orbitals[i], conf.occupancy[i], conf.states[i])
 Base.getindex(conf::Configuration{O}, i::Union{<:UnitRange{<:Integer},<:AbstractVector{<:Integer}}) where O =
-    Configuration([conf[ii] for ii in i], conf.sorted)
+    Configuration(Tuple{O,Int,Symbol}[conf[ii] for ii in i], conf.sorted)
 
 Base.iterate(conf::Configuration{O}, (el, i)=(length(conf)>0 ? conf[1] : nothing,1)) where O =
     i > length(conf) ? nothing : (el, (conf[i==length(conf) ? i : i+1],i+1))
