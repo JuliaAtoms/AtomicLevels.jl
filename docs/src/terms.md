@@ -8,7 +8,7 @@ end
 
 AtomicLevels provides types and methods to work and determine term symbols. The ["Term
 symbol"](https://en.wikipedia.org/wiki/Term_symbol) and ["Angular momentum
-coupling"](https://en.wikipedia.org/wiki/Term_symbol) Wikipedia articles give a good basic
+coupling"](https://en.wikipedia.org/wiki/Angular_momentum_coupling) Wikipedia articles give a good basic
 overview of the terminology.
 
 For term symbols in LS coupling, AtomicLevels provides the [`Term`](@ref) type.
