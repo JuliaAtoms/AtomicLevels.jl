@@ -16,8 +16,8 @@ and `S` both have to be convertible to `HalfInteger`s and `parity` must be of ty
 [`Parity`](@ref) or `±1`.
 """
 struct Term
-    L::HalfInteger
-    S::HalfInteger
+    L::HalfInt
+    S::HalfInt
     parity::Parity
     function Term(L::HalfInteger, S::HalfInteger, parity::Parity)
         L >= 0 || throw(DomainError(L, "Term symbol can not have negative L"))

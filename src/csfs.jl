@@ -20,14 +20,14 @@ struct CSF{O<:AbstractOrbital, IT<:Union{IntermediateTerm,HalfInteger}, T<:Union
             throw(ArgumentError("Need to provide $(length(peel(config))) subshell terms for $(config)"))
         length(terms) == length(peel(config)) ||
             throw(ArgumentError("Need to provide $(length(peel(config))) terms for $(config)"))
-        new{O,HalfInteger,HalfInteger}(config,
-                                       convert.(HalfInteger, subshell_terms),
-                                       convert.(HalfInteger, terms))
+        new{O,HalfInt,HalfInt}(config,
+                               convert.(HalfInt, subshell_terms),
+                               convert.(HalfInt, terms))
     end
 end
 
 const NonRelativisticCSF = CSF{<:Orbital,IntermediateTerm,Term}
-const RelativisticCSF = CSF{<:RelativisticOrbital,HalfInteger,HalfInteger}
+const RelativisticCSF = CSF{<:RelativisticOrbital,HalfInt,HalfInt}
 
 Base.:(==)(a::CSF{O,T}, b::CSF{O,T}) where {O,T} =
     (a.config == b.config) && (a.subshell_terms == b.subshell_terms) && (a.terms == b.terms)
@@ -47,9 +47,6 @@ end
 
 csfs(configs::Vector{Configuration{O}}) where O = vcat(map(csfs, configs)...)
 
-show_couplings(io::IO, st::IntermediateTerm, t::Term) = write(io, "($(st)|$(t))")
-show_couplings(io::IO, st::HalfInteger, t::HalfInteger) = write(io, "($(rs(st))|$(rs(t)))")
-
 function Base.show(io::IO, csf::CSF)
     c = core(csf.config)
     p = peel(csf.config)
@@ -64,13 +61,13 @@ function Base.show(io::IO, csf::CSF)
         occ > 1 && write(io, to_superscript(occ))
         st = csf.subshell_terms[i]
         t = csf.terms[i]
-        show_couplings(io, st, t)
+        write(io, "($(st)|$(t))")
         i != lastindex(p) && write(io, " ")
     end
     print(io, iseven(parity(csf.config)) ? "+" : "-")
 end
 
-function Base.show(io::IO, ::MIME"text/plain", csf::CSF{<:RelativisticOrbital,HalfInteger,HalfInteger})
+function Base.show(io::IO, ::MIME"text/plain", csf::RelativisticCSF)
     c = core(csf.config)
     nc = length(c)
     cw = length(string(c))

@@ -4,7 +4,7 @@
             w <= 2j+1 || throw(ArgumentError("w=$w too large for $orb orbital"))
 
             2w ≥ 2j+1 && (w = convert(Int, 2j) + 1 - w)
-            w == 0 && return [zero(HalfInteger)]
+            w == 0 && return [zero(HalfInt)]
             w == 1 && return [j]
 
             # Forms full Cartesian product of all mⱼ, not necessarily the most
@@ -12,7 +12,7 @@
             mⱼs = filter(allunique, collect(AtomicLevels.allchoices([-j:j for i = 1:w])))
             MJs = map(x -> reduce(+, x), mⱼs) # TODO: make map(sum, mⱼs) work
 
-            Js = HalfInteger[]
+            Js = HalfInt[]
 
             while !isempty(MJs)
                 # Identify the maximum MJ and associate it with J.
@@ -30,7 +30,7 @@
         end
 
         for twoj = 0:10, w = 1:twoj+1
-            j = HalfInteger(twoj, 2)
+            j = HalfInteger(twoj//2)
             ts = AtomicLevels._terms_jw(j, w)
 
             @test issorted(ts, rev=true) # make sure that the array is sorted in descending order

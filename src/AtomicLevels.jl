@@ -5,9 +5,7 @@ using Formatting
 using Parameters
 using BlockBandedMatrices
 using WignerSymbols
-macro hi_str(s)
-    parse(HalfInteger, s)
-end
+using HalfIntegers
 using Combinatorics
 
 if VERSION < v"1.1-DEV"

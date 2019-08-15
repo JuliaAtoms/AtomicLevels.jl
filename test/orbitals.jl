@@ -3,15 +3,15 @@ using Random
 @testset "Orbitals" begin
     @testset "kappa" begin
         import AtomicLevels: assert_orbital_ℓj
-        @test assert_orbital_ℓj(0, hi"1/2") === nothing
-        @test assert_orbital_ℓj(1, hi"1/2") === nothing
+        @test assert_orbital_ℓj(0, HalfInteger(1//2)) === nothing
+        @test assert_orbital_ℓj(1, HalfInteger(1//2)) === nothing
         @test assert_orbital_ℓj(1, 3//2) === nothing
         @test assert_orbital_ℓj(2, 2.5) === nothing
         @test_throws ArgumentError assert_orbital_ℓj(0, 0)
         @test_throws ArgumentError assert_orbital_ℓj(0, 1)
         @test_throws ArgumentError assert_orbital_ℓj(0, 3//2)
         @test_throws ArgumentError assert_orbital_ℓj(5, 1//2)
-        @test_throws MethodError assert_orbital_ℓj(hi"1", hi"1/2")
+        @test_throws MethodError assert_orbital_ℓj(HalfInteger(1), HalfInteger(1//2))
 
         import AtomicLevels: kappa_to_ℓ
         @test_throws ArgumentError kappa_to_ℓ(0)
@@ -32,9 +32,9 @@ using Random
         @test kappa_to_j( 3) == 5//2
 
         import AtomicLevels: ℓj_to_kappa
-        @test ℓj_to_kappa(0, hi"1/2") == -1
+        @test ℓj_to_kappa(0, HalfInteger(1//2)) == -1
         @test κ"s" == -1
-        @test ℓj_to_kappa(1, hi"1/2") == 1
+        @test ℓj_to_kappa(1, HalfInteger(1//2)) == 1
         @test κ"p-" == 1
         @test ℓj_to_kappa(1, 3//2) == -2
         @test κ"p" == -2
@@ -46,7 +46,7 @@ using Random
         @test κ"f-" == 3
         @test ℓj_to_kappa(3, 7//2) == -4
         @test κ"f" == -4
-        @test_throws ArgumentError ℓj_to_kappa(0, hi"3/2")
+        @test_throws ArgumentError ℓj_to_kappa(0, HalfInteger(3//2))
         @test_throws ArgumentError ℓj_to_kappa(0, 0)
         @test_throws ArgumentError ℓj_to_kappa(6, 1//2)
     end
@@ -57,7 +57,7 @@ using Random
         @test o"2[1]" == Orbital(2, 1)
 
         @test ro"1s"   == RelativisticOrbital(1, -1) # κ=-1 => s orbital
-        @test ro"2p-"  == RelativisticOrbital(2,  1, hi"1/2")
+        @test ro"2p-"  == RelativisticOrbital(2,  1, HalfInteger(1//2))
         @test ro"2p-"  == RelativisticOrbital(2,  1, 1//2)
         @test ro"2p"   == RelativisticOrbital(2,  1, 3//2)
         @test ro"2[1]" == RelativisticOrbital(2,  1, 3//2)

@@ -38,12 +38,12 @@
 
     @testset "Coupling of jj terms" begin
         @test couple_terms(1, 2) isa Vector{Int}
-        @test couple_terms(1//2, 1//2) isa Vector{HalfInteger}
-        @test couple_terms(1.0, 1.5) isa Vector{HalfInteger}
+        @test couple_terms(1//2, 1//2) isa Vector{HalfInt}
+        @test couple_terms(1.0, 1.5) isa Vector{HalfInt}
 
-        @test couple_terms(hi"1/2", hi"0") == [1//2]
-        @test couple_terms(1//2, hi"0") == [1//2]
-        @test couple_terms(hi"1/2", 0) == [1//2]
+        @test couple_terms(HalfInteger(1//2), HalfInteger(0)) == [1//2]
+        @test couple_terms(1//2, HalfInteger(0)) == [1//2]
+        @test couple_terms(HalfInteger(1//2), 0) == [1//2]
 
         @test couple_terms(0, 1) == 1:1
         @test couple_terms(1//2,1//2) == 0:1
@@ -54,9 +54,9 @@
         @test couple_terms(1.0, 1.5) == 1//2:5//2
 
         @test intermediate_couplings([1, 2], 3) isa Vector{Vector{Int}}
-        @test intermediate_couplings([1, 2], hi"3") isa Vector{Vector{HalfInteger}}
-        @test intermediate_couplings([1, 2], hi"3/2") isa Vector{Vector{HalfInteger}}
-        @test intermediate_couplings([1, 2.5], 3) isa Vector{Vector{HalfInteger}}
+        @test intermediate_couplings([1, 2], HalfInteger(3)) isa Vector{Vector{HalfInt}}
+        @test intermediate_couplings([1, 2], HalfInteger(3//2)) isa Vector{Vector{HalfInt}}
+        @test intermediate_couplings([1, 2.5], 3) isa Vector{Vector{HalfInt}}
 
         @test intermediate_couplings([0, 0], 0) == [[0,0,0]]
         @test intermediate_couplings([0, 0], 1) == [[1,1,1]]
