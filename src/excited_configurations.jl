@@ -1,19 +1,59 @@
+"""
+    orbital_priority(fun, orig_cfg, orbitals)
+
+Generate priorities for the substitution `orbitals`, i.e. the
+preferred ordering of the orbitals in configurations excited from
+`orig_cfg`. `fun` can optionally transform the labels of substitution
+orbitals, in which case they will be ordered just after their parent
+orbital in the source configuration; otherwise they will be appended
+to the priority list.
+"""
+function orbital_priority(fun::Function, orig_cfg::Configuration{O₁}, orbitals::Vector{O₂}) where {O₁<:AbstractOrbital,O₂<:AbstractOrbital}
+    orbital_priority = Vector{promote_type(O₁,O₂)}()
+    for (orb,occ,state) in orig_cfg
+        push!(orbital_priority, orb)
+        for new_orb in orbitals
+            subs_orb = fun(new_orb, orb)
+            (new_orb == subs_orb || subs_orb ∈ orbital_priority) && continue
+            push!(orbital_priority, subs_orb)
+        end
+    end
+    # This is not exactly correct, since if there is a transformation
+    # in effect (`fun` not returning the same orbital), they should
+    # not be included in the orbital priority list, whereas if there
+    # is no transformation, they should be appended since they have
+    # the lowest priority (compared to the original
+    # orbitals). However, if there is a transformation, the resulting
+    # orbitals will be different from the ingoing ones, and the
+    # subsequent excitations will never consider the untransformed
+    # substitution orbitals, so there is really no harm done.
+    for new_orb in orbitals
+        (new_orb ∈ orbital_priority) && continue
+        push!(orbital_priority, new_orb)
+    end
+
+    Dict(o => i for (i,o) in enumerate(orbital_priority))
+end
+
 function single_excitations!(fun::Function,
                              excitations::Vector{<:Configuration},
                              ref_set::Configuration,
-                             orbitals::Vector{O},
+                             orbitals::Vector{<:AbstractOrbital},
                              min_occupancy::Vector{Int},
                              max_occupancy::Vector{Int},
-                             excite_from::Int) where {O<:AbstractOrbital}
+                             excite_from::Int)
+    orig_cfg = first(excitations)
+    orbital_order = orbital_priority(fun, orig_cfg, orbitals)
     for config ∈ excitations[end-excite_from+1:end]
-        for (orb,occ,state) ∈ config
+        for (orb_i,(orb,occ,state)) ∈ enumerate(config)
             state != :open && continue
             # If the orbital we propose to excite from is among those
             # from the reference set and already at its minimum
             # occupancy, we continue.
             i = findfirst(isequal(orb), ref_set.orbitals)
             !isnothing(i) && occ == min_occupancy[i] && continue
-            for new_orb ∈ orbitals
+
+            for (new_orb_i,new_orb) ∈ enumerate(orbitals)
                 subs_orb = fun(new_orb, orb)
                 subs_orb == orb && continue
                 # If the proposed substitution orbital is among those
@@ -27,6 +67,28 @@ function single_excitations!(fun::Function,
                 # already at its maximum, due to the degeneracy, we
                 # continue.
                 !isnothing(k) && config.occupancy[k] == degeneracy(subs_orb) && continue
+
+                # If we are working with unsorted configurations and
+                # the substitution orbital is not already present in
+                # config, we need to check if the substitution would
+                # generate a configuration that violates the desired
+                # orbital priority.
+                if isnothing(k) && !config.sorted
+                    sp = orbital_order[subs_orb]
+
+                    # Make sure that no preceding orbital has higher
+                    # value than subs_orb.
+                    (any(orbital_order[o] > sp
+                         for o in config.orbitals[1:orb_i-1]) ||
+                     # The orbital substituted from, if higher
+                     # occupancy than one, will also be a preceding
+                     # orbital; thus its value has to be lower as
+                     # well.
+                     occ > 1 && orbital_order[orb] > sp ||
+                     # Any following orbital must have higher value.
+                     any(orbital_order[o] < sp
+                         for o in config.orbitals[orb_i+1:end])) && continue
+                end
 
                 excited_config = replace(config, orb=>subs_orb)
                 excited_config ∉ excitations && push!(excitations, excited_config)
@@ -69,7 +131,7 @@ function excited_configurations(fun::Function,
 
     # The orbitals of the reference are valid orbitals to excite to as
     # well.
-    orbitals = sort(unique(vcat(ref_set_peel.orbitals, orbitals...)))
+    orbitals = unique(vcat(ref_set_peel.orbitals, orbitals...))
 
     excitations = Configuration[ref_set_peel]
     excite_from = 1
