@@ -1,5 +1,4 @@
 using AtomicLevels
-import AtomicLevels: @hi_str
 using WignerSymbols
 using HalfIntegers
 using Test

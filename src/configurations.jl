@@ -7,8 +7,8 @@ following _states_: `:open`, `:closed` or `:inactive`.
 
 # Constructors
 
-    Configuration(orbitals :: Vector{<:AbstractOrbital}, occupancy :: Vector{Int}, states :: Vector{Symbol}[, sorted=true])
-    Configuration(orbitals :: Vector{Tuple{<:AbstractOrbital, Int, Symbol}}[, sorted=true])
+    Configuration(orbitals :: Vector{<:AbstractOrbital}, occupancy :: Vector{Int}, states :: Vector{Symbol}[; sorted=true])
+    Configuration(orbitals :: Vector{Tuple{<:AbstractOrbital, Int, Symbol}}[; sorted=true])
 
 In the first case, the paramaters of each orbital have to be passed as
 separate vectors, and the orbitals and occupancy have to be of the
@@ -32,8 +32,8 @@ struct Configuration{O<:AbstractOrbital}
     function Configuration(
         orbitals::Vector{O},
         occupancy::Vector{Int},
-        states::Vector{Symbol}=[:open for o in orbitals],
-        sorted=true) where {O<:AbstractOrbital}
+        states::Vector{Symbol}=[:open for o in orbitals];
+        sorted=false) where {O<:AbstractOrbital}
         length(orbitals) == length(occupancy) ||
             throw(ArgumentError("Need to specify occupation numbers for all orbitals"))
         length(states) ≤ length(orbitals) ||
@@ -84,7 +84,7 @@ struct Configuration{O<:AbstractOrbital}
     end
 end
 
-function Configuration(orbs::Vector{Tuple{O,Int,Symbol}}, sorted=true) where {O<:AbstractOrbital}
+function Configuration(orbs::Vector{Tuple{O,Int,Symbol}}; sorted=false) where {O<:AbstractOrbital}
     orbitals = Vector{O}()
     occupancy = Vector{Int}()
     states = Vector{Symbol}()
@@ -93,16 +93,23 @@ function Configuration(orbs::Vector{Tuple{O,Int,Symbol}}, sorted=true) where {O<
         push!(occupancy, occ)
         push!(states, state)
     end
-    Configuration(orbitals, occupancy, states, sorted)
+    Configuration(orbitals, occupancy, states, sorted=sorted)
 end
 
-Configuration(orbital::O, occupancy::Int, state::Symbol=:open, sorted=true) where {O<:AbstractOrbital} =
-    Configuration([orbital], [occupancy], [state], sorted)
+Configuration(orbital::O, occupancy::Int, state::Symbol=:open; sorted=false) where {O<:AbstractOrbital} =
+    Configuration([orbital], [occupancy], [state], sorted=sorted)
 
-Configuration{O}(sorted=true) where {O<:AbstractOrbital} =
-    Configuration(O[], Int[], Symbol[], sorted)
+Configuration{O}(;sorted=false) where {O<:AbstractOrbital} =
+    Configuration(O[], Int[], Symbol[], sorted=sorted)
 
 const RelativisticConfiguration{N} = Configuration{RelativisticOrbital{N}}
+
+"""
+    issorted(cfg::Configuration)
+
+Tests if the orbitals of `cfg` is sorted.
+"""
+Base.issorted(cfg::Configuration) = cfg.sorted || issorted(cfg.orbitals)
 
 """
     sort(cfg::Configuration)
@@ -110,7 +117,7 @@ const RelativisticConfiguration{N} = Configuration{RelativisticOrbital{N}}
 Returns a sorted copy of `cfg`.
 """
 Base.sort(cfg::Configuration) =
-    Configuration(cfg.orbitals, cfg.occupancy, cfg.states)
+    Configuration(cfg.orbitals, cfg.occupancy, cfg.states, sorted=true)
 
 """
     sorted(cfg::Configuration)
@@ -118,21 +125,62 @@ Base.sort(cfg::Configuration) =
 Returns `cfg` if `cfg.sorted` or a sorted copy otherwise.
 """
 sorted(cfg::Configuration) =
-    cfg.sorted ? cfg : sort(cfg)
+    issorted(cfg) ? cfg : sort(cfg)
 
+"""
+    issimilar(a::Configuration, b::Configuration)
+
+Compares the electronic configurations `a` and `b`, only considering
+the constituent orbitals and their occupancy, but disregarding their
+ordering and states (`:open`, `:closed`, &c).
+
+# Examples
+
+```jldoctest
+julia> a = c"1s 2s"
+1s 2s
+
+julia> b = c"2si 1s"
+2sⁱ 1s
+
+julia> issimilar(a, b)
+true
+
+julia> a==b
+false
+```
+
+"""
 function issimilar(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbital}
     ca = sorted(a)
     cb = sorted(b)
     ca.orbitals == cb.orbitals && ca.occupancy == cb.occupancy
 end
 
+"""
+    ==(a::Configuration, b::Configuration)
+
+Tests if configurations `a` and `b`, considering orbital occupancy,
+ordering, and states.
+
+# Examples
+
+```jldoctest
+julia> c"1s 2s" == c"1s 2s"
+true
+
+julia> c"1s 2s" == c"1s 2si"
+false
+
+julia> c"1s 2s" == c"2s 1s"
+false
+```
+
+"""
 function Base.:(==)(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbital}
     ca = sorted(a)
     cb = sorted(b)
-    issimilar(ca, cb) && ca.states == cb.states
-    # Unsure if a and b are the same if they have different orders;
-    # physically, they are the same.
-    # # && a.sorted == b.sorted
+    issimilar(ca, cb) && ca.states == cb.states && sortperm(a.orbitals) == sortperm(b.orbitals)
 end
 
 Base.hash(c::Configuration) = hash(c.orbitals) ⊻ hash(c.occupancy) ⊻ hash(c.states)
@@ -262,12 +310,13 @@ function state_sym(state::AbstractString)
     end
 end
 
-function core_configuration(::Type{O}, element::AbstractString, state::AbstractString) where {O<:AbstractOrbital}
+function core_configuration(::Type{O}, element::AbstractString, state::AbstractString, sorted) where {O<:AbstractOrbital}
     element ∉ keys(noble_gases_configurations[O]) && throw(ArgumentError("Unknown noble gas $(element)"))
     state = state_sym(state == "" ? "c" : state) # By default, we'd like cores to be frozen
     core_config = noble_gases_configurations[O][element]
     Configuration(core_config.orbitals, core_config.occupancy,
-                  [state for o in core_config.orbitals])
+                  [state for o in core_config.orbitals],
+                  sorted=sorted)
 end
 
 function parse_orbital(::Type{O}, orb_str) where {O<:AbstractOrbital}
@@ -275,48 +324,55 @@ function parse_orbital(::Type{O}, orb_str) where {O<:AbstractOrbital}
     orbital_from_string(O, m[1]) , (m[4] == "") ? 1 : parse(Int, m[4]), state_sym(m[5])
 end
 
-function Base.parse(::Type{Configuration{O}}, conf_str::AbstractString) where {O<:AbstractOrbital}
-    isempty(conf_str) && return Configuration{O}()
+function Base.parse(::Type{Configuration{O}}, conf_str::AbstractString, sorted=false) where {O<:AbstractOrbital}
+    isempty(conf_str) && return Configuration{O}(sorted=sorted)
     orbs = split(conf_str, r"[\. ]")
     core_m = match(r"\[([a-zA-Z]+)\]([*ci]{0,1})", first(orbs))
     if core_m != nothing
-        core_config = core_configuration(O, core_m[1], core_m[2])
+        core_config = core_configuration(O, core_m[1], core_m[2], sorted)
         if length(orbs) > 1
             peel_config = Configuration(parse_orbital.(Ref(O), orbs[2:end]))
             Configuration(vcat(core_config.orbitals, peel_config.orbitals),
                           vcat(core_config.occupancy, peel_config.occupancy),
-                          vcat(core_config.states, peel_config.states))
+                          vcat(core_config.states, peel_config.states),
+                          sorted=sorted)
         else
             core_config
         end
     else
-        Configuration(parse_orbital.(Ref(O), orbs))
+        Configuration(parse_orbital.(Ref(O), orbs), sorted=sorted)
     end
 end
 
 """
     @c_str -> Configuration{Orbital}
 
-Construct a [`Configuration`](@ref), representing a non-relativistic configuration, out of
-a string.
+Construct a [`Configuration`](@ref), representing a non-relativistic
+configuration, out of a string. With the added string macro suffix
+`s`, the configuration is sorted.
 
 ```jldoctest
 julia> c"1s2 2s"
 1s² 2s
 
 julia> c"[Kr] 4d10 5s2 4f2"
+[Kr]ᶜ 4d¹⁰ 5s² 4f²
+
+julia> c"[Kr] 4d10 5s2 4f2"s
 [Kr]ᶜ 4d¹⁰ 4f² 5s²
 ```
 """
-macro c_str(conf_str)
-    parse(Configuration{Orbital}, conf_str)
+macro c_str(conf_str, suffix="")
+    suffix ∈ ["", "s"] || throw(ArgumentError("Unknown configuration suffix $suffix"))
+    parse(Configuration{Orbital}, conf_str, suffix=="s")
 end
 
 """
     @rc_str -> Configuration{RelativisticOrbital}
 
-Construct a [`Configuration`](@ref) representing a relativistic configuration out of a
-string.
+Construct a [`Configuration`](@ref) representing a relativistic
+configuration out of a string. With the added string macro suffix `s`,
+the configuration is sorted.
 
 ```jldoctest
 julia> rc"[Ne] 3s 3p- 3p"
@@ -324,16 +380,20 @@ julia> rc"[Ne] 3s 3p- 3p"
 
 julia> rc"[Ne] 3s 3p-2 3p4"
 [Ne]ᶜ 3s 3p⁻² 3p⁴
+
+julia> rc"2p- 1s"s
+1s 2p⁻
 ```
 """
-macro rc_str(conf_str)
-    parse(Configuration{RelativisticOrbital}, conf_str)
+macro rc_str(conf_str, suffix="")
+    suffix ∈ ["", "s"] || throw(ArgumentError("Unknown configuration suffix $suffix"))
+    parse(Configuration{RelativisticOrbital}, conf_str, suffix=="s")
 end
 
 Base.getindex(conf::Configuration{O}, i::Integer) where O =
     (conf.orbitals[i], conf.occupancy[i], conf.states[i])
 Base.getindex(conf::Configuration{O}, i::Union{<:UnitRange{<:Integer},<:AbstractVector{<:Integer}}) where O =
-    Configuration(Tuple{O,Int,Symbol}[conf[ii] for ii in i], conf.sorted)
+    Configuration(Tuple{O,Int,Symbol}[conf[ii] for ii in i], sorted=conf.sorted)
 
 Base.iterate(conf::Configuration{O}, (el, i)=(length(conf)>0 ? conf[1] : nothing,1)) where O =
     i > length(conf) ? nothing : (el, (conf[i==length(conf) ? i : i+1],i+1))
@@ -573,7 +633,7 @@ function Base.replace(conf::Configuration{O₁}, orbs::Pair{O₂,O₃}) where {O
         deleteat!(states, i)
     end
 
-    Configuration(orbitals, occupancy, states, conf.sorted)
+    Configuration(orbitals, occupancy, states, sorted=conf.sorted)
 end
 
 """
@@ -603,7 +663,7 @@ function Base.:(-)(configuration::Configuration{O₁}, orbital::O₂, n::Int=1) 
         deleteat!(states, i)
     end
 
-    Configuration(orbitals, occupancy, states, configuration.sorted)
+    Configuration(orbitals, occupancy, states, sorted=configuration.sorted)
 end
 
 """
@@ -636,7 +696,7 @@ function Base.:(+)(a::Configuration{O₁}, b::Configuration{O₂}) where {O<:Abs
             states[i] == state || throw(ArgumentError("Incompatible states for $(orb): $(states[i]) and $state"))
         end
     end
-    Configuration(orbitals, occupancy, states, a.sorted && b.sorted)
+    Configuration(orbitals, occupancy, states, sorted=a.sorted && b.sorted)
 end
 
 """
@@ -791,6 +851,10 @@ permissible values for the quantum numbers `n`, `ℓ`, `mℓ`, `ms` for each ele
 ```jldoctest
 julia> spin_configurations(c"1s2")
 1-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:
+ 1s₀α 1s₀β
+
+julia> spin_configurations(c"1s2"s)
+1-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:
  1s²
 
 julia> spin_configurations(c"1s ks")
@@ -811,12 +875,12 @@ function spin_configurations(cfg::Configuration{O}) where {O<:Orbital}
     map(Iterators.product(orbitals...)) do choice
         c = vcat(choice...)
         s = [states[orb.orb] for orb in c]
-        Configuration(c, ones(Int,length(c)), s, cfg.sorted)
+        Configuration(c, ones(Int,length(c)), s, sorted=cfg.sorted)
     end |> vec
 end
 
 Base.convert(::Type{Configuration{SpinOrbital}}, c::Configuration{SpinOrbital{Orbital{T}}}) where T =
-    Configuration(Vector{SpinOrbital}(c.orbitals), c.occupancy, c.states, c.sorted)
+    Configuration(Vector{SpinOrbital}(c.orbitals), c.occupancy, c.states, sorted=c.sorted)
 
 """
     spin_configurations(configurations)
@@ -930,7 +994,7 @@ end
 Reduces a relativistic configuration down to the corresponding non-relativistic configuration.
 
 ```jldoctest
-julia> c = rc"1s2 2p-2 2s 2p2 3s2 3p-"
+julia> c = rc"1s2 2p-2 2s 2p2 3s2 3p-"s
 1s² 2s 2p⁻² 2p² 3s² 3p⁻
 
 julia> nonrelconfiguration(c)
@@ -955,6 +1019,6 @@ function nonrelconfiguration(c::Configuration{<:RelativisticOrbital})
     Configuration(nrorbitals, nroccupancies, nrstates)
 end
 
-export Configuration, @c_str, @rc_str,
+export Configuration, @c_str, @rc_str, issimilar,
     num_electrons, core, peel, active, inactive, bound, continuum, parity, ⊗, @rcs_str,
     spin_configurations, substitutions, close!, nonrelconfiguration
