@@ -58,6 +58,8 @@ Various other methods exist to manipulate or transform configurations or to quer
 information.
 
 ```@docs
+issimilar
+Base.:(==)(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbital}
 num_electrons(::Configuration)
 num_electrons(::Configuration, ::AtomicLevels.AbstractOrbital)
 Base.delete!
