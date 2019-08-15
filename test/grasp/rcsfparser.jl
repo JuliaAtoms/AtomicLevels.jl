@@ -84,7 +84,7 @@ function parse_rcsf(filename)
                 end
             end
 
-            config = Configuration(vcat(core_orbitals, orbitals), vcat(core_occupations, noccupations))
+            config = Configuration(vcat(core_orbitals, orbitals), vcat(core_occupations, noccupations), sorted=true)
             subshell_terms = map(x -> convert(Rational{Int}, x),
                 vcat(core_couplings, Vector{HalfInt}(orbcouplings)))
             terms = map(x -> convert(Rational{Int}, x),
