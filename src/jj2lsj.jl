@@ -21,11 +21,11 @@ Base.convert(::Type{T}, cg::ClebschGordan) where {T<:Real} =
 Base.adjoint(cg::ClebschGordan) = cg
 
 Base.show(io::IO, cg::ClebschGordan) =
-    write(io, "⟨$(rs(cg.j₁)),$(rs(cg.j₂));$(rs(cg.m₁)),$(rs(cg.m₂))|$(rs(cg.J)),$(rs(cg.M))⟩")
+    write(io, "⟨$(cg.j₁),$(cg.j₂);$(cg.m₁),$(cg.m₂)|$(cg.J),$(cg.M)⟩")
 
 function Base.show(io::IO, cg::ClebschGordanℓs)
     spin = cg.m₂ > 0 ? "↑" : "↓"
-    write(io, "⟨$(spectroscopic_label(cg.j₁));$(cg.m₁),$(spin)|$(rs(cg.J)),$(rs(cg.M))⟩")
+    write(io, "⟨$(spectroscopic_label(cg.j₁));$(cg.m₁),$(spin)|$(cg.J),$(cg.M)⟩")
 end
 
 #=

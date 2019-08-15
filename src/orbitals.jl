@@ -266,7 +266,7 @@ Note: `κ` is always an integer.
 """
 function kappa_to_j(kappa::Integer)
     kappa == zero(kappa) && throw(ArgumentError("κ can not be zero"))
-    HalfInteger(2*abs(kappa) - 1, 2)
+    HalfInteger((2*abs(kappa) - 1)//2)
 end
 
 """
@@ -284,7 +284,7 @@ end
 
 function assert_orbital_ℓj(ℓ::Integer, j::Real)
     j = HalfInteger(j)
-    s = hi"1/2"
+    s = HalfInteger(1//2)
     (ℓ == j + s) || (ℓ == j - s) ||
         throw(ArgumentError("Invalid (ℓ, j) = $(ℓ), $(j) pair, expected j = ℓ ± 1/2."))
     return

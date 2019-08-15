@@ -1,6 +1,6 @@
 struct Level{O,IT,T}
     csf::CSF{O,IT,T}
-    J::HalfInteger
+    J::HalfInt
     function Level(csf::CSF{O,IT,T}, J::HalfInteger) where {O,IT,T}
         J ∈ J_range(last(csf.terms)) ||
             throw(ArgumentError("Invalid J = $(J) for term $(last(csf.terms))"))
@@ -29,7 +29,7 @@ levels(csf::CSF) = sort([Level(csf,J) for J in J_range(last(csf.terms))])
 
 struct State{O,IT,T}
     level::Level{O,IT,T}
-    M_J::HalfInteger
+    M_J::HalfInt
     function State(level::Level{O,IT,T}, M_J::HalfInteger) where {O,IT,T}
         abs(M_J) ≤ level.J ||
             throw(ArgumentError("Invalid M_J = $(M_J) for level with J = $(level.J)"))

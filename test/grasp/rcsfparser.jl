@@ -1,7 +1,8 @@
 using AtomicLevels: CSF, orbital_from_string
+using HalfIntegers
 
 angularmomentum(o::RelativisticOrbital) = AtomicLevels.kappa_to_j(o.κ)
-angularmomentum(csf::CSF{O,HalfInteger}) where O = last(csf.terms)
+angularmomentum(csf::CSF{O,<:HalfInteger}) where O = last(csf.terms)
 
 # Relativistic CSLs and parsing of GRASP CSL files
 
@@ -15,11 +16,11 @@ function parse_rcsf(filename)
         line = readline(io); @assert strip(line) == "CSF(s):"
 
         core_orbitals = parse_cores(line_cores)
-        core_couplings = HalfInteger[0 for co in core_orbitals]
+        core_couplings = zeros(HalfInt, length(core_orbitals))
         core_occupations = map(degeneracy, core_orbitals)
 
         blockid, csfid = 1, 1
-        csfs = CSF{RelativisticOrbital{Int},HalfInteger}[]
+        csfs = CSF{RelativisticOrbital{Int},HalfInt}[]
         while ! eof(io)
             line1 = readline(io)
             if startswith(line1, " *")
@@ -67,7 +68,7 @@ function parse_rcsf(filename)
             # current orbital are both zeros.
             for i = 1:length(orbitals)
                 oj = orbcouplings[i]
-                cj = (i > 1) ? csfcouplings[i-1] : HalfInteger(0)
+                cj = (i > 1) ? csfcouplings[i-1] : zero(HalfInt)
                 Δupper, Δlower = oj+cj, abs(oj-cj)
                 if csfcouplings[i] === nothing
                     Δupper == Δlower || error("""
@@ -85,9 +86,9 @@ function parse_rcsf(filename)
 
             config = Configuration(vcat(core_orbitals, orbitals), vcat(core_occupations, noccupations))
             subshell_terms = map(x -> convert(Rational{Int}, x),
-                vcat(core_couplings, Vector{HalfInteger}(orbcouplings)))
+                vcat(core_couplings, Vector{HalfInt}(orbcouplings)))
             terms = map(x -> convert(Rational{Int}, x),
-                vcat(core_couplings, Vector{HalfInteger}(csfcouplings)))
+                vcat(core_couplings, Vector{HalfInt}(csfcouplings)))
             csf = CSF(config, subshell_terms, terms)
             push!(csfs, csf)
         end
@@ -101,8 +102,8 @@ function parse_csflines(line1, line2, line3)
 
     orbs = RelativisticOrbital{Int}[]
     orbs_nelectrons = Int[]
-    orbs_orbcouplings = Union{HalfInteger,Nothing}[]
-    orbs_csfcouplings = Union{HalfInteger,Nothing}[]
+    orbs_orbcouplings = Union{HalfInt,Nothing}[]
+    orbs_csfcouplings = Union{HalfInt,Nothing}[]
     norbitals = div(length(line1), 9) # number of orbitals in this group
     for i = 1:norbitals
         orb = line1[9*(i-1)+1:9*i]
@@ -158,7 +159,7 @@ end
 
 function parse_angmom_string(s)
     length(strip(s)) == 0 && return nothing
-    parse(HalfInteger, s)
+    parse(HalfInt, s)
 end
 
 function parse_cores(line)

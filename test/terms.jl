@@ -20,7 +20,7 @@ using Test
         @test T"2[3/2]o" == Term(3//2, 1//2, p"odd")
         @test T"2Z" == Term(20, 1//2, p"even")
 
-        @test_throws DomainError Term(HalfInteger(-1,2), HalfInteger(1,2), p"even")
+        @test_throws DomainError Term(HalfInteger(-1//2), HalfInteger(1//2), p"even")
         @test_throws DomainError Term(3//2, -1//2, p"odd")
         @test_throws DomainError Term(-2, 1//2, 1)
 
@@ -184,9 +184,9 @@ using Test
                 w >= 1 || throw(DomainError("w must be positive"))
                 # First, let's build a histogram of (M_L, M_S) values of all the product
                 # basis states.
-                lsbasis = [(ml, ms) for ms = HalfInteger(-1,2):HalfInteger(1,2), ml = -ℓ:ℓ]
+                lsbasis = [(ml, ms) for ms = HalfInteger(-1//2):HalfInteger(1//2), ml = -ℓ:ℓ]
                 @assert length(lsbasis) == 2*(2ℓ+1)
-                Lmax, Smax = w * ℓ, w * HalfInteger(1,2)
+                Lmax, Smax = w * ℓ, w * HalfInteger(1//2)
                 NL, NS = convert(Int, 2*Lmax + 1), convert(Int, 2*Smax + 1)
                 hist =  zeros(Int, NL, NS)
                 for c in combinations(1:length(lsbasis), w)

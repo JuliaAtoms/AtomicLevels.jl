@@ -1,5 +1,5 @@
 """
-    terms(o::RelativisticOrbital, w = 1) -> Vector{HalfInteger}
+    terms(o::RelativisticOrbital, w = 1) -> Vector{HalfInt}
 
 Returns a sorted list of valid ``J`` values of `w` equivalent jj-coupled particles on
 orbital `o` (i.e. `o^w`).
@@ -14,7 +14,7 @@ function terms(orb::RelativisticOrbital, w::Int=one(Int))
     # fewer holes than particles on this shell
     2w ≥ 2j+1 && (w = convert(Int, 2j) + 1 - w)
     # Zero and one particle cases are simple special cases
-    w == 0 && return [zero(HalfInteger)]
+    w == 0 && return [zero(HalfInt)]
     w == 1 && return [j]
     # _terms_jw is guaranteed to be in descending order
     reverse!(_terms_jw(j, w))
@@ -35,17 +35,17 @@ function _terms_jw(j::HalfInteger, w::Integer)
     Jmax = j*w
     NJ = convert(Int, 2*Jmax + 1)
     hist = zeros(Int, NJ)
-    for c in combinations(HalfInteger(-j):HalfInteger(j), w)
+    for c in combinations(HalfInt(-j):HalfInt(j), w)
         M = sum(c)
         i = convert(Int, M + Jmax) + 1
         hist[i] += 1
     end
     # Go through the histogram to figure out the J terms.
-    jvalues = HalfInteger[]
+    jvalues = HalfInt[]
     Jmid = div(NJ, 2) + (isodd(NJ) ? 1 : 0)
     for i = 1:Jmid
         @assert hist[NJ - i + 1] == hist[i] # make sure that the histogram is symmetric
-        J = convert(HalfInteger, Jmax - i + 1)
+        J = convert(HalfInt, Jmax - i + 1)
         lastbin = (i > 1) ? hist[i-1] : 0
         @assert hist[i] >= lastbin
         for _ = 1:(hist[i]-lastbin)
