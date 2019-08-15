@@ -366,9 +366,9 @@
     end
 
     @testset "Configuration transformations" begin
-        @test nonrelconfiguration(rc"1s2 2p-2 2s 2p2 3s2 3p-") == c"1s2 2s 2p4 3s2 3p"
-        @test nonrelconfiguration(rc"1s2 ks2") == c"1s2 ks2"
-        @test nonrelconfiguration(rc"kp-2 kp4 lp-2 lp") == c"kp6 lp3"
+        @test nonrelconfiguration(rc"1s2 2p-2 2s 2p2 3s2 3p-"s) == c"1s2 2s 2p4 3s2 3p"s
+        @test nonrelconfiguration(rc"1s2 ks2"s) == c"1s2 ks2"s
+        @test nonrelconfiguration(rc"kp-2 kp4 lp-2 lp"s) == c"kp6 lp3"s
     end
 
     @testset "Internal utilities" begin
