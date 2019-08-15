@@ -31,6 +31,31 @@ using .GRASPParser
 
         @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", min_occupancy=[-1,0,0])
         @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", max_occupancy=[3,2,4])
+
+        @testset "Unsorted base configuration" begin
+            # Expect respected substitution orbitals ordering
+            @test excited_configurations(c"1s2", o"2s", o"2p", keep_parity=false) ==
+                [c"1s2", c"1s 2s", c"1s 2p", c"2s2", c"2s 2p", c"2p2"]
+            @test excited_configurations(c"1s2", o"2p", o"2s", keep_parity=false) ==
+                [c"1s2", c"1s 2p", c"1s 2s", c"2p2", c"2p 2s", c"2s2"]
+            @test excited_configurations(c"1s 2s", o"2p", o"2s", keep_parity=false) ==
+                [c"1s 2s", c"2s2", c"1s2", c"1s 2p", c"2s 2p", c"2p2"]
+            @test excited_configurations(c"1s 2s", o"2p", o"3s", keep_parity=false) ==
+                [c"1s 2s", c"2s2", c"1s2", c"1s 2p", c"1s 3s", c"2s 2p", c"2s 3s", c"2p2", c"2p 3s", c"3s2"]
+
+            @test excited_configurations(rc"1s2", ro"2s", ro"2p-", ro"2p") ==
+                [rc"1s2", rc"1s 2s", rc"2s2", rc"2p-2", rc"2p- 2p", rc"2p2"]
+            @test excited_configurations(rc"1s2", ro"2s", ro"2p", ro"2p-") ==
+                [rc"1s2", rc"1s 2s", rc"2s2", rc"2p2", rc"2p 2p-", rc"2p-2"]
+        end
+
+        @testset "Sorted base configuration" begin
+            # Expect canonical ordering (of the orbitals, not the configurations)
+            @test excited_configurations(c"1s2"s, o"2p", o"2s", keep_parity=false) ==
+                [c"1s2", c"1s 2p", c"1s 2s", c"2p2", c"2s 2p", c"2s2"]
+            @test excited_configurations(rc"1s2"s, ro"2s", ro"2p", ro"2p-") ==
+                [rc"1s2", rc"1s 2s", rc"2s2", rc"2p2", rc"2p- 2p", rc"2p-2"]
+        end
     end
 
     @testset "Custom substitutions" begin
@@ -50,8 +75,10 @@ using .GRASPParser
         gst = spin_configurations(Configuration(o"1s", 2, :open, sorted=false))[1]
         orbitals = reduce(vcat, spin_orbitals.(os"2[s]"))
         cs = excited_configurations(gst, orbitals...)
-        @test cs[2:3] == [replace(gst, gst.orbitals[1]=>o) for o in orbitals]
-        @test cs[4:5] == [replace(gst, gst.orbitals[2]=>o) for o in orbitals]
+        @test cs[1] == gst
+        @test_broken cs[2:3] == [replace(gst, gst.orbitals[1]=>o) for o in orbitals]
+        @test_broken cs[4:5] == [replace(gst, gst.orbitals[2]=>o) for o in orbitals]
+        @test cs[6] == Configuration(orbitals, [1,1])
     end
 
     @testset "Ion–continuum" begin
@@ -66,7 +93,7 @@ using .GRASPParser
         @test excited_configurations(c"1s2", os"k[s-p]"...) ==
             [c"1s2", c"1s ks", c"ks2", c"kp2"]
 
-        @test_broken excited_configurations(rc"1s2", ros"2[s-p]"...) ==
+        @test excited_configurations(rc"1s2", ros"2[s-p]"...) ==
             [rc"1s2", rc"1s 2s", rc"2s2", rc"2p-2", rc"2p- 2p", rc"2p2"]
         @test excited_configurations(rc"1s2", ro"2s") == [rc"1s2", rc"1s 2s", rc"2s2"]
         @test excited_configurations(rc"1s2", ro"2p-") == [rc"1s2", rc"2p-2"]
@@ -130,7 +157,7 @@ using .GRASPParser
         n
         =#
         compare_with_grasp("rcsf.out.4.txt") do
-            csfs(unique(map(sort, excited_configurations(rc"1s2", ro"2s", ro"2p-", ro"2p"))))
+            csfs(excited_configurations(rc"1s2", ro"2s", ro"2p-", ro"2p"))
         end
 
         #= rcsfgenerate input:
@@ -144,10 +171,10 @@ using .GRASPParser
         n
         =#
         compare_with_grasp("rcsf.out.5.txt") do
-            map(sort, excited_configurations(
+            excited_configurations(
                 rc"1s2",
                 ro"2s", ro"2p-", ro"2p", ro"3s", ro"3p-", ro"3p", ro"3d-", ro"3d"
-            )) |> unique |> csfs
+            ) |> csfs
         end
 
         # TODO:
