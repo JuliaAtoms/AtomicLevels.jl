@@ -62,7 +62,7 @@ julia> T"1S"
 julia> T"4Po"
 ⁴Pᵒ
 
-julia> T"2[3/2]o"
+julia> T"2[3/2]o" # jK coupling, common in noble gases
 ²[3/2]ᵒ
 ```
 """
@@ -88,7 +88,36 @@ Base.hash(t::Term) = hash((t.L,t.S,t.parity))
 
 include("xu2006.jl")
 
-# This function calculates the term symbol for a given orbital ℓʷ
+"""
+    xu_terms(ℓ, w, p)
+
+Return all term symbols for the orbital `ℓʷ` and parity `p`; the term
+multiplicity is computed using [`AtomicLevels.Xu.X`](@ref).
+
+# Examples
+
+```jldoctest
+julia> AtomicLevels.xu_terms(3, 3, parity(c"3d3"))
+17-element Array{Term,1}:
+ ²P
+ ²D
+ ²D
+ ²F
+ ²F
+ ²G
+ ²G
+ ²H
+ ²H
+ ²I
+ ²K
+ ²L
+ ⁴S
+ ⁴D
+ ⁴F
+ ⁴G
+ ⁴I
+```
+"""
 function xu_terms(ℓ::Int, w::Int, p::Parity)
     ts = map(((w//2 - floor(Int, w//2)):w//2)) do S
         S′ = 2S |> Int
@@ -100,7 +129,8 @@ end
 """
     terms(orb::Orbital, w::Int=one(Int))
 
-Returns a list of valid LS term symbols
+Returns a list of valid LS term symbols for the orbital `orb` with `w`
+occupancy.
 """
 function terms(orb::Orbital, w::Int=one(Int))
     ℓ = orb.ℓ
@@ -169,7 +199,7 @@ end
 
 # * Intermediate terms, seniority
 """
-    struct IntermediateTerm
+    IntermediateTerm(term, seniority)
 
 Represents a term together with its seniority quantum number.
 """
