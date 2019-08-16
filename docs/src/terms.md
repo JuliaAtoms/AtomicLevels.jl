@@ -29,26 +29,24 @@ with the `HalfInteger` type.
 
 ```@docs
 terms
-count_terms
 ```
 
-The `L` and `S` quantum numbers are not, in general, sufficient to uniquely identify a term.
-The [`IntermediateTerm`](@ref) type allows one to specify an additional quantum number which
-would uniquely identify the term.
+## Term multiplicity and intermediate terms
+
+For subshells starting with `d³`, the possible terms may occur more
+than once (multiplicity higher than one), corresponding to different
+physical states. These arise from different sequences of coupling the
+``w`` equivalent electrons of the same ``\ell``, and are distinguished
+using a _seniority number_, which the [`IntermediateTerm`](@ref) type
+implements.
 
 ```@docs
 IntermediateTerm
 intermediate_terms
+count_terms
 ```
 
-## Term multiplicity
-
-For subshells starting with `d³`, the possible terms may occur
-more than once (multiplicity higher than one), corresponding to
-different physical states. These arise from different sequences of
-coupling the ``w`` equivalent electrons of the same ``\ell``, and are
-distinguished using a _seniority number_. AtomicLevels.jl uses the
-algorithm presented in
+AtomicLevels.jl uses the algorithm presented in
 
 - _Alternative mathematical technique to determine LS spectral terms_
   by Xu Renjun and Dai Zhenwen, published in JPhysB, 2006.
@@ -66,6 +64,21 @@ AtomicLevels.xu_terms
 AtomicLevels.Xu.X
 AtomicLevels.Xu.A
 AtomicLevels.Xu.f
+```
+
+## Term couplings
+
+To generate the possible [`terms`](@ref) of a configuration, all the
+possible terms of the individual subshells, have to be coupled
+together to form the final terms; this is done from
+left-to-right. When generating all possible [`CSFs`](@ref CSFs) from a
+configuration, it is also necessary to find the intermediate couplings
+of the individual subshells.
+
+```@docs
+couple_terms
+AtomicLevels.final_terms
+intermediate_couplings
 ```
 
 ```@meta

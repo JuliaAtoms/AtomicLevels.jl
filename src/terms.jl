@@ -131,6 +131,21 @@ end
 
 Returns a list of valid LS term symbols for the orbital `orb` with `w`
 occupancy.
+
+# Examples
+
+```jldoctest
+julia> terms(o"3d", 3)
+8-element Array{Term,1}:
+ ²P
+ ²D
+ ²D
+ ²F
+ ²G
+ ²H
+ ⁴P
+ ⁴F
+```
 """
 function terms(orb::Orbital, w::Int=one(Int))
     ℓ = orb.ℓ
@@ -148,6 +163,34 @@ function terms(orb::Orbital, w::Int=one(Int))
     end
 end
 
+"""
+    terms(config)
+
+Generate all final ``LS`` terms for `config`.
+
+# Examples
+
+```jldoctest
+julia> terms(c"1s")
+1-element Array{Term,1}:
+ ²S
+
+julia> terms(c"1s 2p")
+2-element Array{Term,1}:
+ ¹Pᵒ
+ ³Pᵒ
+
+julia> terms(c"[Ne] 3d3")
+7-element Array{Term,1}:
+ ²P
+ ²D
+ ²F
+ ²G
+ ²H
+ ⁴P
+ ⁴F
+```
+"""
 function terms(config::Configuration{O}) where {O<:AbstractOrbital}
     ts = map(config) do (orb,occ,state)
         terms(orb,occ)
@@ -228,8 +271,41 @@ Base.isless(a::IntermediateTerm, b::IntermediateTerm) =
 """
     intermediate_terms(orb::Orbital, w::Int=one(Int))
 
-Generates all [`IntermediateTerm`](@ref) for a given non-relativstic orbital `orb` and
-occupation `w`.
+Generates all [`IntermediateTerm`](@ref) for a given non-relativstic
+orbital `orb` and occupation `w`.
+
+# Examples
+
+```jldoctest
+julia> intermediate_terms(o"2p", 2)
+3-element Array{IntermediateTerm,1}:
+ ₀¹S
+ ₂¹D
+ ₂³P
+```
+
+The preceding subscript is the seniority number, which indicates at
+which occupancy a certain term is first seen, cf.
+
+```jldoctest
+julia> intermediate_terms(o"3d", 1)
+1-element Array{IntermediateTerm,1}:
+ ₁²D
+
+julia> intermediate_terms(o"3d", 3)
+8-element Array{IntermediateTerm,1}:
+ ₁²D
+ ₃²P
+ ₃²D
+ ₃²F
+ ₃²G
+ ₃²H
+ ₃⁴P
+ ₃⁴F
+```
+
+In the second case, we see both `₁²D` and `₃²D`, since there are two
+ways of coupling 3 `d` electrons to a `²D` symmetry.
 """
 function intermediate_terms(orb::Orbital, w::Int=one(Int))
     ts = terms(orb, w)
@@ -254,6 +330,25 @@ function intermediate_terms(orb::Orbital, w::Int=one(Int))
     sort(vcat(its...))
 end
 
+"""
+    intermediate_terms(config)
+
+Generate the intermediate terms for each subshell of `config`.
+
+# Examples
+
+```jldoctest
+julia> intermediate_terms(c"1s 2p3")
+2-element Array{Array{IntermediateTerm,1},1}:
+ [₁²S]
+ [₁²Pᵒ, ₃²Dᵒ, ₃⁴Sᵒ]
+
+julia> intermediate_terms(rc"3d2 5g3")
+2-element Array{Array{HalfIntegers.Half{Int64},1},1}:
+ [0, 2, 4]
+ [3/2, 5/2, 7/2, 9/2, 9/2, 11/2, 13/2, 15/2, 17/2, 21/2]
+```
+"""
 function intermediate_terms(config::Configuration)
     map(config) do (orb,occ,state)
         intermediate_terms(orb,occ)
