@@ -1,1 +1,1 @@
-# Atomic configuration state functions (CSFs)
+# [Atomic configuration state functions (CSFs)](@id CSFs)
