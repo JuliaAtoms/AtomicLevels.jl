@@ -1,65 +1,62 @@
 module Xu
 
-#=
-This is an implementation of the algorithm presented in
+@doc raw"""
+    f(n,ℓ)
 
-"Alternative mathematical technique to determine LS spectral terms"
-
-by Xu Renjun and Dai Zhenwen, published in JPhysB, 2006.
-doi:10.1088/0953-4075/39/16/007
-
-In the following, \(S'=2S\in\mathbb{Z}\) and
-\(M_S'=2M_S\in\mathbb{Z}\), as in the original article.
-
-\[\begin{aligned}
-X(N,\ell,S',L) = A(N,\ell,\ell,S',L) - A(N,\ell,\ell,S',L+1)\\
-+A(N,\ell,\ell,S'+2,L+1) - A(N,\ell,\ell,S'+2,L)
-\end{aligned}
-\quad(1)\]
-
-with \(A(N,\ell,\ell_b,M_S',M_L)\) obeying four different cases:
-
-
-Case 1, \(M_S'=1\), \(|M_L|\leq\ell\), and \(N=1\):
-
-\[A(1,\ell,\ell_b,1,M_L) = 1\qquad(2)\]
-
-
-Case 2, \(\{M_S'\}={2-N,4-N,...,N-2}\), \(|M_L| \leq
-f\left(\frac{N-M_S'}{2}-1\right)+f\left(\frac{N+M_S'}{2}-1\right)\),
-and \(1<N\leq 2\ell+1\):
-
-\[\begin{aligned}
-A(N,\ell,\ell,M_S',M_L) =
-\sum_{\displaystyle M_{L-}=\max\left\{-f\left(\frac{N-M_S'}{2}-1\right),M_L-f\left(\frac{N+M_S'}{2}-1\right)\right\}}
-^{\displaystyle\min\left\{f\left(\frac{N-M_S'}{2}-1\right),M_L+f\left(\frac{N+M_S'}{2}-1\right)\right\}}\\
-\Bigg\{A\left(\frac{N-M_S'}{2},\ell,\ell,\frac{N-M_S'}{2},M_{L-}\right)
-\times
-A\left(\frac{N+M_S'}{2},\ell,\ell,\frac{N+M_S'}{2},M_L-M_{L-}\right)\Bigg\}
-\end{aligned}\quad (3)\]
-
-
-Case 3, \(M_S'=N\), \(|M_L|\leq f(N-1)\), and \(1<N\leq 2\ell+1\):
-
-\[A(N,\ell,\ell_b,N,M_L) =
-\sum_{\displaystyle M_{L_I} = \left\lfloor{\frac{M_L-1}{N}+\frac{N+1}{2}}\right\rfloor}
-^{\displaystyle\min\{\ell_b,M_L+f(N-2)\}}
-A(N-1,\ell,M_{L_I}-1,N-1,M_L-M_{L_I})
-\]
-
-
-Case 4, else:
-\[A(N,\ell,\ell_b,M_S',M_L) = 0 \qquad (5)\]
-
-\[f(n)=\begin{cases}
-\displaystyle\sum_{m=0}^n(\ell-m), & n\geq0\\
+```math
+f(n,\ell)=\begin{cases}
+\displaystyle\sum_{m=0}^n \ell-m, & n\geq0\\
 0, & n<0
-\end{cases}\]
-
-=#
-
+\end{cases}
+```
+"""
 f(n::I,ℓ::I) where {I<:Integer} = n >= 0 ? sum(ℓ-m for m in 0:n) : 0
 
+@doc raw"""
+``A(N,\ell,\ell_b,M_S',M_L)`` obeys four different cases:
+
+## Case 1
+
+``M_S'=1``, ``|M_L|\leq\ell``, and ``N=1``:
+
+```math
+A(1,\ell,\ell_b,1,M_L) = 1
+```
+
+## Case 2
+
+``\{M_S'\}={2-N,4-N,...,N-2}``, ``|M_L| \leq f\left(\frac{N-M_S'}{2}-1\right)+f\left(\frac{N+M_S'}{2}-1\right)``, and ``1<N\leq 2\ell+1``:
+
+```math
+\begin{aligned}
+A(N,\ell,\ell,M_S',M_L) =
+\sum_{M_{L-}\max\left\{-f\left(\frac{N-M_S'}{2}-1\right),M_L-f\left(\frac{N+M_S'}{2}-1\right)\right\}}
+^{\min\left\{f\left(\frac{N-M_S'}{2}-1\right),M_L+f\left(\frac{N+M_S'}{2}-1\right)\right\}}
+\Bigg\{A\left(\frac{N-M_S'}{2},\ell,\ell,\frac{N-M_S'}{2},M_{L-}\right)\\
+\times
+A\left(\frac{N+M_S'}{2},\ell,\ell,\frac{N+M_S'}{2},M_L-M_{L-}\right)\Bigg\}
+\end{aligned}
+```
+
+## Case 3
+
+``M_S'=N``, ``|M_L|\leq f(N-1)``, and ``1<N\leq 2\ell+1``:
+
+```math
+A(N,\ell,\ell_b,N,M_L) =
+\sum_{M_{L_I} = \left\lfloor{\frac{M_L-1}{N}+\frac{N+1}{2}}\right\rfloor}
+^{\min\{\ell_b,M_L+f(N-2)\}}
+A(N-1,\ell,M_{L_I}-1,N-1,M_L-M_{L_I})
+```
+
+## Case 4
+
+else:
+
+```math
+A(N,\ell,\ell_b,M_S',M_L) = 0
+```
+"""
 function A(N::I, ℓ::I, ℓ_b::I, M_S′::I, M_L::I) where {I<:Integer}
     if M_S′ == 1 && abs(M_L) <= ℓ && N == 1
         1 # Case 1
@@ -87,6 +84,35 @@ function A(N::I, ℓ::I, ℓ_b::I, M_S′::I, M_L::I) where {I<:Integer}
     end
 end
 
+@doc raw"""
+    X(N, ℓ, S′, L)
+
+Calculate the multiplicity of the term ``^{2S+1}L`` (``S'=2S``) for
+the orbital `ℓ` with occupancy `N`, according to the formula:
+
+```math
+\begin{aligned}
+X(N, \ell, S', L) =&+ A(N, \ell,\ell,S',L)\\
+&- A(N, \ell,\ell,S',L+1)\\
+&+A(N, \ell,\ell,S'+2,L+1)\\
+&- A(N, \ell,\ell,S'+2,L)
+\end{aligned}
+```
+
+Note that this is not correct for filled shells, for which the only
+possible term trivially is `¹S`.
+
+# Examples
+
+```jldoctest
+julia> AtomicLevels.Xu.X(1, 0, 1, 0) # Multiplicity of ²S term for s¹
+1
+
+julia> AtomicLevels.Xu.X(3, 3, 1, 3) # Multiplicity of ²D term for d³
+2
+```
+
+"""
 X(N::I, ℓ::I, S′::I, L::I) where {I<:Integer} = A(N,ℓ,ℓ,S′,L) - A(N,ℓ,ℓ,S′,L+1) + A(N,ℓ,ℓ,S′+2,L+1) - A(N,ℓ,ℓ,S′+2,L)
 
 end

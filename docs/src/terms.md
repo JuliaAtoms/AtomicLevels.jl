@@ -41,6 +41,33 @@ IntermediateTerm
 intermediate_terms
 ```
 
+## Term multiplicity
+
+For subshells starting with `d³`, the possible terms may occur
+more than once (multiplicity higher than one), corresponding to
+different physical states. These arise from different sequences of
+coupling the ``w`` equivalent electrons of the same ``\ell``, and are
+distinguished using a _seniority number_. AtomicLevels.jl uses the
+algorithm presented in
+
+- _Alternative mathematical technique to determine LS spectral terms_
+  by Xu Renjun and Dai Zhenwen, published in JPhysB, 2006.
+
+  [doi:10.1088/0953-4075/39/16/007](https://dx.doi.org/10.1088/0953-4075/39/16/007)
+
+to compute the multiplicity of individual subshells, beyond the
+trivial cases of a single electron or a filled subshell.
+
+In the following, ``S'=2S\in\mathbb{Z}`` and
+``M_S'=2M_S\in\mathbb{Z}``, as in the original article.
+
+```@docs
+AtomicLevels.xu_terms
+AtomicLevels.Xu.X
+AtomicLevels.Xu.A
+AtomicLevels.Xu.f
+```
+
 ```@meta
 DocTestSetup = nothing
 ```
