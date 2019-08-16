@@ -421,7 +421,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "AtomicLevels.spin_configurations",
     "category": "function",
-    "text": "spin_configurations(configuration)\n\nGenerate all possible configurations of spin-orbitals from configuration, i.e. all permissible values for the quantum numbers n, ℓ, mℓ, ms for each electron. Example:\n\njulia> spin_configurations(c\"1s2\")\n1-element Array{Configuration{SpinOrbital},1}:\n 1s²\n\n\n\n\n\nspin_configurations(configurations)\n\nFor each configuration in configurations, generate all possible configurations of spin-orbitals.\n\n\n\n\n\n"
+    "text": "spin_configurations(configuration)\n\nGenerate all possible configurations of spin-orbitals from configuration, i.e. all permissible values for the quantum numbers n, ℓ, mℓ, ms for each electron. Example:\n\njulia> spin_configurations(c\"1s2\")\n1-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:\n 1s²\n\njulia> spin_configurations(c\"1s ks\")\n4-element Array{Configuration{SpinOrbital},1}:\n 1s₀α ks₀α\n 1s₀β ks₀α\n 1s₀α ks₀β\n 1s₀β ks₀β\n\n\n\n\n\nspin_configurations(configurations)\n\nFor each configuration in configurations, generate all possible configurations of spin-orbitals.\n\n\n\n\n\n"
 },
 
 {
@@ -469,7 +469,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Term symbols",
     "title": "AtomicLevels.terms",
     "category": "function",
-    "text": "terms(orb::Orbital, w::Int=one(Int))\n\nReturns a list of valid LS term symbols\n\n\n\n\n\nterms(o::RelativisticOrbital, w = 1) -> Vector{HalfInteger}\n\nReturns a sorted list of valid J values of w equivalent jj-coupled particles on orbital o (i.e. o^w).\n\nWhen there are degeneracies (i.e. multiple states with the same J and M quantum numbers), the corresponding J value is repeated in the output array.\n\n\n\n\n\n"
+    "text": "terms(orb::Orbital, w::Int=one(Int))\n\nReturns a list of valid LS term symbols\n\n\n\n\n\nterms(o::RelativisticOrbital, w = 1) -> Vector{HalfInt}\n\nReturns a sorted list of valid J values of w equivalent jj-coupled particles on orbital o (i.e. o^w).\n\nWhen there are degeneracies (i.e. multiple states with the same J and M quantum numbers), the corresponding J value is repeated in the output array.\n\n\n\n\n\n"
 },
 
 {
