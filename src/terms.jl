@@ -151,6 +151,8 @@ function terms(orb::Orbital, w::Int=one(Int))
     ℓ = orb.ℓ
     g = degeneracy(orb)
     w > g && throw(DomainError(w, "Invalid occupancy $w for $orb with degeneracy $g"))
+    # For shells that are more than half-filled, we instead consider
+    # the equivalent problem of g-w coupled holes.
     (w > g/2 && w != g) && (w = g - w)
 
     p = parity(orb)^w

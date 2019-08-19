@@ -2,10 +2,11 @@
     couple_terms(t1, t2)
 
 Generate all possible coupling terms between `t1` and `t2`.  It is
-assumed that t1 and t2 originate from non-equivalent electrons, since
-the vector model does not predict correct term couplings for
-equivalent electrons; some of the generated terms would violate the
-Pauli principle; cf. Cowan p. 108–109.
+assumed that `t1` and `t2` originate from non-equivalent electrons
+(i.e. from _different_ subshells), since the vector model does not
+predict correct term couplings for equivalent electrons; some of the
+generated terms would violate the Pauli principle; cf. Cowan
+p. 108–109.
 
 # Examples
 

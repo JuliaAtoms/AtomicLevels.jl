@@ -99,8 +99,8 @@ X(N, \ell, S', L) =&+ A(N, \ell,\ell,S',L)\\
 \end{aligned}
 ```
 
-Note that this is not correct for filled shells, for which the only
-possible term trivially is `¹S`.
+Note that this is not correct for filled (empty) shells, for which the
+only possible term trivially is `¹S`.
 
 # Examples
 
