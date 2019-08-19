@@ -461,7 +461,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Term symbols",
     "title": "AtomicLevels.@T_str",
     "category": "macro",
-    "text": "@T_str -> Term\n\nConstructs a Term object out of its canonical string representation.\n\njulia> T\"1S\"\n¹S\n\njulia> T\"4Po\"\n⁴Pᵒ\n\njulia> T\"2[3/2]o\"\n²[3/2]ᵒ\n\n\n\n\n\n"
+    "text": "@T_str -> Term\n\nConstructs a Term object out of its canonical string representation.\n\njulia> T\"1S\"\n¹S\n\njulia> T\"4Po\"\n⁴Pᵒ\n\njulia> T\"2[3/2]o\" # jK coupling, common in noble gases\n²[3/2]ᵒ\n\n\n\n\n\n"
 },
 
 {
@@ -469,7 +469,31 @@ var documenterSearchIndex = {"docs": [
     "page": "Term symbols",
     "title": "AtomicLevels.terms",
     "category": "function",
-    "text": "terms(orb::Orbital, w::Int=one(Int))\n\nReturns a list of valid LS term symbols\n\n\n\n\n\nterms(o::RelativisticOrbital, w = 1) -> Vector{HalfInt}\n\nReturns a sorted list of valid J values of w equivalent jj-coupled particles on orbital o (i.e. o^w).\n\nWhen there are degeneracies (i.e. multiple states with the same J and M quantum numbers), the corresponding J value is repeated in the output array.\n\n\n\n\n\n"
+    "text": "terms(orb::Orbital, w::Int=one(Int))\n\nReturns a list of valid LS term symbols for the orbital orb with w occupancy.\n\nExamples\n\njulia> terms(o\"3d\", 3)\n8-element Array{Term,1}:\n ²P\n ²D\n ²D\n ²F\n ²G\n ²H\n ⁴P\n ⁴F\n\n\n\n\n\nterms(config)\n\nGenerate all final LS terms for config.\n\nExamples\n\njulia> terms(c\"1s\")\n1-element Array{Term,1}:\n ²S\n\njulia> terms(c\"1s 2p\")\n2-element Array{Term,1}:\n ¹Pᵒ\n ³Pᵒ\n\njulia> terms(c\"[Ne] 3d3\")\n7-element Array{Term,1}:\n ²P\n ²D\n ²F\n ²G\n ²H\n ⁴P\n ⁴F\n\n\n\n\n\nterms(o::RelativisticOrbital, w = 1) -> Vector{HalfInt}\n\nReturns a sorted list of valid J values of w equivalent jj-coupled particles on orbital o (i.e. oʷ).\n\nWhen there are degeneracies (i.e. multiple states with the same J and M quantum numbers), the corresponding J value is repeated in the output array.\n\nExamples\n\njulia> terms(ro\"3d\", 3)\n3-element Array{HalfIntegers.Half{Int64},1}:\n 3/2\n 5/2\n 9/2\n\njulia> terms(ro\"3d-\", 3)\n1-element Array{HalfIntegers.Half{Int64},1}:\n 3/2\n\njulia> terms(ro\"4f\", 4)\n8-element Array{HalfIntegers.Half{Int64},1}:\n 0\n 2\n 2\n 4\n 4\n 5\n 6\n 8\n\n\n\n\n\n"
+},
+
+{
+    "location": "terms/#Term-symbols-1",
+    "page": "Term symbols",
+    "title": "Term symbols",
+    "category": "section",
+    "text": "DocTestSetup = quote\n    using AtomicLevels\nendAtomicLevels provides types and methods to work and determine term symbols. The \"Term symbol\" and \"Angular momentum coupling\" Wikipedia articles give a good basic overview of the terminology.For term symbols in LS coupling, AtomicLevels provides the Term type.TermThe Term objects can also be constructed with the @T_str string macro.@T_strThe terms function can be used to generate all possible term symbols. In the case of relativistic orbitals, the term symbols are simply the valid J values, represented with the HalfInteger type.terms"
+},
+
+{
+    "location": "terms/#AtomicLevels.IntermediateTerm",
+    "page": "Term symbols",
+    "title": "AtomicLevels.IntermediateTerm",
+    "category": "type",
+    "text": "IntermediateTerm(term, seniority)\n\nRepresents a term together with its seniority quantum number.\n\n\n\n\n\n"
+},
+
+{
+    "location": "terms/#AtomicLevels.intermediate_terms",
+    "page": "Term symbols",
+    "title": "AtomicLevels.intermediate_terms",
+    "category": "function",
+    "text": "intermediate_terms(orb::Orbital, w::Int=one(Int))\n\nGenerates all IntermediateTerm for a given non-relativstic orbital orb and occupation w.\n\nExamples\n\njulia> intermediate_terms(o\"2p\", 2)\n3-element Array{IntermediateTerm,1}:\n ₀¹S\n ₂¹D\n ₂³P\n\nThe preceding subscript is the seniority number, which indicates at which occupancy a certain term is first seen, cf.\n\njulia> intermediate_terms(o\"3d\", 1)\n1-element Array{IntermediateTerm,1}:\n ₁²D\n\njulia> intermediate_terms(o\"3d\", 3)\n8-element Array{IntermediateTerm,1}:\n ₁²D\n ₃²P\n ₃²D\n ₃²F\n ₃²G\n ₃²H\n ₃⁴P\n ₃⁴F\n\nIn the second case, we see both ₁²D and ₃²D, since there are two ways of coupling 3 d electrons to a ²D symmetry.\n\n\n\n\n\nintermediate_terms(config)\n\nGenerate the intermediate terms for each subshell of config.\n\nExamples\n\njulia> intermediate_terms(c\"1s 2p3\")\n2-element Array{Array{IntermediateTerm,1},1}:\n [₁²S]\n [₁²Pᵒ, ₃²Dᵒ, ₃⁴Sᵒ]\n\njulia> intermediate_terms(rc\"3d2 5g3\")\n2-element Array{Array{HalfIntegers.Half{Int64},1},1}:\n [0, 2, 4]\n [3/2, 5/2, 7/2, 9/2, 9/2, 11/2, 13/2, 15/2, 17/2, 21/2]\n\n\n\n\n\n"
 },
 
 {
@@ -481,27 +505,83 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "terms/#AtomicLevels.IntermediateTerm",
+    "location": "terms/#Term-multiplicity-and-intermediate-terms-1",
     "page": "Term symbols",
-    "title": "AtomicLevels.IntermediateTerm",
-    "category": "type",
-    "text": "struct IntermediateTerm\n\nRepresents a term together with its seniority quantum number.\n\n\n\n\n\n"
-},
-
-{
-    "location": "terms/#AtomicLevels.intermediate_terms",
-    "page": "Term symbols",
-    "title": "AtomicLevels.intermediate_terms",
-    "category": "function",
-    "text": "intermediate_terms(orb::Orbital, w::Int=one(Int))\n\nGenerates all IntermediateTerm for a given non-relativstic orbital orb and occupation w.\n\n\n\n\n\n"
-},
-
-{
-    "location": "terms/#Term-symbols-1",
-    "page": "Term symbols",
-    "title": "Term symbols",
+    "title": "Term multiplicity and intermediate terms",
     "category": "section",
-    "text": "DocTestSetup = quote\n    using AtomicLevels\nendAtomicLevels provides types and methods to work and determine term symbols. The \"Term symbol\" and \"Angular momentum coupling\" Wikipedia articles give a good basic overview of the terminology.For term symbols in LS coupling, AtomicLevels provides the Term type.TermThe Term objects can also be constructed with the @T_str string macro.@T_strThe terms function can be used to generate all possible term symbols. In the case of relativistic orbitals, the term symbols are simply the valid J values, represented with the HalfInteger type.terms\ncount_termsThe L and S quantum numbers are not, in general, sufficient to uniquely identify a term. The IntermediateTerm type allows one to specify an additional quantum number which would uniquely identify the term.IntermediateTerm\nintermediate_termsDocTestSetup = nothing"
+    "text": "For subshells starting with d³, the possible terms may occur more than once (multiplicity higher than one), corresponding to different physical states. These arise from different sequences of coupling the w equivalent electrons of the same ell, and are distinguished using a seniority number, which the IntermediateTerm type implements. For partially filled f shells, seniority is not enough to distinguish all possible couplings. Using count_terms, we can see that e.g. the ²Dᵒ has higher multiplicity than can be described with seniority only:julia> count_terms(o\"4f\", 3, T\"2Do\")\n2\n\njulia> count_terms(o\"4f\", 5, T\"2Do\")\n5IntermediateTerm\nintermediate_terms\ncount_terms"
+},
+
+{
+    "location": "terms/#AtomicLevels.xu_terms",
+    "page": "Term symbols",
+    "title": "AtomicLevels.xu_terms",
+    "category": "function",
+    "text": "xu_terms(ℓ, w, p)\n\nReturn all term symbols for the orbital ℓʷ and parity p; the term multiplicity is computed using AtomicLevels.Xu.X.\n\nExamples\n\njulia> AtomicLevels.xu_terms(3, 3, parity(c\"3d3\"))\n17-element Array{Term,1}:\n ²P\n ²D\n ²D\n ²F\n ²F\n ²G\n ²G\n ²H\n ²H\n ²I\n ²K\n ²L\n ⁴S\n ⁴D\n ⁴F\n ⁴G\n ⁴I\n\n\n\n\n\n"
+},
+
+{
+    "location": "terms/#AtomicLevels.Xu.X",
+    "page": "Term symbols",
+    "title": "AtomicLevels.Xu.X",
+    "category": "function",
+    "text": "X(N, ℓ, S′, L)\n\nCalculate the multiplicity of the term ^2S+1L (S=2S) for the orbital ℓ with occupancy N, according to the formula:\n\nbeginaligned\nX(N ell S L) =+ A(N ellellSL)\n- A(N ellellSL+1)\n+A(N ellellS+2L+1)\n- A(N ellellS+2L)\nendaligned\n\nNote that this is not correct for filled (empty) shells, for which the only possible term trivially is ¹S.\n\nExamples\n\njulia> AtomicLevels.Xu.X(1, 0, 1, 0) # Multiplicity of ²S term for s¹\n1\n\njulia> AtomicLevels.Xu.X(3, 3, 1, 3) # Multiplicity of ²D term for d³\n2\n\n\n\n\n\n"
+},
+
+{
+    "location": "terms/#AtomicLevels.Xu.A",
+    "page": "Term symbols",
+    "title": "AtomicLevels.Xu.A",
+    "category": "function",
+    "text": "A(Nellell_bM_SM_L) obeys four different cases:\n\nCase 1\n\nM_S=1, M_Lleqell, and N=1:\n\nA(1ellell_b1M_L) = 1\n\nCase 2\n\nM_S=2-N4-NN-2, M_L leq fleft(fracN-M_S2-1right)+fleft(fracN+M_S2-1right), and 1Nleq 2ell+1:\n\nbeginaligned\nA(NellellM_SM_L) =\nsum_M_L-maxleft-fleft(fracN-M_S2-1right)M_L-fleft(fracN+M_S2-1right)right\n^minleftfleft(fracN-M_S2-1right)M_L+fleft(fracN+M_S2-1right)right\nBiggAleft(fracN-M_S2ellellfracN-M_S2M_L-right)\ntimes\nAleft(fracN+M_S2ellellfracN+M_S2M_L-M_L-right)Bigg\nendaligned\n\nCase 3\n\nM_S=N, M_Lleq f(N-1), and 1Nleq 2ell+1:\n\nA(Nellell_bNM_L) =\nsum_M_L_I = leftlfloorfracM_L-1N+fracN+12rightrfloor\n^minell_bM_L+f(N-2)\nA(N-1ellM_L_I-1N-1M_L-M_L_I)\n\nCase 4\n\nelse:\n\nA(Nellell_bM_SM_L) = 0\n\n\n\n\n\n"
+},
+
+{
+    "location": "terms/#AtomicLevels.Xu.f",
+    "page": "Term symbols",
+    "title": "AtomicLevels.Xu.f",
+    "category": "function",
+    "text": "f(n,ℓ)\n\nf(nell)=begincases\ndisplaystylesum_m=0^n ell-m  ngeq0\n0  n0\nendcases\n\n\n\n\n\n"
+},
+
+{
+    "location": "terms/#Internal-implementation-of-term-multiplicity-calculation-1",
+    "page": "Term symbols",
+    "title": "Internal implementation of term multiplicity calculation",
+    "category": "section",
+    "text": "AtomicLevels.jl uses the algorithm presented inAlternative mathematical technique to determine LS spectral terms by Xu Renjun and Dai Zhenwen, published in JPhysB, 2006.\ndoi:10.1088/0953-4075/39/16/007to compute the multiplicity of individual subshells, beyond the trivial cases of a single electron or a filled subshell. These routines need not be used directly, instead use terms and count_terms.In the following, S=2SinmathbbZ and M_S=2M_SinmathbbZ, as in the original article.AtomicLevels.xu_terms\nAtomicLevels.Xu.X\nAtomicLevels.Xu.A\nAtomicLevels.Xu.f"
+},
+
+{
+    "location": "terms/#AtomicLevels.couple_terms",
+    "page": "Term symbols",
+    "title": "AtomicLevels.couple_terms",
+    "category": "function",
+    "text": "couple_terms(t1, t2)\n\nGenerate all possible coupling terms between t1 and t2.  It is assumed that t1 and t2 originate from non-equivalent electrons (i.e. from different subshells), since the vector model does not predict correct term couplings for equivalent electrons; some of the generated terms would violate the Pauli principle; cf. Cowan p. 108–109.\n\nExamples\n\njulia> couple_terms(T\"1Po\", T\"2Se\")\n1-element Array{Term,1}:\n ²Pᵒ\n\njulia> couple_terms(T\"3Po\", T\"2Se\")\n2-element Array{Term,1}:\n ²Pᵒ\n ⁴Pᵒ\n\njulia> couple_terms(T\"3Po\", T\"2De\")\n6-element Array{Term,1}:\n ²Pᵒ\n ²Dᵒ\n ²Fᵒ\n ⁴Pᵒ\n ⁴Dᵒ\n ⁴Fᵒ\n\n\n\n\n\ncouple_terms(t1s, t2s)\n\nGenerate all coupling between all terms in t1s and all terms in t2s.\n\n\n\n\n\n"
+},
+
+{
+    "location": "terms/#AtomicLevels.final_terms",
+    "page": "Term symbols",
+    "title": "AtomicLevels.final_terms",
+    "category": "function",
+    "text": "final_terms(ts::Vector{<:Vector{<:Union{Term,Real}}})\n\nGenerate all possible final terms from the vector of vectors of individual subshell terms by coupling from left to right.\n\nExamples\n\njulia> ts = [[T\"1S\", T\"3S\"], [T\"2P\", T\"2D\"]]\n2-element Array{Array{Term,1},1}:\n [¹S, ³S]\n [²P, ²D]\n\njulia> AtomicLevels.final_terms(ts)\n4-element Array{Term,1}:\n ²P\n ²D\n ⁴P\n ⁴D\n\n\n\n\n\n"
+},
+
+{
+    "location": "terms/#AtomicLevels.intermediate_couplings",
+    "page": "Term symbols",
+    "title": "AtomicLevels.intermediate_couplings",
+    "category": "function",
+    "text": "intermediate_couplings(its::Vector{IntermediateTerm,Integer,HalfInteger}, t₀ = T\"1S\")\n\nGenerate all intermediate coupling trees from the vector of intermediate terms its, starting from the initial term t₀.\n\nExamples\n\njulia> intermediate_couplings([IntermediateTerm(T\"2S\", 1), IntermediateTerm(T\"2D\", 1)])\n2-element Array{Array{Term,1},1}:\n [¹S, ²S, ¹D]\n [¹S, ²S, ³D]\n\n\n\n\n\nintermediate_couplings(J::Vector{<:Real}, j₀ = 0)\n\nExamples\n\njulia> intermediate_couplings([1//2, 3//2])\n2-element Array{Array{HalfIntegers.Half{Int64},1},1}:\n [0, 1/2, 1]\n [0, 1/2, 2]\n\n\n\n\n\n"
+},
+
+{
+    "location": "terms/#Term-couplings-1",
+    "page": "Term symbols",
+    "title": "Term couplings",
+    "category": "section",
+    "text": "The angular momentum coupling method is based on the vector model, where two angular momenta can be combined via vector addition to form a total angular momentum:vecJ = vecL + vecSwhere the length of the resultant momentum vecJ obeysL-S leq J leq L+SRelations such as these are used to couple the term symbols in both LS and jj coupling; however, not all values of J predicted by the vector model are valid physical states, see couple_terms.To generate the possible terms of a configuration, all the possible terms of the individual subshells, have to be coupled together to form the final terms; this is done from left-to-right. When generating all possible CSFs from a configuration, it is also necessary to find the intermediate couplings of the individual subshells. As an example, if we want to find the possible terms of 3p² 4s 5p², we first find the possible terms of the individual subshells:julia> its = intermediate_terms(c\"3p2 4s 5p2\")\n3-element Array{Array{IntermediateTerm,1},1}:\n [₀¹S, ₂¹D, ₂³P]\n [₁²S]\n [₀¹S, ₂¹D, ₂³P]where the seniority numbers are indicated as preceding subscripts. We then need to couple each intermediate term of the first subshell with each of the second subshell, and couple each of the resulting terms with each of the third subshell, and so on. E.g. coupling the ₂³P intermediate term with ₁²S produces two terms:julia> couple_terms(T\"3P\", T\"2S\")\n2-element Array{Term,1}:\n ²P\n ⁴Peach of which need to be coupled with e.g. ₂¹D:julia> couple_terms(T\"2P\", T\"1D\")\n3-element Array{Term,1}:\n ²P\n ²D\n ²F\n\njulia> couple_terms(T\"4P\", T\"1D\")\n3-element Array{Term,1}:\n ⁴P\n ⁴D\n ⁴Fterms uses couple_terms (through AtomicLevels.final_terms) to produce all possible terms coupling trees, folding from left-to-right:julia> a = couple_terms([T\"1S\", T\"1D\", T\"3P\"], [T\"2S\"])\n4-element Array{Term,1}:\n ²S\n ²P\n ²D\n ⁴P\n\njulia> couple_terms(a, [T\"1S\", T\"1D\", T\"3P\"])\n12-element Array{Term,1}:\n ²S\n ²P\n ²D\n ²F\n ²G\n ⁴S\n ⁴P\n ⁴D\n ⁴F\n ⁶S\n ⁶P\n ⁶Dwhich gives the same result asjulia> terms(c\"3p2 4s 5p2\")\n12-element Array{Term,1}:\n ²S\n ²P\n ²D\n ²F\n ²G\n ⁴S\n ⁴P\n ⁴D\n ⁴F\n ⁶S\n ⁶P\n ⁶DNote that for the generation of final terms, the intermediate terms need not be kept (and their seniority is not important). However, for the generation of CSFs, we need to form all possible combinations of intermediate terms for each subshell, and couple them, again left-to-right, to form all possible coupling chains (each one corresponding to a unique physical state). E.g. for the last term of each subshell of 3p² 4s 5p²julia> last.(its)\n3-element Array{IntermediateTerm,1}:\n ₂³P\n ₁²S\n ₂³Pwe find the following chains:julia> intermediate_couplings(last.(its))\n15-element Array{Array{Term,1},1}:\n [¹S, ³P, ²P, ²S]\n [¹S, ³P, ²P, ²P]\n [¹S, ³P, ²P, ²D]\n [¹S, ³P, ²P, ⁴S]\n [¹S, ³P, ²P, ⁴P]\n [¹S, ³P, ²P, ⁴D]\n [¹S, ³P, ⁴P, ²S]\n [¹S, ³P, ⁴P, ²P]\n [¹S, ³P, ⁴P, ²D]\n [¹S, ³P, ⁴P, ⁴S]\n [¹S, ³P, ⁴P, ⁴P]\n [¹S, ³P, ⁴P, ⁴D]\n [¹S, ³P, ⁴P, ⁶S]\n [¹S, ³P, ⁴P, ⁶P]\n [¹S, ³P, ⁴P, ⁶D]couple_terms\nAtomicLevels.final_terms\nintermediate_couplingsDocTestSetup = nothing"
 },
 
 {
@@ -513,7 +593,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "csfs/#Atomic-configuration-state-functions-(CSFs)-1",
+    "location": "csfs/#CSFs-1",
     "page": "CSFs",
     "title": "Atomic configuration state functions (CSFs)",
     "category": "section",
@@ -585,6 +665,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "internals/#AtomicLevels.final_terms-Union{Tuple{Array{#s45,1} where #s45<:(Array{#s26,1} where #s26<:T)}, Tuple{T}} where T<:Union{Term, Real}",
+    "page": "Internals",
+    "title": "AtomicLevels.final_terms",
+    "category": "method",
+    "text": "final_terms(ts::Vector{<:Vector{<:Union{Term,Real}}})\n\nGenerate all possible final terms from the vector of vectors of individual subshell terms by coupling from left to right.\n\nExamples\n\njulia> ts = [[T\"1S\", T\"3S\"], [T\"2P\", T\"2D\"]]\n2-element Array{Array{Term,1},1}:\n [¹S, ³S]\n [²P, ²D]\n\njulia> AtomicLevels.final_terms(ts)\n4-element Array{Term,1}:\n ²P\n ²D\n ⁴P\n ⁴D\n\n\n\n\n\n"
+},
+
+{
     "location": "internals/#AtomicLevels.get_noble_core_name-Union{Tuple{Configuration{O}}, Tuple{O}} where O",
     "page": "Internals",
     "title": "AtomicLevels.get_noble_core_name",
@@ -638,6 +726,14 @@ var documenterSearchIndex = {"docs": [
     "title": "AtomicLevels.rconfigurations_from_orbital",
     "category": "method",
     "text": "rconfigurations_from_orbital(n, ℓ, occupancy)\n\nGenerate all Configurations with relativistic orbitals corresponding to the non-relativistic orbital with n and ℓ quantum numbers, with given occupancy.\n\nExamples\n\njulia> AtomicLevels.rconfigurations_from_orbital(3, 1, 2)\n3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:\n 3p⁻²\n 3p⁻ 3p\n 3p²\n\n\n\n\n\n"
+},
+
+{
+    "location": "internals/#AtomicLevels.xu_terms-Tuple{Int64,Int64,Parity}",
+    "page": "Internals",
+    "title": "AtomicLevels.xu_terms",
+    "category": "method",
+    "text": "xu_terms(ℓ, w, p)\n\nReturn all term symbols for the orbital ℓʷ and parity p; the term multiplicity is computed using AtomicLevels.Xu.X.\n\nExamples\n\njulia> AtomicLevels.xu_terms(3, 3, parity(c\"3d3\"))\n17-element Array{Term,1}:\n ²P\n ²D\n ²D\n ²F\n ²F\n ²G\n ²G\n ²H\n ²H\n ²I\n ²K\n ²L\n ⁴S\n ⁴D\n ⁴F\n ⁴G\n ⁴I\n\n\n\n\n\n"
 },
 
 {
