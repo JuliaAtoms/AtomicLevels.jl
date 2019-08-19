@@ -6,9 +6,14 @@ DocTestSetup = quote
 end
 ```
 
-We define a configuration to be a set of orbitals with their associated occupation (i.e. the
-number of electron on that orbital). We can represent a particular configuration with an
-instance of the [`Configuration`](@ref) type.
+We define a configuration to be a set of orbitals with their
+associated occupation (i.e. the number of electron on that
+orbital). We can represent a particular configuration with an instance
+of the [`Configuration`](@ref) type. The orbitals of a configuration
+can be unsorted (default) or sorted according to the canonical
+ordering (first by ``n``, then by ``\ell``, &c). It is important to
+allow for arbitrary order, since permutation of the orbitals in a
+configuration, in general incurs a phase shift of matrix elements, &c.
 
 ```@docs
 Configuration

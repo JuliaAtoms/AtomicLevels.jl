@@ -395,6 +395,11 @@
             @test c"1s 2s" != c"2s 1s"
             @test c"1s 2s" == c"2s 1s"s
             @test c"1s 2s" != c"2si 1s"
+
+            @test rc"1s 2s" != rc"1s 2si"
+            @test rc"1s 2s" != rc"2s 1s"
+            @test rc"1s 2s" == rc"2s 1s"s
+            @test rc"1s 2s" != rc"2si 1s"
         end
         @testset "Substitutions" begin
             @testset "Spatial orbitals" begin

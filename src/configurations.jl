@@ -7,10 +7,15 @@ following _states_: `:open`, `:closed` or `:inactive`.
 
 # Constructors
 
-    Configuration(orbitals :: Vector{<:AbstractOrbital}, occupancy :: Vector{Int}, states :: Vector{Symbol}[; sorted=true])
-    Configuration(orbitals :: Vector{Tuple{<:AbstractOrbital, Int, Symbol}}[; sorted=true])
+    Configuration(orbitals :: Vector{<:AbstractOrbital},
+                  occupancy :: Vector{Int},
+                  states :: Vector{Symbol}
+                  [; sorted=false])
 
-In the first case, the paramaters of each orbital have to be passed as
+    Configuration(orbitals :: Vector{Tuple{<:AbstractOrbital, Int, Symbol}}
+                  [; sorted=false])
+
+In the first case, the parameters of each orbital have to be passed as
 separate vectors, and the orbitals and occupancy have to be of the
 same length. The `states` vector can be shorter and then the latter
 orbitals that were not explicitly specified by `states` are assumed to
@@ -122,7 +127,7 @@ Base.sort(cfg::Configuration) =
 """
     sorted(cfg::Configuration)
 
-Returns `cfg` if `cfg.sorted` or a sorted copy otherwise.
+Returns `cfg` if it is already sorted or a sorted copy otherwise.
 """
 sorted(cfg::Configuration) =
     issorted(cfg) ? cfg : sort(cfg)
@@ -160,7 +165,7 @@ end
 """
     ==(a::Configuration, b::Configuration)
 
-Tests if configurations `a` and `b`, considering orbital occupancy,
+Tests if configurations `a` and `b` are the same, considering orbital occupancy,
 ordering, and states.
 
 # Examples
@@ -177,11 +182,10 @@ false
 ```
 
 """
-function Base.:(==)(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbital}
-    ca = sorted(a)
-    cb = sorted(b)
-    issimilar(ca, cb) && ca.states == cb.states && sortperm(a.orbitals) == sortperm(b.orbitals)
-end
+Base.:(==)(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbital} =
+    a.orbitals == b.orbitals &&
+    a.occupancy == b.occupancy &&
+    a.states == b.states
 
 Base.hash(c::Configuration) = hash(c.orbitals) ⊻ hash(c.occupancy) ⊻ hash(c.states)
 
@@ -324,7 +328,7 @@ function parse_orbital(::Type{O}, orb_str) where {O<:AbstractOrbital}
     orbital_from_string(O, m[1]) , (m[4] == "") ? 1 : parse(Int, m[4]), state_sym(m[5])
 end
 
-function Base.parse(::Type{Configuration{O}}, conf_str::AbstractString, sorted=false) where {O<:AbstractOrbital}
+function Base.parse(::Type{Configuration{O}}, conf_str::AbstractString; sorted=false) where {O<:AbstractOrbital}
     isempty(conf_str) && return Configuration{O}(sorted=sorted)
     orbs = split(conf_str, r"[\. ]")
     core_m = match(r"\[([a-zA-Z]+)\]([*ci]{0,1})", first(orbs))
@@ -364,7 +368,7 @@ julia> c"[Kr] 4d10 5s2 4f2"s
 """
 macro c_str(conf_str, suffix="")
     suffix ∈ ["", "s"] || throw(ArgumentError("Unknown configuration suffix $suffix"))
-    parse(Configuration{Orbital}, conf_str, suffix=="s")
+    parse(Configuration{Orbital}, conf_str, sorted=suffix=="s")
 end
 
 """
@@ -387,7 +391,7 @@ julia> rc"2p- 1s"s
 """
 macro rc_str(conf_str, suffix="")
     suffix ∈ ["", "s"] || throw(ArgumentError("Unknown configuration suffix $suffix"))
-    parse(Configuration{RelativisticOrbital}, conf_str, suffix=="s")
+    parse(Configuration{RelativisticOrbital}, conf_str, sorted=suffix=="s")
 end
 
 Base.getindex(conf::Configuration{O}, i::Integer) where O =
