@@ -71,7 +71,7 @@ using .GRASPParser
                                      ]
     end
 
-    @testset "Doubles excitations of spin-configurations" begin
+    @testset "Double excitations of spin-configurations" begin
         gst = spin_configurations(Configuration(o"1s", 2, :open, sorted=false))[1]
         orbitals = reduce(vcat, spin_orbitals.(os"2[s]"))
         cs = excited_configurations(gst, orbitals...)
