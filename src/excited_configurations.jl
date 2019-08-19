@@ -106,6 +106,9 @@ function excited_configurations(fun::Function,
                                 max_occupancy::Vector{Int}=[degeneracy(first(o)) for o in peel(ref_set)],
                                 keep_parity::Bool=true) where {O<:AbstractOrbital,
                                                                O₁<:O,O₂<:O}
+    min_excitations ≥ 0 ||
+        throw(ArgumentError("Invalid minimum excitations specification $(min_excitations)"))
+
     if max_excitations isa Symbol
         max_excitations = if max_excitations == :singles
             1
@@ -114,6 +117,8 @@ function excited_configurations(fun::Function,
         else
             throw(ArgumentError("Invalid maximum excitations specification $(max_excitations)"))
         end
+    elseif max_excitations < 0
+        throw(ArgumentError("Invalid maximum excitations specification $(max_excitations)"))
     end
 
     lp = length(peel(ref_set))
@@ -156,7 +161,7 @@ excited_configurations(ref_set::Configuration,
 ion_continuum(neutral::Configuration{<:Orbital{<:Integer}},
               continuum_orbitals::Vector{Orbital{Symbol}},
               max_excitations=:singles) =
-    excited_configurations(neutral, continuum_orbitals...;
-                           max_excitations=max_excitations, keep_parity=false)
+                  excited_configurations(neutral, continuum_orbitals...;
+                                         max_excitations=max_excitations, keep_parity=false)
 
 export excited_configurations, ion_continuum

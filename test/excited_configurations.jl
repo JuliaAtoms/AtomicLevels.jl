@@ -25,6 +25,8 @@ using .GRASPParser
 
 @testset "Excited configurations" begin
     @testset "Simple" begin
+        @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", min_excitations=-1)
+        @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", max_excitations=-1)
         @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", max_excitations=:triples)
         @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", min_occupancy=[2,0])
         @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", max_occupancy=[2,0])
