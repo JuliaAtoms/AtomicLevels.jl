@@ -10,8 +10,8 @@ to the priority list.
 """
 function orbital_priority(fun::Function, orig_cfg::Configuration{O₁}, orbitals::Vector{O₂}) where {O₁<:AbstractOrbital,O₂<:AbstractOrbital}
     orbital_priority = Vector{promote_type(O₁,O₂)}()
+    append!(orbital_priority, orig_cfg.orbitals)
     for (orb,occ,state) in orig_cfg
-        push!(orbital_priority, orb)
         for new_orb in orbitals
             subs_orb = fun(new_orb, orb)
             (new_orb == subs_orb || subs_orb ∈ orbital_priority) && continue
@@ -78,19 +78,11 @@ function single_excitations!(fun::Function,
 
                     # Make sure that no preceding orbital has higher
                     # value than subs_orb.
-                    (any(orbital_order[o] > sp
-                         for o in config.orbitals[1:orb_i-1]) ||
-                     # The orbital substituted from, if higher
-                     # occupancy than one, will also be a preceding
-                     # orbital; thus its value has to be lower as
-                     # well.
-                     occ > 1 && orbital_order[orb] > sp ||
-                     # Any following orbital must have higher value.
-                     any(orbital_order[o] < sp
-                         for o in config.orbitals[orb_i+1:end])) && continue
+                    any(orbital_order[o] > sp
+                        for o in config.orbitals) && continue
                 end
 
-                excited_config = replace(config, orb=>subs_orb)
+                excited_config = replace(config, orb=>subs_orb, append=true)
                 excited_config ∉ excitations && push!(excitations, excited_config)
             end
         end
