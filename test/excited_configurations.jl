@@ -23,6 +23,37 @@ end
 
 using .GRASPParser
 
+"""
+    ispermutation(a, b[; cmp=isequal])
+
+Tests is `a` is a permutation of `b`, i.e. if all elements are present
+in both arrays. The comparison of two elements can be customized by
+supplying a binary function `cmp`.
+
+# Examples
+
+```jldoctest
+julia> ispermutation([1,2],[1,2])
+true
+
+julia> ispermutation([1,2],[2,1])
+true
+
+julia> ispermutation([1,2],[2,2])
+false
+
+julia> ispermutation([1,2],[1,-2])
+false
+
+julia> ispermutation([1,2],[1,-2],cmp=(a,b)->abs(a)==abs(b))
+true
+```
+"""
+ispermutation(a, b; cmp=isequal) =
+    length(a) == length(b) &&
+    all(any(Base.Fix2(cmp, x), b)
+        for x in a)
+
 @testset "Excited configurations" begin
     @testset "Simple" begin
         @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", min_excitations=-1)
@@ -36,19 +67,44 @@ using .GRASPParser
 
         @testset "Unsorted base configuration" begin
             # Expect respected substitution orbitals ordering
-            @test excited_configurations(c"1s2", o"2s", o"2p", keep_parity=false) ==
-                [c"1s2", c"1s 2s", c"1s 2p", c"2s2", c"2s 2p", c"2p2"]
-            @test excited_configurations(c"1s2", o"2p", o"2s", keep_parity=false) ==
-                [c"1s2", c"1s 2p", c"1s 2s", c"2p2", c"2p 2s", c"2s2"]
-            @test excited_configurations(c"1s 2s", o"2p", o"2s", keep_parity=false) ==
-                [c"1s 2s", c"2s2", c"1s2", c"1s 2p", c"2s 2p", c"2p2"]
-            @test excited_configurations(c"1s 2s", o"2p", o"3s", keep_parity=false) ==
-                [c"1s 2s", c"2s2", c"1s2", c"1s 2p", c"1s 3s", c"2s 2p", c"2s 3s", c"2p2", c"2p 3s", c"3s2"]
+            @test ispermutation(excited_configurations(c"1s2", o"2s", o"2p", keep_parity=false),
+                                [c"1s2", c"1s 2s", c"1s 2p", c"2s2", c"2s 2p", c"2p2"])
+            @test ispermutation(excited_configurations(c"1s2", o"2p", o"2s", keep_parity=false),
+                                [c"1s2", c"1s 2p", c"1s 2s", c"2p2", c"2p 2s", c"2s2"])
+            @test ispermutation(excited_configurations(c"1s 2s", o"2p", o"2s", keep_parity=false),
+                                [c"1s 2s", c"2s2", c"1s2", c"1s 2p", c"2s 2p", c"2p2"])
+            @test ispermutation(excited_configurations(c"1s 2s", o"2p", o"3s", keep_parity=false),
+                                [c"1s 2s", c"2s2", c"1s2", c"1s 2p", c"1s 3s", c"2s 2p", c"2s 3s", c"2p2", c"2p 3s", c"3s2"])
 
-            @test excited_configurations(rc"1s2", ro"2s", ro"2p-", ro"2p") ==
-                [rc"1s2", rc"1s 2s", rc"2s2", rc"2p-2", rc"2p- 2p", rc"2p2"]
-            @test excited_configurations(rc"1s2", ro"2s", ro"2p", ro"2p-") ==
-                [rc"1s2", rc"1s 2s", rc"2s2", rc"2p2", rc"2p 2p-", rc"2p-2"]
+            @test ispermutation(excited_configurations(rc"1s2", ro"2s", ro"2p-", ro"2p"),
+                                [rc"1s2", rc"1s 2s", rc"2s2", rc"2p-2", rc"2p- 2p", rc"2p2"])
+            @test ispermutation(excited_configurations(rc"1s2", ro"2s", ro"2p", ro"2p-"),
+                                [rc"1s2", rc"1s 2s", rc"2s2", rc"2p2", rc"2p 2p-", rc"2p-2"])
+
+            @testset "Core orbital replacements" begin
+                reference = excited_configurations(c"[Ne]*"s, os"3[s-d]"...,
+                                                   keep_parity=false)
+                @test length(reference) == 46
+                test1 = excited_configurations(c"[Ne]*", os"3[s-d]"...,
+                                               keep_parity=false)
+                test2 = excited_configurations(c"[Ne]*", o"3p", o"3d", o"3s",
+                                               keep_parity=false)
+
+                @test ispermutation(reference, test1)
+                @test !ispermutation(reference, test2)
+                @test ispermutation(reference, test2, cmp=issimilar)
+                for cfg in test2
+                    i = findfirst(isequal(o"3p"), cfg.orbitals)
+                    j = findfirst(isequal(o"3d"), cfg.orbitals)
+                    k = findfirst(isequal(o"3s"), cfg.orbitals)
+
+                    if !isnothing(i)
+                        !isnothing(j) && @test i < j
+                        !isnothing(k) && @test i < k
+                    end
+                    !isnothing(j) && !isnothing(k) && @test j < k
+                end
+            end
         end
 
         @testset "Sorted base configuration" begin
@@ -66,10 +122,10 @@ using .GRASPParser
                                          Orbital(Symbol("{$b}"), a.ℓ)
                                      end == [
                                          c"1s2 2s2",
-                                         replace(c"1s2 2s2", o"1s" => Orbital(Symbol("{1s}"), 0)),
-                                         replace(c"1s2 2s2", o"1s" => Orbital(Symbol("{1s}"), 1)),
-                                         replace(c"1s2 2s2", o"2s" => Orbital(Symbol("{2s}"), 0)),
-                                         replace(c"1s2 2s2", o"2s" => Orbital(Symbol("{2s}"), 1))
+                                         replace(c"1s2 2s2", o"1s" => Orbital(Symbol("{1s}"), 0), append=true),
+                                         replace(c"1s2 2s2", o"1s" => Orbital(Symbol("{1s}"), 1), append=true),
+                                         replace(c"1s2 2s2", o"2s" => Orbital(Symbol("{2s}"), 0), append=true),
+                                         replace(c"1s2 2s2", o"2s" => Orbital(Symbol("{2s}"), 1), append=true)
                                      ]
     end
 
@@ -79,7 +135,7 @@ using .GRASPParser
         cs = excited_configurations(gst, orbitals...)
         @test cs[1] == gst
         @test_broken cs[2:3] == [replace(gst, gst.orbitals[1]=>o) for o in orbitals]
-        @test_broken cs[4:5] == [replace(gst, gst.orbitals[2]=>o) for o in orbitals]
+        @test cs[4:5] == [replace(gst, gst.orbitals[2]=>o) for o in orbitals]
         @test cs[6] == Configuration(orbitals, [1,1])
     end
 
