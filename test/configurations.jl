@@ -189,6 +189,10 @@
         @test replace(c"1s kp", o"kp"=>o"ld") == c"1s ld"
         @test_throws ArgumentError replace(c"1s2", o"2p"=>o"3p")
         @test_throws ArgumentError replace(c"1s2 2s", o"2s"=>o"1s")
+
+        @test replace(c"1s2 2s", o"1s"=>o"2p") == c"1s 2p 2s"
+        @test replace(c"1s2 2s", o"1s"=>o"2p", append=true) == c"1s 2s 2p"
+        @test replace(c"1s2 2s"s, o"1s"=>o"2p") == c"1s 2s 2p"
     end
 
     @testset "Orbital removal" begin

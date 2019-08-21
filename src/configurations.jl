@@ -608,7 +608,29 @@ julia> count(c"[Kr] 5s")
 """
 Base.count(conf::Configuration) = mapreduce(o -> o[2], +, conf)
 
-function Base.replace(conf::Configuration{O₁}, orbs::Pair{O₂,O₃}) where {O<:AbstractOrbital,O₁<:O,O₂<:O,O₃<:O}
+"""
+    replace(conf, a => b[; append=false])
+
+Substitute one electron in orbital `a` of `conf` by one electron in
+orbital `b`. If `conf` is unsorted the substitution is performed
+in-place, unless `append`, in which case the new orbital is appended
+instead.
+
+# Examples
+
+```jldoctest
+julia> replace(c"1s2 2s", o"1s" => o"2p")
+1s 2p 2s
+
+julia> replace(c"1s2 2s", o"1s" => o"2p", append=true)
+1s 2s 2p
+
+julia> replace(c"1s2 2s"s, o"1s" => o"2p")
+1s 2s 2
+```
+"""
+function Base.replace(conf::Configuration{O₁}, orbs::Pair{O₂,O₃};
+                      append=false) where {O<:AbstractOrbital,O₁<:O,O₂<:O,O₃<:O}
     src,dest = orbs
     orbitals = promote_type(O₁,O₂,O₃)[]
     append!(orbitals, conf.orbitals)
@@ -620,7 +642,7 @@ function Base.replace(conf::Configuration{O₁}, orbs::Pair{O₂,O₃}) where {O
 
     j = findfirst(isequal(dest), orbitals)
     if isnothing(j)
-        j = i + 1
+        j = (append ? length(orbitals) : i) + 1
         insert!(orbitals, j, dest)
         insert!(occupancy, j, 1)
         insert!(states, j, :open)
