@@ -107,6 +107,10 @@ Configuration(orbital::O, occupancy::Int, state::Symbol=:open; sorted=false) whe
 Configuration{O}(;sorted=false) where {O<:AbstractOrbital} =
     Configuration(O[], Int[], Symbol[], sorted=sorted)
 
+Base.copy(cfg::Configuration) =
+    Configuration(copy(cfg.orbitals), copy(cfg.occupancy), copy(cfg.states),
+                  sorted=cfg.sorted)
+
 const RelativisticConfiguration{N} = Configuration{RelativisticOrbital{N}}
 
 """
@@ -961,7 +965,9 @@ spin_configurations(cs::Vector{Configuration{Orbital{T}}}) where T =
 spin_configurations(cs::Vector{<:Configuration}) =
     sort(Vector{Configuration{SpinOrbital}}(vcat(map(spin_configurations, cs)...)))
 
-function Base.show(io::IO, c::Configuration{<:SpinOrbital})
+const SpinConfiguration{O<:SpinOrbital} = Configuration{O}
+
+function Base.show(io::IO, c::SpinConfiguration)
     orbitals = Dict{Orbital, Vector{<:SpinOrbital}}()
     core_orbitals = sort(unique(map(o -> o.orb, core(c).orbitals)))
     core_cfg = Configuration(core_orbitals, ones(Int, length(core_orbitals))) |> fill |> close
@@ -1002,7 +1008,7 @@ function Base.show(io::IO, c::Configuration{<:SpinOrbital})
 end
 
 """
-    substitutions(src::Configuration{<:SpinOrbital}, dst::Configuration{<:SpinOrbital})
+    substitutions(src::SpinConfiguration, dst::SpinConfiguration)
 
 Find all orbital substitutions going from spin-configuration `src` to
 configuration `dst`.
