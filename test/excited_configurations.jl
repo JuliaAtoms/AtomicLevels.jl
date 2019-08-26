@@ -89,6 +89,7 @@ ispermutation(a, b; cmp=isequal) =
                                      c"1s 2s 2p2",
                                      c"1s2 2p2"])
             end
+
             @testset "Neon" begin
                 Ne_singles = [
                     c"1s 2s2 2p6 3s",
@@ -195,14 +196,43 @@ ispermutation(a, b; cmp=isequal) =
                                      ]
     end
 
-    @testset "Double excitations of spin-configurations" begin
-        gst = spin_configurations(Configuration(o"1s", 2, :open, sorted=false))[1]
-        orbitals = reduce(vcat, spin_orbitals.(os"2[s]"))
-        cs = excited_configurations(gst, orbitals...)
-        @test cs[1] == gst
-        @test_broken cs[2:3] == [replace(gst, gst.orbitals[1]=>o) for o in orbitals]
-        @test cs[4:5] == [replace(gst, gst.orbitals[2]=>o) for o in orbitals]
-        @test cs[6] == Configuration(orbitals, [1,1])
+    @testset "Spin-configurations" begin
+        @testset "Bound substitutions" begin
+            cfg = first(scs"1s2")
+            orbitals = sos"3[s]"
+            @test ispermutation(excited_configurations(cfg, orbitals..., keep_parity=false),
+                                 vcat(cfg,
+                                      [replace(cfg, cfg.orbitals[1]=>o) for o in orbitals],
+                                      [replace(cfg, cfg.orbitals[2]=>o) for o in orbitals],
+                                      scs"3s2"))
+            @test ispermutation(excited_configurations(cfg, orbitals..., keep_parity=false,
+                                                       min_occupancy=[1,0]),
+                                 vcat(cfg,
+                                      [replace(cfg, cfg.orbitals[2]=>o) for o in orbitals]))
+        end
+        @testset "Continuum substitutions" begin
+            gst = first(scs"1s2 2s2")
+            orbitals = sos"k[s]"
+            ionize = (subs_orb, orb) -> isbound(orb) ? SpinOrbital(Orbital(Symbol("[$(orb)]"), subs_orb.orb.ℓ), subs_orb.mℓ, subs_orb.spin) : subs_orb
+            singles = [replace(gst, o => ionize(so,o))
+                       for so in orbitals
+                       for o in gst.orbitals]
+            doubles = unique([replace(cfg, o => ionize(so,o))
+                              for cfg in singles
+                              for so in orbitals
+                              for o in bound(cfg).orbitals])
+            @test ispermutation(excited_configurations(ionize, gst, orbitals..., keep_parity=false),
+                                vcat(gst, singles, doubles))
+        end
+        @testset "Double excitations of spin-configurations" begin
+            gst = spin_configurations(Configuration(o"1s", 2, :open, sorted=false))[1]
+            orbitals = reduce(vcat, spin_orbitals.(os"2[s]"))
+            cs = excited_configurations(gst, orbitals...)
+            @test cs[1] == gst
+            @test cs[2:3] == [replace(gst, gst.orbitals[1]=>o) for o in orbitals]
+            @test cs[4:5] == [replace(gst, gst.orbitals[2]=>o) for o in orbitals]
+            @test cs[6] == Configuration(orbitals, [1,1])
+        end
     end
 
     @testset "Ion–continuum" begin

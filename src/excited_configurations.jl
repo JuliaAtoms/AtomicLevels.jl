@@ -89,6 +89,79 @@ function single_excitations!(fun::Function,
     end
 end
 
+# For configurations of spatial orbitals only, the orbitals of the
+# reference are valid orbitals to excite to as well.
+substitution_orbitals(ref_set::Configuration, orbitals::O...) where {O<:AbstractOrbital} =
+    unique(vcat(peel(ref_set).orbitals, orbitals...))
+
+# For spin-orbitals, we do not want to excite to the orbitals of the
+# reference set.
+substitution_orbitals(ref_set::SpinConfiguration, orbitals::O...) where {O<:SpinOrbital} =
+    filter(o -> o ∉ ref_set, O[orbitals...])
+
+function substitutions!(fun, excitations, ref_set, orbitals,
+                        min_excitations, max_excitations,
+                        min_occupancy, max_occupancy)
+    excite_from = 1
+    retain = 1
+    for i in 1:max_excitations
+        i ≤ min_excitations && (retain = length(excitations)+1)
+        single_excitations!(fun, excitations, ref_set, orbitals,
+                            min_occupancy, max_occupancy, excite_from)
+        excite_from = length(excitations)-excite_from
+    end
+    deleteat!(excitations, 1:retain-1)
+end
+
+function substitutions!(fun, excitations::Vector{<:SpinConfiguration},
+                        ref_set::SpinConfiguration, orbitals::Vector{<:SpinOrbital},
+                        min_excitations, max_excitations,
+                        min_occupancy, max_occupancy)
+    subs_orbs = map(ref_set.orbitals) do orb
+        map(subs_orb -> fun(subs_orb, orb), orbitals)
+    end
+
+    # Either all subsitution orbitals are the same for all source
+    # orbitals, or all source orbitals have unique substitution
+    # orbitals (generated using `fun`); for simplicity, we do not
+    # support a mixture.
+    all_same = true
+    for i ∈ 2:length(subs_orbs)
+        d = [isempty(setdiff(subs_orbs[i], subs_orbs[j]))
+             for j in 1:i-1]
+        i == 2 && !any(d) && (all_same = false)
+        all(d) && all_same || !any(d) && !all_same ||
+            throw(ArgumentError("All substitution orbitals have to equal or non-overlapping"))
+    end
+
+    source_orbitals = findall(iszero, min_occupancy)
+
+    for i ∈ min_excitations:max_excitations
+        # Loop over all slots, e.g. all spin-orbitals we want to
+        # excite from.
+        for srci ∈ combinations(source_orbitals,i)
+            all_substitutions = if all_same
+                # In this case, in the first slot, any of the i..n
+                # substitution orbitals goes, in the next i+1..n, in
+                # the second i+2..n, &c.
+                combinations(orbitals, i)
+            else
+                # In this case, we simply form the direct product of
+                # the source-orbital specific substitution orbitals.
+                Iterators.product([subs_orbs[src] for src in srci]...)
+            end
+            for substitutions in all_substitutions
+                cfg = ref_set
+                for (j,subs_orb) in enumerate(substitutions)
+                    cfg = replace(cfg, ref_set.orbitals[srci[j]] => subs_orb)
+                end
+                push!(excitations, cfg)
+            end
+        end
+    end
+    deleteat!(excitations, 1)
+end
+
 function excited_configurations(fun::Function,
                                 ref_set::Configuration{O₁},
                                 orbitals::O₂...;
@@ -120,28 +193,21 @@ function excited_configurations(fun::Function,
         throw(ArgumentError("Need to specify $(lp) maximum occupancies for active subshells: $(peel(ref_set))"))
 
     all(min_occupancy .>= 0) || throw(ArgumentError("Invalid minimum occupancy requested"))
-    all(max_occupancy .<= [degeneracy(first(o)) for o in peel(ref_set)]) ||
+    all(min_occupancy .<= max_occupancy .<= [degeneracy(first(o)) for o in peel(ref_set)]) ||
         throw(ArgumentError("Invalid maximum occupancy requested"))
 
     ref_set_core = core(ref_set)
     ref_set_peel = peel(ref_set)
 
-    # The orbitals of the reference are valid orbitals to excite to as
-    # well.
-    orbitals = unique(vcat(ref_set_peel.orbitals, orbitals...))
+    orbitals = substitution_orbitals(ref_set, orbitals...)
 
-    excitations = Configuration[ref_set_peel]
-    excite_from = 1
-    retain = 1
-    for i in 1:max_excitations
-        i ≤ min_excitations && (retain = length(excitations)+1)
-        single_excitations!(fun, excitations, ref_set_peel, orbitals,
-                            min_occupancy, max_occupancy, excite_from)
-        excite_from = length(excitations)-excite_from
-    end
+    excitations = Configuration{<:promote_type(O₁,O₂)}[ref_set_peel]
+    substitutions!(fun, excitations, ref_set_peel, orbitals,
+                   min_excitations, max_excitations,
+                   min_occupancy, max_occupancy)
     keep_parity && filter!(e -> parity(e) == parity(ref_set), excitations)
 
-    [ref_set_core + e for e in excitations[retain:end]]
+    [ref_set_core + e for e in excitations]
 end
 
 excited_configurations(ref_set::Configuration,
