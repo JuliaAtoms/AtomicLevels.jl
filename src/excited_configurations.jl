@@ -162,6 +162,65 @@ function substitutions!(fun, excitations::Vector{<:SpinConfiguration},
     deleteat!(excitations, 1)
 end
 
+"""
+    excited_configurations([fun::Function, ] cfg::Configuration,
+                           orbitals::AbstractOrbital...
+                           [; min_excitations=0, max_excitations=:doubles,
+                            min_occupancy=[0, 0, ...], max_occupancy=[..., g_i, ...],
+                            keep_parity=true])
+
+Generate all excitations from the reference set `cfg` by substituting
+at least `min_excitations` and at most `max_excitations` of the
+substitution `orbitals`. `min_occupancy` specifies the minimum
+occupation number for each of the source orbitals (default `0`) and
+equivalently `max_occupancy` specifies the maximum occupation number
+(default is the degeneracy for each orbital). `keep_parity` controls
+whether the excited configuration has to have the same parity as
+`cfg`. Finally, `fun` allows modification of the substitution orbitals
+depending on the source orbitals, which is useful for generating
+ionized configurations.
+
+# Examples
+
+```jldoctest
+julia> excited_configurations(c"1s2", o"2s", o"2p")
+4-element Array{Configuration{Orbital{Int64}},1}:
+ 1s²
+ 1s 2s
+ 2s²
+ 2p²
+
+julia> excited_configurations(c"1s2 2p", o"2p")
+2-element Array{Configuration{Orbital{Int64}},1}:
+ 1s² 2p
+ 2p³
+
+julia> excited_configurations(c"1s2 2p", o"2p", max_occupancy=[2,2])
+1-element Array{Configuration{Orbital{Int64}},1}:
+ 1s² 2p
+
+julia> excited_configurations(first(scs"1s2"), sos"k[s]"...) do dst,src
+           if isbound(src)
+               # Generate label that indicates src orbital,
+               # i.e. the resultant hole
+               SpinOrbital(Orbital(Symbol("[\$(src)]"), dst.orb.ℓ), 
+                           dst.mℓ, dst.spin)
+           else
+               dst
+           end
+       end
+9-element Array{Configuration,1}:
+ 1s₀α 1s₀β
+ [1s₀α]s₀α 1s₀β
+ [1s₀α]s₀β 1s₀β
+ 1s₀α [1s₀β]s₀α
+ 1s₀α [1s₀β]s₀β
+ [1s₀α]s₀α [1s₀β]s₀α
+ [1s₀α]s₀β [1s₀β]s₀α
+ [1s₀α]s₀α [1s₀β]s₀β
+ [1s₀α]s₀β [1s₀β]s₀β
+```
+"""
 function excited_configurations(fun::Function,
                                 ref_set::Configuration{O₁},
                                 orbitals::O₂...;
