@@ -57,6 +57,7 @@ ispermutation(a, b; cmp=isequal) =
 @testset "Excited configurations" begin
     @testset "Simple" begin
         @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", min_excitations=-1)
+        @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", min_excitations=3, max_excitations=2)
         @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", max_excitations=-1)
         @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", max_excitations=:triples)
         @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", min_occupancy=[2,0])
@@ -64,6 +65,71 @@ ispermutation(a, b; cmp=isequal) =
 
         @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", min_occupancy=[-1,0,0])
         @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", max_occupancy=[3,2,4])
+
+        @testset "Minimum excitations" begin
+            @testset "Beryllium" begin
+                @test ispermutation(excited_configurations(c"1s2 2s2", o"2p", keep_parity=false,
+                                                           min_excitations=0),
+                                    [c"1s2 2s2",
+                                     c"1s 2s2 2p",
+                                     c"1s2 2s 2p",
+                                     c"2s2 2p2",
+                                     c"1s 2s 2p2",
+                                     c"1s2 2p2"])
+                @test ispermutation(excited_configurations(c"1s2 2s2", o"2p", keep_parity=false,
+                                                           min_excitations=1),
+                                    [c"1s 2s2 2p",
+                                     c"1s2 2s 2p",
+                                     c"2s2 2p2",
+                                     c"1s 2s 2p2",
+                                     c"1s2 2p2"])
+                @test ispermutation(excited_configurations(c"1s2 2s2", o"2p", keep_parity=false,
+                                                           min_excitations=2),
+                                    [c"2s2 2p2",
+                                     c"1s 2s 2p2",
+                                     c"1s2 2p2"])
+            end
+            @testset "Neon" begin
+                Ne_singles = [
+                    c"1s 2s2 2p6 3s",
+                    c"1s 2s2 2p6 3p",
+                    c"1s2 2s 2p6 3s",
+                    c"1s2 2s 2p6 3p",
+                    c"1s2 2s2 2p5 3s",
+                    c"1s2 2s2 2p5 3p"
+                ]
+
+                Ne_doubles = [
+                    c"2s2 2p6 3s2",
+                    c"2s2 2p6 3s 3p",
+                    c"1s 2s 2p6 3s2",
+                    c"1s 2s 2p6 3s 3p",
+                    c"1s 2s2 2p5 3s2",
+                    c"1s 2s2 2p5 3s 3p",
+                    c"2s2 2p6 3p2",
+                    c"1s 2s 2p6 3p2",
+                    c"1s 2s2 2p5 3p2",
+                    c"1s2 2p6 3s2",
+                    c"1s2 2p6 3s 3p",
+                    c"1s2 2s 2p5 3s2",
+                    c"1s2 2s 2p5 3s 3p",
+                    c"1s2 2p6 3p2",
+                    c"1s2 2s 2p5 3p2",
+                    c"1s2 2s2 2p4 3s2",
+                    c"1s2 2s2 2p4 3s 3p",
+                    c"1s2 2s2 2p4 3p2"
+                ]
+
+                @test ispermutation(excited_configurations(c"[Ne]*", os"3[s-p]"..., keep_parity=false),
+                                    vcat(c"[Ne]*", Ne_singles, Ne_doubles))
+                @test ispermutation(excited_configurations(c"[Ne]*", os"3[s-p]"..., keep_parity=false,
+                                                           min_excitations=1),
+                                    vcat(Ne_singles, Ne_doubles))
+                @test ispermutation(excited_configurations(c"[Ne]*", os"3[s-p]"..., keep_parity=false,
+                                                           min_excitations=2),
+                                    Ne_doubles)
+            end
+        end
 
         @testset "Unsorted base configuration" begin
             # Expect respected substitution orbitals ordering

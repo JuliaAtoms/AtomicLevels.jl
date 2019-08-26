@@ -98,9 +98,6 @@ function excited_configurations(fun::Function,
                                 max_occupancy::Vector{Int}=[degeneracy(first(o)) for o in peel(ref_set)],
                                 keep_parity::Bool=true) where {O<:AbstractOrbital,
                                                                O₁<:O,O₂<:O}
-    min_excitations ≥ 0 ||
-        throw(ArgumentError("Invalid minimum excitations specification $(min_excitations)"))
-
     if max_excitations isa Symbol
         max_excitations = if max_excitations == :singles
             1
@@ -112,6 +109,9 @@ function excited_configurations(fun::Function,
     elseif max_excitations < 0
         throw(ArgumentError("Invalid maximum excitations specification $(max_excitations)"))
     end
+
+    min_excitations ≥ 0 && min_excitations ≤ max_excitations ||
+        throw(ArgumentError("Invalid minimum excitations specification $(min_excitations)"))
 
     lp = length(peel(ref_set))
     length(min_occupancy) == lp ||
@@ -132,14 +132,16 @@ function excited_configurations(fun::Function,
 
     excitations = Configuration[ref_set_peel]
     excite_from = 1
+    retain = 1
     for i in 1:max_excitations
+        i ≤ min_excitations && (retain = length(excitations)+1)
         single_excitations!(fun, excitations, ref_set_peel, orbitals,
                             min_occupancy, max_occupancy, excite_from)
         excite_from = length(excitations)-excite_from
     end
     keep_parity && filter!(e -> parity(e) == parity(ref_set), excitations)
 
-    [ref_set_core + e for e in excitations]
+    [ref_set_core + e for e in excitations[retain:end]]
 end
 
 excited_configurations(ref_set::Configuration,
