@@ -273,7 +273,7 @@
         @test spin_configurations(c"ks2") isa Vector{Configuration{SpinOrbital{Orbital{Symbol}}}}
         @test spin_configurations(c"1s ks") isa Vector{Configuration{SpinOrbital}}
 
-        @test spin_configurations(c"1s 2p") ==
+        @test scs"1s 2p" == spin_configurations(c"1s 2p") ==
             [Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",-1,true)], [1, 1]),
              Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"2p",-1,true)], [1, 1]),
              Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",-1,false)], [1, 1]),
