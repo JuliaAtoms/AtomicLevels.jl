@@ -2,9 +2,9 @@
 
 [[BandedMatrices]]
 deps = ["FillArrays", "LazyArrays", "LinearAlgebra", "MatrixFactorizations", "Random", "SparseArrays"]
-git-tree-sha1 = "a58595d50a365c720fea52745e3a532eeecedc2a"
+git-tree-sha1 = "cdda54b29a1c52fa33defc0c61e3b8bb61f73d15"
 uuid = "aae01518-5342-5314-be14-df237901396f"
-version = "0.9.4"
+version = "0.10.1"
 
 [[Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
@@ -17,9 +17,9 @@ version = "0.9.1"
 
 [[BlockBandedMatrices]]
 deps = ["BandedMatrices", "BlockArrays", "Distributed", "FillArrays", "LazyArrays", "LinearAlgebra", "MatrixFactorizations", "Pkg", "Profile", "Random", "SharedArrays", "SparseArrays", "Statistics", "Test"]
-git-tree-sha1 = "8e3a098d4d0af47786f5ba8f1ad9c7928facfd15"
+git-tree-sha1 = "52a3f347579a93ca4131ec2f6fd298ffde0deccb"
 uuid = "ffab5731-97b5-5995-9138-79e8c1846df0"
-version = "0.4.5"
+version = "0.4.6"
 
 [[CSTParser]]
 deps = ["Tokenize"]
@@ -58,10 +58,10 @@ deps = ["Random", "Serialization", "Sockets"]
 uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
 [[FillArrays]]
-deps = ["LinearAlgebra", "Random", "SparseArrays", "Test"]
-git-tree-sha1 = "9ab8f76758cbabba8d7f103c51dce7f73fcf8e92"
+deps = ["LinearAlgebra", "Random", "SparseArrays"]
+git-tree-sha1 = "8fba6ddaf66b45dec830233cea0aae43eb1261ad"
 uuid = "1a297f60-69ca-5386-bcde-b61e274b549b"
-version = "0.6.3"
+version = "0.6.4"
 
 [[Formatting]]
 deps = ["Compat"]
@@ -79,10 +79,10 @@ deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
 [[LazyArrays]]
-deps = ["FillArrays", "LinearAlgebra", "MacroTools", "StaticArrays", "Test"]
-git-tree-sha1 = "0d9a7174d47407a61953e17c3dcecfb4ca8c5c44"
+deps = ["FillArrays", "LinearAlgebra", "MacroTools", "StaticArrays"]
+git-tree-sha1 = "e71f611fec1329f0fd6c82e9b5d7da3fc9822b0d"
 uuid = "5078a376-72f3-5289-bfd5-ec5146d43c02"
-version = "0.9.1"
+version = "0.10.0"
 
 [[LibGit2]]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
