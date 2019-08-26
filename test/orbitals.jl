@@ -258,6 +258,8 @@ using Random
             @test length(spin_orbitals(orb)) == degeneracy(orb)
         end
 
+        @test sos"1[s] 2[p]" == [soα, soβ, po₋α, po₋β, po₀α, po₀β, po₊α, po₊β]
+
         @test "$(soα)" == "1s₀α"
         @test "$(po₊β)" == "2p₁β"
     end
