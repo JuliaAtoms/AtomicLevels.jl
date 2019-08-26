@@ -34,14 +34,16 @@ orbital.
 SpinOrbital
 ```
 
-The string macros [`@o_str`](@ref) and [`@ro_str`](@ref) can be used to conveniently contruct
-orbitals, while [`@os_str`](@ref) and [`@ros_str`](@ref) can be used to construct whole lists
-of them very easily.
+The string macros [`@o_str`](@ref) and [`@ro_str`](@ref) can be used
+to conveniently construct orbitals, while [`@os_str`](@ref),
+[`@sos_str`](@ref) and [`@ros_str`](@ref) can be used to construct
+whole lists of them very easily.
 
 ```@docs
 @o_str
 @ro_str
 @os_str
+@sos_str
 @ros_str
 ```
 

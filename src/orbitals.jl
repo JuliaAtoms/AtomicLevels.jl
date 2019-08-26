@@ -502,6 +502,8 @@ end
 
 Can be used to easily construct a list of [`Orbital`](@ref)s.
 
+# Examples
+
 ```jldoctest
 julia> os"5[d] 6[s-p] k[7-10]"
 7-element Array{Orbital,1}:
@@ -519,9 +521,36 @@ macro os_str(orbs_str)
 end
 
 """
+    @sos_str -> Vector{SpinOrbital}
+
+Can be used to easily construct a list of [`SpinOrbital`](@ref)s.
+
+# Examples
+
+```jldoctest
+julia> sos"3[s-p]"
+8-element Array{SpinOrbital{Orbital{Int64}},1}:
+ 3s₀α
+ 3s₀β
+ 3p₋₁α
+ 3p₋₁β
+ 3p₀α
+ 3p₀β
+ 3p₁α
+ 3p₁β
+```
+
+"""
+macro sos_str(orbs_str)
+    reduce(vcat, map(spin_orbitals, orbitals_from_string(Orbital, orbs_str)))
+end
+
+"""
     @ros_str -> Vector{RelativisticOrbital}
 
 Can be used to easily construct a list of [`RelativisticOrbital`](@ref)s.
+
+# Examples
 
 ```jldoctest
 julia> ros"2[s-p] 3[p] k[0-d]"
@@ -565,4 +594,6 @@ macro κ_str(κ_str)
     kappa_from_string(κ_str)
 end
 
-export AbstractOrbital, Orbital, SpinOrbital, RelativisticOrbital, @o_str, @ro_str, @os_str, @ros_str, degeneracy, symmetry, isbound, mℓrange, spin_orbitals, @κ_str
+export AbstractOrbital, Orbital, SpinOrbital, RelativisticOrbital,
+    @o_str, @ro_str, @os_str, @sos_str, @ros_str,
+    degeneracy, symmetry, isbound, mℓrange, spin_orbitals, @κ_str
