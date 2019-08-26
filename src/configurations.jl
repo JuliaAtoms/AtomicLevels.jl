@@ -348,12 +348,19 @@ function Base.parse(::Type{Configuration{O}}, conf_str::AbstractString; sorted=f
     end
 end
 
+function parse_conf_str(::Type{O}, conf_str, suffix) where O
+    suffix ∈ ["", "s"] || throw(ArgumentError("Unknown configuration suffix $suffix"))
+    parse(Configuration{O}, conf_str, sorted=suffix=="s")
+end
+
 """
     @c_str -> Configuration{Orbital}
 
 Construct a [`Configuration`](@ref), representing a non-relativistic
 configuration, out of a string. With the added string macro suffix
 `s`, the configuration is sorted.
+
+# Examples
 
 ```jldoctest
 julia> c"1s2 2s"
@@ -367,8 +374,7 @@ julia> c"[Kr] 4d10 5s2 4f2"s
 ```
 """
 macro c_str(conf_str, suffix="")
-    suffix ∈ ["", "s"] || throw(ArgumentError("Unknown configuration suffix $suffix"))
-    parse(Configuration{Orbital}, conf_str, sorted=suffix=="s")
+    parse_conf_str(Orbital, conf_str, suffix)
 end
 
 """
@@ -377,6 +383,8 @@ end
 Construct a [`Configuration`](@ref) representing a relativistic
 configuration out of a string. With the added string macro suffix `s`,
 the configuration is sorted.
+
+# Examples
 
 ```jldoctest
 julia> rc"[Ne] 3s 3p- 3p"
@@ -390,8 +398,41 @@ julia> rc"2p- 1s"s
 ```
 """
 macro rc_str(conf_str, suffix="")
+    parse_conf_str(RelativisticOrbital, conf_str, suffix)
     suffix ∈ ["", "s"] || throw(ArgumentError("Unknown configuration suffix $suffix"))
     parse(Configuration{RelativisticOrbital}, conf_str, sorted=suffix=="s")
+end
+
+"""
+    @scs_str -> Vector{<:SpinConfiguration}
+
+Generate all possible spin-configurations out of a string. With the
+added string macro suffix `s`, the configuration is sorted.
+
+# Examples
+
+```jldoctest
+julia> scs"1s2 2p2"
+15-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:
+ 1s₀α 1s₀β 2p₋₁α 2p₋₁β
+ 1s₀α 1s₀β 2p₋₁α 2p₀α
+ 1s₀α 1s₀β 2p₋₁α 2p₀β
+ 1s₀α 1s₀β 2p₋₁α 2p₁α
+ 1s₀α 1s₀β 2p₋₁α 2p₁β
+ 1s₀α 1s₀β 2p₋₁β 2p₀α
+ 1s₀α 1s₀β 2p₋₁β 2p₀β
+ 1s₀α 1s₀β 2p₋₁β 2p₁α
+ 1s₀α 1s₀β 2p₋₁β 2p₁β
+ 1s₀α 1s₀β 2p₀α 2p₀β
+ 1s₀α 1s₀β 2p₀α 2p₁α
+ 1s₀α 1s₀β 2p₀α 2p₁β
+ 1s₀α 1s₀β 2p₀β 2p₁α
+ 1s₀α 1s₀β 2p₀β 2p₁β
+ 1s₀α 1s₀β 2p₁α 2p₁β
+```
+"""
+macro scs_str(conf_str, suffix="")
+    spin_configurations(parse_conf_str(Orbital, conf_str, suffix))
 end
 
 Base.getindex(conf::Configuration{O}, i::Integer) where O =
@@ -1045,6 +1086,6 @@ function nonrelconfiguration(c::Configuration{<:RelativisticOrbital})
     Configuration(nrorbitals, nroccupancies, nrstates)
 end
 
-export Configuration, @c_str, @rc_str, issimilar,
+export Configuration, @c_str, @rc_str, @scs_str, issimilar,
     num_electrons, core, peel, active, inactive, bound, continuum, parity, ⊗, @rcs_str,
     spin_configurations, substitutions, close!, nonrelconfiguration
