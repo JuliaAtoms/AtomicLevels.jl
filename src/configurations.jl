@@ -671,7 +671,7 @@ julia> replace(c"1s2 2s", o"1s" => o"2p", append=true)
 1s 2s 2p
 
 julia> replace(c"1s2 2s"s, o"1s" => o"2p")
-1s 2s 2
+1s 2s 2p
 ```
 """
 function Base.replace(conf::Configuration{O₁}, orbs::Pair{O₂,O₃};
@@ -965,6 +965,12 @@ spin_configurations(cs::Vector{Configuration{Orbital{T}}}) where T =
 spin_configurations(cs::Vector{<:Configuration}) =
     sort(Vector{Configuration{SpinOrbital}}(vcat(map(spin_configurations, cs)...)))
 
+"""
+    SpinConfiguration
+
+Specialization of [`Configuration`](@ref) for configurations
+consisting of [`SpinOrbital`](@ref)s.
+"""
 const SpinConfiguration{O<:SpinOrbital} = Configuration{O}
 
 function Base.show(io::IO, c::SpinConfiguration)
@@ -1094,4 +1100,4 @@ end
 
 export Configuration, @c_str, @rc_str, @scs_str, issimilar,
     num_electrons, core, peel, active, inactive, bound, continuum, parity, ⊗, @rcs_str,
-    spin_configurations, substitutions, close!, nonrelconfiguration
+    SpinConfiguration, spin_configurations, substitutions, close!, nonrelconfiguration
