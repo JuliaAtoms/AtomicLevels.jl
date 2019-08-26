@@ -8,10 +8,7 @@ using WignerSymbols
 using HalfIntegers
 using Combinatorics
 
-if VERSION < v"1.1-DEV"
-    isnothing(::Nothing) = true
-    isnothing(::Any) = false
-end
+using Compat
 
 include("common.jl")
 include("parity.jl")
