@@ -93,7 +93,15 @@ var documenterSearchIndex = {"docs": [
     "page": "Orbitals",
     "title": "AtomicLevels.@os_str",
     "category": "macro",
-    "text": "@os_str -> Vector{Orbital}\n\nCan be used to easily construct a list of Orbitals.\n\njulia> os\"5[d] 6[s-p] k[7-10]\"\n7-element Array{Orbital,1}:\n 5d\n 6s\n 6p\n kk\n kl\n km\n kn\n\n\n\n\n\n"
+    "text": "@os_str -> Vector{Orbital}\n\nCan be used to easily construct a list of Orbitals.\n\nExamples\n\njulia> os\"5[d] 6[s-p] k[7-10]\"\n7-element Array{Orbital,1}:\n 5d\n 6s\n 6p\n kk\n kl\n km\n kn\n\n\n\n\n\n"
+},
+
+{
+    "location": "orbitals/#AtomicLevels.@sos_str",
+    "page": "Orbitals",
+    "title": "AtomicLevels.@sos_str",
+    "category": "macro",
+    "text": "@sos_str -> Vector{SpinOrbital}\n\nCan be used to easily construct a list of SpinOrbitals.\n\nExamples\n\njulia> sos\"3[s-p]\"\n8-element Array{SpinOrbital{Orbital{Int64}},1}:\n 3s₀α\n 3s₀β\n 3p₋₁α\n 3p₋₁β\n 3p₀α\n 3p₀β\n 3p₁α\n 3p₁β\n\n\n\n\n\n"
 },
 
 {
@@ -101,7 +109,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Orbitals",
     "title": "AtomicLevels.@ros_str",
     "category": "macro",
-    "text": "@ros_str -> Vector{RelativisticOrbital}\n\nCan be used to easily construct a list of RelativisticOrbitals.\n\njulia> ros\"2[s-p] 3[p] k[0-d]\"\n10-element Array{RelativisticOrbital,1}:\n 2s\n 2p⁻\n 2p\n 3p⁻\n 3p\n ks\n kp⁻\n kp\n kd⁻\n kd\n\n\n\n\n\n"
+    "text": "@ros_str -> Vector{RelativisticOrbital}\n\nCan be used to easily construct a list of RelativisticOrbitals.\n\nExamples\n\njulia> ros\"2[s-p] 3[p] k[0-d]\"\n10-element Array{RelativisticOrbital,1}:\n 2s\n 2p⁻\n 2p\n 3p⁻\n 3p\n ks\n kp⁻\n kp\n kd⁻\n kd\n\n\n\n\n\n"
 },
 
 {
@@ -109,7 +117,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Orbitals",
     "title": "Orbital types",
     "category": "section",
-    "text": "AtomicLevels provides two basic types for labelling atomic orbitals: Orbital and RelativisticOrbital. Stricly speaking, these types do not label orbitals, but groups of orbitals with the same angular symmetry and radial behaviour (i.e. a subshell).All orbitals are subtypes of AbstractOrbital. Types and methods that work on generic orbitals can dispatch on that.Orbital\nRelativisticOrbital\nAbstractOrbitalThe SpinOrbital type can be used to fully qualify all the quantum numbers (that is, also m_ell and m_s) of an Orbital. It represent a since, distinct orbital.SpinOrbitalThe string macros @o_str and @ro_str can be used to conveniently contruct orbitals, while @os_str and @ros_str can be used to construct whole lists of them very easily.@o_str\n@ro_str\n@os_str\n@ros_str"
+    "text": "AtomicLevels provides two basic types for labelling atomic orbitals: Orbital and RelativisticOrbital. Stricly speaking, these types do not label orbitals, but groups of orbitals with the same angular symmetry and radial behaviour (i.e. a subshell).All orbitals are subtypes of AbstractOrbital. Types and methods that work on generic orbitals can dispatch on that.Orbital\nRelativisticOrbital\nAbstractOrbitalThe SpinOrbital type can be used to fully qualify all the quantum numbers (that is, also m_ell and m_s) of an Orbital. It represent a since, distinct orbital.SpinOrbitalThe string macros @o_str and @ro_str can be used to conveniently construct orbitals, while @os_str, @sos_str and @ros_str can be used to construct whole lists of them very easily.@o_str\n@ro_str\n@os_str\n@sos_str\n@ros_str"
 },
 
 {
@@ -197,7 +205,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "AtomicLevels.Configuration",
     "category": "type",
-    "text": "struct Configuration{<:AbstractOrbital}\n\nRepresents a configuration – a set of orbitals and their associated occupation number. Furthermore, each orbital can be in one of the following states: :open, :closed or :inactive.\n\nConstructors\n\nConfiguration(orbitals :: Vector{<:AbstractOrbital}, occupancy :: Vector{Int}, states :: Vector{Symbol})\nConfiguration(orbitals :: Vector{Tuple{<:AbstractOrbital, Int, Symbol}})\n\nIn the first case, the paramaters of each orbital have to be passed as separate vectors, and the orbitals and occupancy have to be of the same length. The states vector can be shorter and then the latter orbitals that were not explicitly specified by states are assumed to be :open.\n\nThe second constructor allows you to pass a vector of tuples instead, where each tuple is a triplet (orbital :: AbstractOrbital, occupancy :: Int, state :: Symbol) corresponding to each orbital.\n\nIn all cases, all the orbitals have to be distinct. The orbitals in the configuration will be sorted according to the ordering defined for the particular AbstractOrbital.\n\n\n\n\n\n"
+    "text": "struct Configuration{<:AbstractOrbital}\n\nRepresents a configuration – a set of orbitals and their associated occupation number.  Furthermore, each orbital can be in one of the following states: :open, :closed or :inactive.\n\nConstructors\n\nConfiguration(orbitals :: Vector{<:AbstractOrbital},\n              occupancy :: Vector{Int},\n              states :: Vector{Symbol}\n              [; sorted=false])\n\nConfiguration(orbitals :: Vector{Tuple{<:AbstractOrbital, Int, Symbol}}\n              [; sorted=false])\n\nIn the first case, the parameters of each orbital have to be passed as separate vectors, and the orbitals and occupancy have to be of the same length. The states vector can be shorter and then the latter orbitals that were not explicitly specified by states are assumed to be :open.\n\nThe second constructor allows you to pass a vector of tuples instead, where each tuple is a triplet (orbital :: AbstractOrbital, occupancy :: Int, state :: Symbol) corresponding to each orbital.\n\nIn all cases, all the orbitals have to be distinct. The orbitals in the configuration will be sorted (if sorted) according to the ordering defined for the particular AbstractOrbital.\n\n\n\n\n\n"
 },
 
 {
@@ -205,7 +213,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "AtomicLevels.@c_str",
     "category": "macro",
-    "text": "@c_str -> Configuration{Orbital}\n\nConstruct a Configuration, representing a non-relativistic configuration, out of a string.\n\njulia> c\"1s2 2s\"\n1s² 2s\n\njulia> c\"[Kr] 4d10 5s2 4f2\"\n[Kr]ᶜ 4d¹⁰ 4f² 5s²\n\n\n\n\n\n"
+    "text": "@c_str -> Configuration{Orbital}\n\nConstruct a Configuration, representing a non-relativistic configuration, out of a string. With the added string macro suffix s, the configuration is sorted.\n\nExamples\n\njulia> c\"1s2 2s\"\n1s² 2s\n\njulia> c\"[Kr] 4d10 5s2 4f2\"\n[Kr]ᶜ 4d¹⁰ 5s² 4f²\n\njulia> c\"[Kr] 4d10 5s2 4f2\"s\n[Kr]ᶜ 4d¹⁰ 4f² 5s²\n\n\n\n\n\n"
 },
 
 {
@@ -213,7 +221,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "AtomicLevels.@rc_str",
     "category": "macro",
-    "text": "@rc_str -> Configuration{RelativisticOrbital}\n\nConstruct a Configuration representing a relativistic configuration out of a string.\n\njulia> rc\"[Ne] 3s 3p- 3p\"\n[Ne]ᶜ 3s 3p⁻ 3p\n\njulia> rc\"[Ne] 3s 3p-2 3p4\"\n[Ne]ᶜ 3s 3p⁻² 3p⁴\n\n\n\n\n\n"
+    "text": "@rc_str -> Configuration{RelativisticOrbital}\n\nConstruct a Configuration representing a relativistic configuration out of a string. With the added string macro suffix s, the configuration is sorted.\n\nExamples\n\njulia> rc\"[Ne] 3s 3p- 3p\"\n[Ne]ᶜ 3s 3p⁻ 3p\n\njulia> rc\"[Ne] 3s 3p-2 3p4\"\n[Ne]ᶜ 3s 3p⁻² 3p⁴\n\njulia> rc\"2p- 1s\"s\n1s 2p⁻\n\n\n\n\n\n"
 },
 
 {
@@ -221,7 +229,23 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "Atomic configurations",
     "category": "section",
-    "text": "DocTestSetup = quote\n    using AtomicLevels\nendWe define a configuration to be a set of orbitals with their associated occupation (i.e. the number of electron on that orbital). We can represent a particular configuration with an instance of the Configuration type.ConfigurationThe @c_str and @rc_str string macros can be used to conveniently construct configurations:@c_str\n@rc_str"
+    "text": "DocTestSetup = quote\n    using AtomicLevels\nendWe define a configuration to be a set of orbitals with their associated occupation (i.e. the number of electron on that orbital). We can represent a particular configuration with an instance of the Configuration type. The orbitals of a configuration can be unsorted (default) or sorted according to the canonical ordering (first by n, then by ell, &c). It is important to allow for arbitrary order, since permutation of the orbitals in a configuration, in general incurs a phase shift of matrix elements, &c.ConfigurationThe @c_str and @rc_str string macros can be used to conveniently construct configurations:@c_str\n@rc_str"
+},
+
+{
+    "location": "configurations/#AtomicLevels.issimilar",
+    "page": "Configurations",
+    "title": "AtomicLevels.issimilar",
+    "category": "function",
+    "text": "issimilar(a::Configuration, b::Configuration)\n\nCompares the electronic configurations a and b, only considering the constituent orbitals and their occupancy, but disregarding their ordering and states (:open, :closed, &c).\n\nExamples\n\njulia> a = c\"1s 2s\"\n1s 2s\n\njulia> b = c\"2si 1s\"\n2sⁱ 1s\n\njulia> issimilar(a, b)\ntrue\n\njulia> a==b\nfalse\n\n\n\n\n\n"
+},
+
+{
+    "location": "configurations/#Base.:==-Union{Tuple{O}, Tuple{Configuration{#s1} where #s1<:O,Configuration{#s2} where #s2<:O}} where O<:AbstractOrbital",
+    "page": "Configurations",
+    "title": "Base.:==",
+    "category": "method",
+    "text": "==(a::Configuration, b::Configuration)\n\nTests if configurations a and b are the same, considering orbital occupancy, ordering, and states.\n\nExamples\n\njulia> c\"1s 2s\" == c\"1s 2s\"\ntrue\n\njulia> c\"1s 2s\" == c\"1s 2si\"\nfalse\n\njulia> c\"1s 2s\" == c\"2s 1s\"\nfalse\n\n\n\n\n\n"
 },
 
 {
@@ -321,6 +345,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "configurations/#Base.replace",
+    "page": "Configurations",
+    "title": "Base.replace",
+    "category": "function",
+    "text": "replace(conf, a => b[; append=false])\n\nSubstitute one electron in orbital a of conf by one electron in orbital b. If conf is unsorted the substitution is performed in-place, unless append, in which case the new orbital is appended instead.\n\nExamples\n\njulia> replace(c\"1s2 2s\", o\"1s\" => o\"2p\")\n1s 2p 2s\n\njulia> replace(c\"1s2 2s\", o\"1s\" => o\"2p\", append=true)\n1s 2s 2p\n\njulia> replace(c\"1s2 2s\"s, o\"1s\" => o\"2p\")\n1s 2s 2p\n\n\n\n\n\n"
+},
+
+{
     "location": "configurations/#AtomicLevels.core",
     "page": "Configurations",
     "title": "AtomicLevels.core",
@@ -381,7 +413,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "AtomicLevels.nonrelconfiguration",
     "category": "function",
-    "text": "nonrelconfiguration(c::Configuration{<:RelativisticOrbital}) -> Configuration{<:Orbital}\n\nReduces a relativistic configuration down to the corresponding non-relativistic configuration.\n\njulia> c = rc\"1s2 2p-2 2s 2p2 3s2 3p-\"\n1s² 2s 2p⁻² 2p² 3s² 3p⁻\n\njulia> nonrelconfiguration(c)\n1s² 2s 2p⁴ 3s² 3p\n\n\n\n\n\n"
+    "text": "nonrelconfiguration(c::Configuration{<:RelativisticOrbital}) -> Configuration{<:Orbital}\n\nReduces a relativistic configuration down to the corresponding non-relativistic configuration.\n\njulia> c = rc\"1s2 2p-2 2s 2p2 3s2 3p-\"s\n1s² 2s 2p⁻² 2p² 3s² 3p⁻\n\njulia> nonrelconfiguration(c)\n1s² 2s 2p⁴ 3s² 3p\n\n\n\n\n\n"
 },
 
 {
@@ -389,7 +421,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "Interface",
     "category": "section",
-    "text": "For example, it is possible to index into a configuration, including with a range of indices, returning a sub-configuration consisting of only those orbitals. With an integer index, an (orbital, occupancy, state) tuple is returned.julia> config = c\"1s2c 2si 2p3\"\n[He]ᶜ 2sⁱ 2p³\n\njulia> config[2]\n(2s, 1, :inactive)\n\njulia> config[1:2]\n[He]ᶜ 2sⁱ\n\njulia> config[[3,1]]\n[He]ᶜ 2p³The configuration can also be iterated over. Each item is a (orbital, occupancy, state) tuple.julia> for (o, nelec, s) in config\n           @show o, nelec, s\n       end\n(o, nelec, s) = (1s, 2, :closed)\n(o, nelec, s) = (2s, 1, :inactive)\n(o, nelec, s) = (2p, 3, :open)Various other methods exist to manipulate or transform configurations or to query them for information.num_electrons(::Configuration)\nnum_electrons(::Configuration, ::AtomicLevels.AbstractOrbital)\nBase.delete!\nBase.:(+)\nBase.:(-)\nBase.close\nclose!\nBase.fill\nBase.fill!\nBase.in\nBase.filter\nBase.count\ncore\npeel\nactive\ninactive\nbound\ncontinuum\nparity(::Configuration)\nnonrelconfiguration"
+    "text": "For example, it is possible to index into a configuration, including with a range of indices, returning a sub-configuration consisting of only those orbitals. With an integer index, an (orbital, occupancy, state) tuple is returned.julia> config = c\"1s2c 2si 2p3\"\n[He]ᶜ 2sⁱ 2p³\n\njulia> config[2]\n(2s, 1, :inactive)\n\njulia> config[1:2]\n[He]ᶜ 2sⁱ\n\njulia> config[[3,1]]\n[He]ᶜ 2p³The configuration can also be iterated over. Each item is a (orbital, occupancy, state) tuple.julia> for (o, nelec, s) in config\n           @show o, nelec, s\n       end\n(o, nelec, s) = (1s, 2, :closed)\n(o, nelec, s) = (2s, 1, :inactive)\n(o, nelec, s) = (2p, 3, :open)Various other methods exist to manipulate or transform configurations or to query them for information.issimilar\nBase.:(==)(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbital}\nnum_electrons(::Configuration)\nnum_electrons(::Configuration, ::AtomicLevels.AbstractOrbital)\nBase.delete!\nBase.:(+)\nBase.:(-)\nBase.close\nclose!\nBase.fill\nBase.fill!\nBase.in\nBase.filter\nBase.count\nBase.replace\ncore\npeel\nactive\ninactive\nbound\ncontinuum\nparity(::Configuration)\nnonrelconfiguration"
 },
 
 {
@@ -417,11 +449,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "configurations/#AtomicLevels.SpinConfiguration",
+    "page": "Configurations",
+    "title": "AtomicLevels.SpinConfiguration",
+    "category": "type",
+    "text": "SpinConfiguration\n\nSpecialization of Configuration for configurations consisting of SpinOrbitals.\n\n\n\n\n\n"
+},
+
+{
     "location": "configurations/#AtomicLevels.spin_configurations",
     "page": "Configurations",
     "title": "AtomicLevels.spin_configurations",
     "category": "function",
-    "text": "spin_configurations(configuration)\n\nGenerate all possible configurations of spin-orbitals from configuration, i.e. all permissible values for the quantum numbers n, ℓ, mℓ, ms for each electron. Example:\n\njulia> spin_configurations(c\"1s2\")\n1-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:\n 1s²\n\njulia> spin_configurations(c\"1s ks\")\n4-element Array{Configuration{SpinOrbital},1}:\n 1s₀α ks₀α\n 1s₀β ks₀α\n 1s₀α ks₀β\n 1s₀β ks₀β\n\n\n\n\n\nspin_configurations(configurations)\n\nFor each configuration in configurations, generate all possible configurations of spin-orbitals.\n\n\n\n\n\n"
+    "text": "spin_configurations(configuration)\n\nGenerate all possible configurations of spin-orbitals from configuration, i.e. all permissible values for the quantum numbers n, ℓ, mℓ, ms for each electron. Example:\n\njulia> spin_configurations(c\"1s2\")\n1-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:\n 1s₀α 1s₀β\n\njulia> spin_configurations(c\"1s2\"s)\n1-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:\n 1s²\n\njulia> spin_configurations(c\"1s ks\")\n4-element Array{Configuration{SpinOrbital},1}:\n 1s₀α ks₀α\n 1s₀β ks₀α\n 1s₀α ks₀β\n 1s₀β ks₀β\n\n\n\n\n\nspin_configurations(configurations)\n\nFor each configuration in configurations, generate all possible configurations of spin-orbitals.\n\n\n\n\n\n"
 },
 
 {
@@ -429,7 +469,15 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "AtomicLevels.substitutions",
     "category": "function",
-    "text": "substitutions(src::Configuration{<:SpinOrbital}, dst::Configuration{<:SpinOrbital})\n\nFind all orbital substitutions going from spin-configuration src to configuration dst.\n\n\n\n\n\n"
+    "text": "substitutions(src::SpinConfiguration, dst::SpinConfiguration)\n\nFind all orbital substitutions going from spin-configuration src to configuration dst.\n\n\n\n\n\n"
+},
+
+{
+    "location": "configurations/#AtomicLevels.@scs_str",
+    "page": "Configurations",
+    "title": "AtomicLevels.@scs_str",
+    "category": "macro",
+    "text": "@scs_str -> Vector{<:SpinConfiguration}\n\nGenerate all possible spin-configurations out of a string. With the added string macro suffix s, the configuration is sorted.\n\nExamples\n\njulia> scs\"1s2 2p2\"\n15-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:\n 1s₀α 1s₀β 2p₋₁α 2p₋₁β\n 1s₀α 1s₀β 2p₋₁α 2p₀α\n 1s₀α 1s₀β 2p₋₁α 2p₀β\n 1s₀α 1s₀β 2p₋₁α 2p₁α\n 1s₀α 1s₀β 2p₋₁α 2p₁β\n 1s₀α 1s₀β 2p₋₁β 2p₀α\n 1s₀α 1s₀β 2p₋₁β 2p₀β\n 1s₀α 1s₀β 2p₋₁β 2p₁α\n 1s₀α 1s₀β 2p₋₁β 2p₁β\n 1s₀α 1s₀β 2p₀α 2p₀β\n 1s₀α 1s₀β 2p₀α 2p₁α\n 1s₀α 1s₀β 2p₀α 2p₁β\n 1s₀α 1s₀β 2p₀β 2p₁α\n 1s₀α 1s₀β 2p₀β 2p₁β\n 1s₀α 1s₀β 2p₁α 2p₁β\n\n\n\n\n\n"
 },
 
 {
@@ -437,7 +485,23 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "Spin configurations",
     "category": "section",
-    "text": "spin_configurations\nsubstitutionsDocTestSetup = nothing"
+    "text": "SpinConfiguration\nspin_configurations\nsubstitutions\n@scs_str"
+},
+
+{
+    "location": "configurations/#AtomicLevels.excited_configurations",
+    "page": "Configurations",
+    "title": "AtomicLevels.excited_configurations",
+    "category": "function",
+    "text": "excited_configurations([fun::Function, ] cfg::Configuration,\n                       orbitals::AbstractOrbital...\n                       [; min_excitations=0, max_excitations=:doubles,\n                        min_occupancy=[0, 0, ...], max_occupancy=[..., g_i, ...],\n                        keep_parity=true])\n\nGenerate all excitations from the reference set cfg by substituting at least min_excitations and at most max_excitations of the substitution orbitals. min_occupancy specifies the minimum occupation number for each of the source orbitals (default 0) and equivalently max_occupancy specifies the maximum occupation number (default is the degeneracy for each orbital). keep_parity controls whether the excited configuration has to have the same parity as cfg. Finally, fun allows modification of the substitution orbitals depending on the source orbitals, which is useful for generating ionized configurations.\n\nExamples\n\njulia> excited_configurations(c\"1s2\", o\"2s\", o\"2p\")\n4-element Array{Configuration{Orbital{Int64}},1}:\n 1s²\n 1s 2s\n 2s²\n 2p²\n\njulia> excited_configurations(c\"1s2 2p\", o\"2p\")\n2-element Array{Configuration{Orbital{Int64}},1}:\n 1s² 2p\n 2p³\n\njulia> excited_configurations(c\"1s2 2p\", o\"2p\", max_occupancy=[2,2])\n1-element Array{Configuration{Orbital{Int64}},1}:\n 1s² 2p\n\njulia> excited_configurations(first(scs\"1s2\"), sos\"k[s]\"...) do dst,src\n           if isbound(src)\n               # Generate label that indicates src orbital,\n               # i.e. the resultant hole\n               SpinOrbital(Orbital(Symbol(\"[$(src)]\"), dst.orb.ℓ), \n                           dst.mℓ, dst.spin)\n           else\n               dst\n           end\n       end\n9-element Array{Configuration,1}:\n 1s₀α 1s₀β\n [1s₀α]s₀α 1s₀β\n [1s₀α]s₀β 1s₀β\n 1s₀α [1s₀β]s₀α\n 1s₀α [1s₀β]s₀β\n [1s₀α]s₀α [1s₀β]s₀α\n [1s₀α]s₀β [1s₀β]s₀α\n [1s₀α]s₀α [1s₀β]s₀β\n [1s₀α]s₀β [1s₀β]s₀β\n\n\n\n\n\n"
+},
+
+{
+    "location": "configurations/#Excited-configurations-1",
+    "page": "Configurations",
+    "title": "Excited configurations",
+    "category": "section",
+    "text": "AtomicLevels.jl provides an easy interface for generating lists of configurations which are the result of exciting one or more orbitals of a reference set to a set of substitution orbitals. This is done with excited_configurations, which provides various parameters for controlling which excitations are generated. A very simple example could bejulia> excited_configurations(c\"1s2\", os\"2[s-p]\"...)\n4-element Array{Configuration{Orbital{Int64}},1}:\n 1s²\n 1s 2s\n 2s²\n 2p²which as we see contains all configurations generated by at most exciting two orbitals 1s² and keeping the overall parity. By lifting these restrictions, more configurations can be generated:julia> excited_configurations(c\"1s2 2s\", os\"3[s-p]\"...,\n                              keep_parity=false, max_excitations=2)\n14-element Array{Configuration{Orbital{Int64}},1}:\n 1s² 2s\n 1s 2s²\n 1s 2s 3s\n 1s 2s 3p\n 1s² 3s\n 1s² 3p\n 2s² 3s\n 2s² 3p\n 2s 3s²\n 2s 3s 3p\n 1s 3s²\n 1s 3s 3p\n 2s 3p²\n 1s 3p²\n\njulia> excited_configurations(c\"1s2 2s\", os\"3[s-p]\"...,\n                              keep_parity=false, max_excitations=3)\n17-element Array{Configuration{Orbital{Int64}},1}:\n 1s² 2s\n 1s 2s²\n 1s 2s 3s\n 1s 2s 3p\n 1s² 3s\n 1s² 3p\n 2s² 3s\n 2s² 3p\n 2s 3s²\n 2s 3s 3p\n 1s 3s²\n 1s 3s 3p\n 2s 3p²\n 1s 3p²\n 3s² 3p\n 3s 3p²\n 3p³Since configurations by default are unsorted, when exciting from SpinConfigurations, the substitutions are performed in-place:julia> excited_configurations(first(scs\"1s2\"), sos\"2[s-p]\"...)\n21-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:\n 1s₀α 1s₀β\n 2s₀α 1s₀β\n 2s₀β 1s₀β\n 1s₀α 2s₀α\n 1s₀α 2s₀β\n 2s₀α 2s₀β\n 2p₋₁α 2p₋₁β\n 2p₋₁α 2p₀α\n 2p₋₁α 2p₀β\n 2p₋₁α 2p₁α\n 2p₋₁α 2p₁β\n 2p₋₁β 2p₀α\n 2p₋₁β 2p₀β\n 2p₋₁β 2p₁α\n 2p₋₁β 2p₁β\n 2p₀α 2p₀β\n 2p₀α 2p₁α\n 2p₀α 2p₁β\n 2p₀β 2p₁α\n 2p₀β 2p₁β\n 2p₁α 2p₁βexcited_configurationsDocTestSetup = nothing"
 },
 
 {
@@ -665,7 +729,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "internals/#AtomicLevels.final_terms-Union{Tuple{Array{#s45,1} where #s45<:(Array{#s26,1} where #s26<:T)}, Tuple{T}} where T<:Union{Term, Real}",
+    "location": "internals/#AtomicLevels.final_terms-Union{Tuple{Array{#s42,1} where #s42<:(Array{#s24,1} where #s24<:T)}, Tuple{T}} where T<:Union{Term, Real}",
     "page": "Internals",
     "title": "AtomicLevels.final_terms",
     "category": "method",
@@ -713,6 +777,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "internals/#AtomicLevels.orbital_priority-Union{Tuple{O₂}, Tuple{O₁}, Tuple{Function,Configuration{O₁},Array{O₂,1}}} where O₂<:AbstractOrbital where O₁<:AbstractOrbital",
+    "page": "Internals",
+    "title": "AtomicLevels.orbital_priority",
+    "category": "method",
+    "text": "orbital_priority(fun, orig_cfg, orbitals)\n\nGenerate priorities for the substitution orbitals, i.e. the preferred ordering of the orbitals in configurations excited from orig_cfg. fun can optionally transform the labels of substitution orbitals, in which case they will be ordered just after their parent orbital in the source configuration; otherwise they will be appended to the priority list.\n\n\n\n\n\n"
+},
+
+{
     "location": "internals/#AtomicLevels.rconfigurations_from_orbital-Tuple{Orbital,Integer}",
     "page": "Internals",
     "title": "AtomicLevels.rconfigurations_from_orbital",
@@ -726,6 +798,14 @@ var documenterSearchIndex = {"docs": [
     "title": "AtomicLevels.rconfigurations_from_orbital",
     "category": "method",
     "text": "rconfigurations_from_orbital(n, ℓ, occupancy)\n\nGenerate all Configurations with relativistic orbitals corresponding to the non-relativistic orbital with n and ℓ quantum numbers, with given occupancy.\n\nExamples\n\njulia> AtomicLevels.rconfigurations_from_orbital(3, 1, 2)\n3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:\n 3p⁻²\n 3p⁻ 3p\n 3p²\n\n\n\n\n\n"
+},
+
+{
+    "location": "internals/#AtomicLevels.sorted-Tuple{Configuration}",
+    "page": "Internals",
+    "title": "AtomicLevels.sorted",
+    "category": "method",
+    "text": "sorted(cfg::Configuration)\n\nReturns cfg if it is already sorted or a sorted copy otherwise.\n\n\n\n\n\n"
 },
 
 {
@@ -758,6 +838,14 @@ var documenterSearchIndex = {"docs": [
     "title": "Base.:-",
     "category": "method",
     "text": "-(configuration::Configuration, orbital::AbstractOrbital[, n=1])\n\nRemove n electrons in the orbital orbital from the configuration configuration. If the orbital had previously been :closed or :inactive, it will now be :open.\n\n\n\n\n\n"
+},
+
+{
+    "location": "internals/#Base.:==-Union{Tuple{O}, Tuple{Configuration{#s22} where #s22<:O,Configuration{#s21} where #s21<:O}} where O<:AbstractOrbital",
+    "page": "Internals",
+    "title": "Base.:==",
+    "category": "method",
+    "text": "==(a::Configuration, b::Configuration)\n\nTests if configurations a and b are the same, considering orbital occupancy, ordering, and states.\n\nExamples\n\njulia> c\"1s 2s\" == c\"1s 2s\"\ntrue\n\njulia> c\"1s 2s\" == c\"1s 2si\"\nfalse\n\njulia> c\"1s 2s\" == c\"2s 1s\"\nfalse\n\n\n\n\n\n"
 },
 
 {
@@ -822,6 +910,30 @@ var documenterSearchIndex = {"docs": [
     "title": "Base.isless",
     "category": "method",
     "text": "isless(a::Orbital, b::Orbital)\n\nCompares the orbitals a and b to decide which one comes before the other in a configuration.\n\nExamples\n\njulia> o\"1s\" < o\"2s\"\ntrue\n\njulia> o\"1s\" < o\"2p\"\ntrue\n\njulia> o\"ks\" < o\"2p\"\nfalse\n\n\n\n\n\n"
+},
+
+{
+    "location": "internals/#Base.issorted-Tuple{Configuration}",
+    "page": "Internals",
+    "title": "Base.issorted",
+    "category": "method",
+    "text": "issorted(cfg::Configuration)\n\nTests if the orbitals of cfg is sorted.\n\n\n\n\n\n"
+},
+
+{
+    "location": "internals/#Base.replace-Union{Tuple{O₃}, Tuple{O₂}, Tuple{O₁}, Tuple{O}, Tuple{Configuration{O₁},Pair{O₂,O₃}}} where O₃<:O where O₂<:O where O₁<:O where O<:AbstractOrbital",
+    "page": "Internals",
+    "title": "Base.replace",
+    "category": "method",
+    "text": "replace(conf, a => b[; append=false])\n\nSubstitute one electron in orbital a of conf by one electron in orbital b. If conf is unsorted the substitution is performed in-place, unless append, in which case the new orbital is appended instead.\n\nExamples\n\njulia> replace(c\"1s2 2s\", o\"1s\" => o\"2p\")\n1s 2p 2s\n\njulia> replace(c\"1s2 2s\", o\"1s\" => o\"2p\", append=true)\n1s 2s 2p\n\njulia> replace(c\"1s2 2s\"s, o\"1s\" => o\"2p\")\n1s 2s 2p\n\n\n\n\n\n"
+},
+
+{
+    "location": "internals/#Base.sort-Tuple{Configuration}",
+    "page": "Internals",
+    "title": "Base.sort",
+    "category": "method",
+    "text": "sort(cfg::Configuration)\n\nReturns a sorted copy of cfg.\n\n\n\n\n\n"
 },
 
 {
