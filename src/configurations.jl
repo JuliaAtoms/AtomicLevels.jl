@@ -241,26 +241,29 @@ function close!(config::Configuration)
 end
 
 function write_orbitals(io::IO, config::Configuration)
+    ascii = get(io, :ascii, false)
     for (i,(orb,occ,state)) in enumerate(config)
         i > 1 && write(io, " ")
-        write(io, "$(orb)")
-        occ > 1 && write(io, to_superscript(occ))
-        state == :closed && write(io, "ᶜ")
-        state == :inactive && write(io, "ⁱ")
+        show(io, orb)
+        occ > 1 && write(io, ascii ? "$occ" : to_superscript(occ))
+        state == :closed && write(io, ascii ? "c" : "ᶜ")
+        state == :inactive && write(io, ascii ? "i" : "ⁱ")
     end
 end
 
 function Base.show(io::IO, config::Configuration{O}) where O
+    ascii = get(io, :ascii, false)
     nc = length(config)
     if nc == 0
-        write(io, "∅")
+        write(io, ascii ? "empty" : "∅")
         return
     end
     noble_core_name = get_noble_core_name(config)
     core_config = core(config)
     ncc = length(core_config)
     if !isnothing(noble_core_name)
-        write(io, "[$(noble_core_name)]ᶜ")
+        write(io, "[$(noble_core_name)]")
+        write(io, ascii ? "c" : "ᶜ")
         ngc = length(get_noble_gas(O, noble_core_name))
         core_config = core(config)
         if ncc > ngc
@@ -272,6 +275,13 @@ function Base.show(io::IO, config::Configuration{O}) where O
         write_orbitals(io, core_config)
     end
     write_orbitals(io, peel(config))
+end
+
+function Base.ascii(config::Configuration)
+    io = IOBuffer()
+    ctx = IOContext(io, :ascii=>true)
+    show(ctx, config)
+    String(take!(io))
 end
 
 """
