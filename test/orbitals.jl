@@ -270,4 +270,10 @@ using Random
         @test AtomicLevels.mqtype(ro"2s") == Int
         @test AtomicLevels.mqtype(ro"ks") == Symbol
     end
+
+    @testset "String representation" begin
+        @test string(o"1s") == "1s"
+        @test string(ro"2p-") == "2p⁻"
+        @test ascii(ro"2p-") == "2p-"
+    end
 end

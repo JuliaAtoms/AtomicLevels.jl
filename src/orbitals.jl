@@ -19,6 +19,13 @@ nisless(an::T, bn::T) where T = an < bn
 nisless(an::I, bn::Symbol) where {I<:Integer} = true
 nisless(an::Symbol, bn::I) where {I<:Integer} = false
 
+function Base.ascii(o::AbstractOrbital)
+    io = IOBuffer()
+    ctx = IOContext(io, :ascii=>true)
+    show(ctx, o)
+    String(take!(io))
+end
+
 # * Non-relativistic orbital
 
 """
@@ -387,7 +394,7 @@ end
 
 function Base.show(io::IO, orb::RelativisticOrbital)
     write(io, "$(orb.n)$(spectroscopic_label(kappa_to_ℓ(orb.κ)))")
-    orb.κ > 0 && write(io, "⁻")
+    orb.κ > 0 && write(io, get(io, :ascii, false) ? "-" : "⁻")
 end
 
 function flip_j(orb::RelativisticOrbital)
