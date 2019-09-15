@@ -729,7 +729,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "internals/#AtomicLevels.final_terms-Union{Tuple{Array{#s42,1} where #s42<:(Array{#s24,1} where #s24<:T)}, Tuple{T}} where T<:Union{Term, Real}",
+    "location": "internals/#AtomicLevels.final_terms-Union{Tuple{Array{#s37,1} where #s37<:(Array{#s21,1} where #s21<:T)}, Tuple{T}} where T<:Union{Term, Real}",
     "page": "Internals",
     "title": "AtomicLevels.final_terms",
     "category": "method",
@@ -841,7 +841,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "internals/#Base.:==-Union{Tuple{O}, Tuple{Configuration{#s22} where #s22<:O,Configuration{#s21} where #s21<:O}} where O<:AbstractOrbital",
+    "location": "internals/#Base.:==-Union{Tuple{O}, Tuple{Configuration{#s19} where #s19<:O,Configuration{#s18} where #s18<:O}} where O<:AbstractOrbital",
     "page": "Internals",
     "title": "Base.:==",
     "category": "method",
