@@ -203,13 +203,12 @@ julia> excited_configurations(first(scs"1s2"), sos"k[s]"...) do dst,src
            if isbound(src)
                # Generate label that indicates src orbital,
                # i.e. the resultant hole
-               SpinOrbital(Orbital(Symbol("[\$(src)]"), dst.orb.ℓ), 
-                           dst.mℓ, dst.spin)
+               SpinOrbital(Orbital(Symbol("[\$(src)]"), dst.orb.ℓ), dst.m)
            else
                dst
            end
        end
-9-element Array{Configuration,1}:
+9-element Array{Configuration{SpinOrbital{#s16,Tuple{Int64,HalfIntegers.Half{Int64}}} where #s16<:Orbital},1}:
  1s₀α 1s₀β
  [1s₀α]s₀α 1s₀β
  [1s₀α]s₀β 1s₀β
@@ -260,13 +259,14 @@ function excited_configurations(fun::Function,
 
     orbitals = substitution_orbitals(ref_set, orbitals...)
 
-    excitations = Configuration{<:promote_type(O₁,O₂)}[ref_set_peel]
+    Cfg = Configuration{promote_type(O₁,O₂)}
+    excitations = Cfg[ref_set_peel]
     substitutions!(fun, excitations, ref_set_peel, orbitals,
                    min_excitations, max_excitations,
                    min_occupancy, max_occupancy)
     keep_parity && filter!(e -> parity(e) == parity(ref_set), excitations)
 
-    [ref_set_core + e for e in excitations]
+    Cfg[ref_set_core + e for e in excitations]
 end
 
 excited_configurations(ref_set::Configuration,

@@ -24,17 +24,17 @@ using Random
 
         import AtomicLevels: kappa_to_j
         @test_throws ArgumentError kappa_to_j(0)
-        @test kappa_to_j(-1) == 1//2
-        @test kappa_to_j( 1) == 1//2
-        @test kappa_to_j(-2) == 3//2
-        @test kappa_to_j( 2) == 3//2
-        @test kappa_to_j(-3) == 5//2
-        @test kappa_to_j( 3) == 5//2
+        @test kappa_to_j(-1) === half(1)
+        @test kappa_to_j( 1) === half(1)
+        @test kappa_to_j(-2) === half(3)
+        @test kappa_to_j( 2) === half(3)
+        @test kappa_to_j(-3) === half(5)
+        @test kappa_to_j( 3) === half(5)
 
         import AtomicLevels: ℓj_to_kappa
-        @test ℓj_to_kappa(0, HalfInteger(1//2)) == -1
+        @test ℓj_to_kappa(0, half(1)) == -1
         @test κ"s" == -1
-        @test ℓj_to_kappa(1, HalfInteger(1//2)) == 1
+        @test ℓj_to_kappa(1, half(1)) == 1
         @test κ"p-" == 1
         @test ℓj_to_kappa(1, 3//2) == -2
         @test κ"p" == -2
@@ -46,7 +46,7 @@ using Random
         @test κ"f-" == 3
         @test ℓj_to_kappa(3, 7//2) == -4
         @test κ"f" == -4
-        @test_throws ArgumentError ℓj_to_kappa(0, HalfInteger(3//2))
+        @test_throws ArgumentError ℓj_to_kappa(0, half(3))
         @test_throws ArgumentError ℓj_to_kappa(0, 0)
         @test_throws ArgumentError ℓj_to_kappa(6, 1//2)
     end
@@ -57,7 +57,7 @@ using Random
         @test o"2[1]" == Orbital(2, 1)
 
         @test ro"1s"   == RelativisticOrbital(1, -1) # κ=-1 => s orbital
-        @test ro"2p-"  == RelativisticOrbital(2,  1, HalfInteger(1//2))
+        @test ro"2p-"  == RelativisticOrbital(2,  1, half(1))
         @test ro"2p-"  == RelativisticOrbital(2,  1, 1//2)
         @test ro"2p"   == RelativisticOrbital(2,  1, 3//2)
         @test ro"2[1]" == RelativisticOrbital(2,  1, 3//2)
@@ -200,26 +200,38 @@ using Random
         @test !isbound(ro"ϵd")
     end
 
-    @testset "Magnetic quantum numbers" begin
-        @test mℓrange(o"1s") == 0:0
-        @test mℓrange(o"2p") == -1:1
-        @test mℓrange(o"3d") == -2:2
+    @testset "Angular momenta" begin
+        @test angular_momenta(o"2s") == (0,half(1))
+        @test angular_momenta(o"2p") == (1,half(1))
+        @test angular_momenta(o"4f") == (3,half(1))
+        @test angular_momentum_ranges(o"4f") == (-3:3,-half(1):half(1))
+
+        @test angular_momenta(ro"1s") == (half(1),)
+        @test angular_momenta(ro"2p-") == (half(1),)
+        @test angular_momenta(ro"2p") == (half(3),)
+        @test angular_momenta(ro"3d-") == (half(3),)
+        @test angular_momenta(ro"3d") == (half(5),)
+        @test angular_momentum_ranges(ro"3d") == (-half(5):half(5),)
     end
 
     @testset "Spin orbitals" begin
-        @test_throws ArgumentError SpinOrbital(o"1s", 1, true)
-        @test_throws ArgumentError SpinOrbital(o"ks", 1, true)
-        @test_throws ArgumentError SpinOrbital(o"2p", -3, true)
+        up, down = half(1),-half(1)
 
-        soα = SpinOrbital(o"1s", 0, true)
-        soβ = SpinOrbital(o"1s", 0, false)
+        @test_throws ArgumentError SpinOrbital(o"1s", 1, up)
+        @test_throws ArgumentError SpinOrbital(o"ks", 1, up)
+        @test_throws ArgumentError SpinOrbital(o"2p", -3, up)
+        @test_throws ArgumentError SpinOrbital(o"2p", 1, half(3))
+        @test_throws ArgumentError SpinOrbital(ro"2p-", half(3))
 
-        po₋α = SpinOrbital(o"2p", -1, true)
-        po₀α = SpinOrbital(o"2p", 0, true)
-        po₊α = SpinOrbital(o"2p", 1, true)
-        po₋β = SpinOrbital(o"2p", -1, false)
-        po₀β = SpinOrbital(o"2p", 0, false)
-        po₊β = SpinOrbital(o"2p", 1, false)
+        soα = SpinOrbital(o"1s", 0, up)
+        soβ = SpinOrbital(o"1s", 0, down)
+
+        po₋α = SpinOrbital(o"2p", -1, up)
+        po₀α = SpinOrbital(o"2p", 0, up)
+        po₊α = SpinOrbital(o"2p", 1, up)
+        po₋β = SpinOrbital(o"2p", -1, down)
+        po₀β = SpinOrbital(o"2p", 0, down)
+        po₊β = SpinOrbital(o"2p", 1, down)
 
         @test degeneracy(soα) == 1
         @test soα < soβ
@@ -247,10 +259,10 @@ using Random
         @test symmetry(po₀α) != symmetry(po₀β)
         @test symmetry(po₊α) != symmetry(po₊β)
 
-        @test symmetry(po₋α) == symmetry(SpinOrbital(o"3p", -1, true))
+        @test symmetry(po₋α) == symmetry(SpinOrbital(o"3p", -1, up))
 
         @test isbound(soα)
-        @test !isbound(SpinOrbital(o"ks", 0, true))
+        @test !isbound(SpinOrbital(o"ks", 0, up))
 
         @test spin_orbitals(o"1s") == [soα, soβ]
         @test spin_orbitals(o"2p") == [po₋α, po₋β, po₀α, po₀β, po₊α, po₊β]
@@ -273,7 +285,7 @@ using Random
 
     @testset "String representation" begin
         @test string(o"1s") == "1s"
-        @test string(ro"2p-") == "2p⁻"
+        @test string(ro"2p-") == "2p-"
         @test ascii(ro"2p-") == "2p-"
     end
 end

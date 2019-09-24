@@ -10,8 +10,8 @@ end
 Base.zero(::Type{ClebschGordan{A,B,C,j₁T,j₂T}}) where {A,B,C,j₁T,j₂T} =
     ClebschGordan{A,B,C,j₁T,j₂T}(zero(A),zero(A),zero(B),zero(B),zero(C),zero(C))
 
-const ClebschGordanℓs{I<:Integer} = ClebschGordan{I,Rational{I},Rational{I},:ℓ,:s}
-ClebschGordanℓs(j₁::I, m₁::I, j₂::R, m₂::R, J::R, M::R) where {I<:Integer,R<:Rational{I}} =
+const ClebschGordanℓs{I<:Integer} = ClebschGordan{I,Half{I},Half{I},:ℓ,:s}
+ClebschGordanℓs(j₁::I, m₁::I, j₂::R, m₂::R, J::R, M::R) where {I<:Integer,R<:Half{I}} =
     ClebschGordanℓs{I}(j₁, m₁, j₂, m₂, J, M)
 
 Base.convert(::Type{T}, cg::ClebschGordan) where {T<:Real} =
@@ -59,14 +59,14 @@ function rotate!(blocks::Vector{M}, orbs::RelativisticOrbital...) where {T,M<:Ab
     ℓ = kappa_to_ℓ(first(orbs).κ)
     # We sort by mⱼ and remove the first and last elements since they
     # are pure and trivially unity.
-    ℓms = sort(vcat([[(ℓ,m,s) for m ∈ -ℓ:ℓ] for s = -1//2:1//2]...)[2:end-1], by=((ℓms)) -> (ℓms[2],+(ℓms[2:3]...)))
-    jmⱼ = sort(vcat([[(j,mⱼ) for mⱼ ∈ -j:j] for j ∈ [convert(Rational, kappa_to_j(o.κ)) for o in orbs]]...), by=last)[2:end-1]
+    ℓms = sort(vcat([[(ℓ,m,s) for m ∈ -ℓ:ℓ] for s = -half(1):half(1)]...)[2:end-1], by=((ℓms)) -> (ℓms[2],+(ℓms[2:3]...)))
+    jmⱼ = sort(vcat([[(j,mⱼ) for mⱼ ∈ -j:j] for j ∈ [kappa_to_j(o.κ) for o in orbs]]...), by=last)[2:end-1]
     for (a,(ℓ,m,s)) in enumerate(ℓms)
         bi = cld(a, 2)
         o = 2*(bi-1)
         for (b,(j,mⱼ)) in enumerate(jmⱼ)
             b-o ∉ 1:2 && continue
-            blocks[bi][a-o,b-o] = ClebschGordanℓs(ℓ,m,1//2,s,j,mⱼ)
+            blocks[bi][a-o,b-o] = ClebschGordanℓs(ℓ,m,half(1),s,j,mⱼ)
         end
     end
     blocks
@@ -110,10 +110,10 @@ function jj2lsj(::Type{T}, orbs::RelativisticOrbital...) where T
             -j:j
         end
 
-        jₘₐₓ = maximum([convert(Rational, kappa_to_j(o.κ)) for o in subspace])
+        jₘₐₓ = maximum([kappa_to_j(o.κ) for o in subspace])
         pure = [Matrix{T}(undef,1,1),Matrix{T}(undef,1,1)]
-        pure[1][1]=ClebschGordanℓs(ℓ,-ℓ,1//2,-1//2,jₘₐₓ,-jₘₐₓ)
-        pure[2][1]=ClebschGordanℓs(ℓ,ℓ,1//2,1//2,jₘₐₓ,jₘₐₓ)
+        pure[1][1]=ClebschGordanℓs(ℓ,-ℓ,half(1),-half(1),jₘₐₓ,-jₘₐₓ)
+        pure[2][1]=ClebschGordanℓs(ℓ,ℓ,half(1),half(1),jₘₐₓ,jₘₐₓ)
 
         n = sum(length.(mⱼ))-2
         if n > 0
@@ -136,12 +136,11 @@ end
 jj2lsj(orbs::RelativisticOrbital...) = jj2lsj(Float64, orbs...)
 
 function jj2lsj(sorb::SpinOrbital)
-    @unpack orb,mℓ,spin = sorb
+    orb,(mℓ,ms) = sorb.orb,sorb.m
     @unpack n,ℓ = orb
-    ms = (spin ? 1 : -1)//2
     mj = mℓ + ms
-    map(max(abs(mj),ℓ-1//2):(ℓ+1//2)) do j
-        (RelativisticOrbital(n,ℓ,j),mj)=>clebschgordan(ℓ,mℓ,1//2,ms,j,mj)
+    map(max(abs(mj),ℓ-half(1)):(ℓ+half(1))) do j
+        (RelativisticOrbital(n,ℓ,j),mj)=>clebschgordan(ℓ,mℓ,half(1),ms,j,mj)
     end
 end
 
