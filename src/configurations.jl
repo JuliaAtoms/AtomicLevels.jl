@@ -402,13 +402,13 @@ the configuration is sorted.
 
 ```jldoctest
 julia> rc"[Ne] 3s 3p- 3p"
-[Ne]ᶜ 3s 3p⁻ 3p
+[Ne]ᶜ 3s 3p- 3p
 
 julia> rc"[Ne] 3s 3p-2 3p4"
-[Ne]ᶜ 3s 3p⁻² 3p⁴
+[Ne]ᶜ 3s 3p-² 3p⁴
 
 julia> rc"2p- 1s"s
-1s 2p⁻
+1s 2p-
 ```
 """
 macro rc_str(conf_str, suffix="")
@@ -427,7 +427,7 @@ added string macro suffix `s`, the configuration is sorted.
 
 ```jldoctest
 julia> scs"1s2 2p2"
-15-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:
+15-element Array{Configuration{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}}},1}:
  1s₀α 1s₀β 2p₋₁α 2p₋₁β
  1s₀α 1s₀β 2p₋₁α 2p₀α
  1s₀α 1s₀β 2p₋₁α 2p₀β
@@ -815,9 +815,9 @@ julia> c"1s" ⊗ [c"2s2", c"2s 2p"]
 
 julia> [rc"1s", rc"2s"] ⊗ [rc"2p-", rc"2p"]
 4-element Array{Configuration{RelativisticOrbital{Int64}},1}:
- 1s 2p⁻
+ 1s 2p-
  1s 2p
- 2s 2p⁻
+ 2s 2p-
  2s 2p
 ```
 """
@@ -839,8 +839,8 @@ non-relativistic orbital with `n` and `ℓ` quantum numbers, with given occupanc
 ```jldoctest
 julia> AtomicLevels.rconfigurations_from_orbital(3, 1, 2)
 3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:
- 3p⁻²
- 3p⁻ 3p
+ 3p-²
+ 3p- 3p
  3p²
 ```
 """
@@ -881,8 +881,8 @@ non-relativistic version of the `orbital` with a given occupancy.
 ```jldoctest
 julia> AtomicLevels.rconfigurations_from_orbital(o"3p", 2)
 3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:
- 3p⁻²
- 3p⁻ 3p
+ 3p-²
+ 3p- 3p
  3p²
 ```
 """
@@ -913,8 +913,8 @@ and `occupancy` are integers, and `ℓ` is in spectroscopic notation.
 ```jldoctest
 julia> rcs"3p2"
 3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:
- 3p⁻²
- 3p⁻ 3p
+ 3p-²
+ 3p- 3p
  3p²
 ```
 """
@@ -931,23 +931,23 @@ permissible values for the quantum numbers `n`, `ℓ`, `mℓ`, `ms` for each ele
 
 ```jldoctest
 julia> spin_configurations(c"1s2")
-1-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:
+1-element Array{Configuration{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}}},1}:
  1s₀α 1s₀β
 
 julia> spin_configurations(c"1s2"s)
-1-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:
+1-element Array{Configuration{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}}},1}:
  1s²
 
 julia> spin_configurations(c"1s ks")
-4-element Array{Configuration{SpinOrbital},1}:
+4-element Array{Configuration{SpinOrbital{#s16,Tuple{Int64,HalfIntegers.Half{Int64}}} where #s16<:Orbital},1}:
  1s₀α ks₀α
  1s₀β ks₀α
  1s₀α ks₀β
  1s₀β ks₀β
 ```
 """
-function spin_configurations(cfg::Configuration{O}) where {O<:Orbital}
-    states = Dict{Orbital,Symbol}()
+function spin_configurations(cfg::Configuration{O}) where O
+    states = Dict{O,Symbol}()
     orbitals = map(cfg) do (orb,occ,state)
         states[orb] = state
         sorbs = spin_orbitals(orb)
@@ -960,8 +960,22 @@ function spin_configurations(cfg::Configuration{O}) where {O<:Orbital}
     end |> vec
 end
 
-Base.convert(::Type{Configuration{SpinOrbital}}, c::Configuration{SpinOrbital{Orbital{T}}}) where T =
-    Configuration(Vector{SpinOrbital}(c.orbitals), c.occupancy, c.states, sorted=c.sorted)
+Base.convert(::Type{Configuration{O}}, c::Configuration) where {O<:AbstractOrbital} =
+    Configuration(Vector{O}(c.orbitals), c.occupancy, c.states, sorted=c.sorted)
+
+Base.convert(::Type{Configuration{SO}}, c::Configuration{<:SpinOrbital}) where {SO<:SpinOrbital} =
+    Configuration(Vector{SO}(c.orbitals), c.occupancy, c.states, sorted=c.sorted)
+
+Base.promote_type(::Type{Configuration{SO}}, ::Type{Configuration{SO}}) where {SO<:SpinOrbital} =
+    Configuration{SO}
+
+Base.promote_type(::Type{CA}, ::Type{CB}) where {
+    A<:SpinOrbital,CA<:Configuration{A},
+    B<:SpinOrbital,CB<:Configuration{B}
+} =
+    Configuration{promote_type(A,B)}
+
+Base.promote_type(::Type{Cfg}, ::Type{Union{}}) where {SO<:SpinOrbital,Cfg<:Configuration{SO}} = Cfg
 
 """
     spin_configurations(configurations)
@@ -969,11 +983,10 @@ Base.convert(::Type{Configuration{SpinOrbital}}, c::Configuration{SpinOrbital{Or
 For each configuration in `configurations`, generate all possible configurations of
 spin-orbitals.
 """
-spin_configurations(cs::Vector{Configuration{Orbital{T}}}) where T =
-    sort(vcat(map(spin_configurations, cs)...))
-
-spin_configurations(cs::Vector{<:Configuration}) =
-    sort(Vector{Configuration{SpinOrbital}}(vcat(map(spin_configurations, cs)...)))
+function spin_configurations(cs::Vector{Configuration{O}}) where O
+    scs = map(spin_configurations, cs)
+    sort(reduce(vcat, scs))
+end
 
 """
     SpinConfiguration
@@ -992,35 +1005,35 @@ function Base.show(io::IO, c::SpinConfiguration)
         show(io, core_cfg)
         write(io, " ")
     end
-    if !c.sorted
-        # In the unsorted case, we do not yet contract subshells for
-        # printing; to be implemented.
-        so = string.(peel(c).orbitals)
-        write(io, join(so, " "))
-        return
-    end
-    for orb in peel(c).orbitals
-        orbitals[orb.orb] = push!(get(orbitals, orb.orb, SpinOrbital[]), orb)
-    end
-    map(sort(collect(keys(orbitals)))) do orb
-        ℓ = orb.ℓ
-        g = degeneracy(orb)
-        sub_shell = orbitals[orb]
-        if length(sub_shell) == g
-            format("{1:s}{2:s}", orb, to_superscript(g))
-        else
-            map(mℓrange(orb)) do mℓ
-                mℓshell = findall(o -> o.mℓ == mℓ, sub_shell)
-                if length(mℓshell) == 2
-                    format("{1:s}{2:s}{3:s}", orb, to_subscript(mℓ), to_superscript(2))
-                elseif length(mℓshell) == 1
-                    string(sub_shell[mℓshell[1]])
-                else
-                    ""
-                end
-            end |> so -> join(filter(s -> !isempty(s), so), " ")
-        end
-    end |> so -> write(io, join(so, " "))
+    # if !c.sorted
+    # In the unsorted case, we do not yet contract subshells for
+    # printing; to be implemented.
+    so = string.(peel(c).orbitals)
+    write(io, join(so, " "))
+    return
+    # end
+    # for orb in peel(c).orbitals
+    #     orbitals[orb.orb] = push!(get(orbitals, orb.orb, SpinOrbital[]), orb)
+    # end
+    # map(sort(collect(keys(orbitals)))) do orb
+    #     ℓ = orb.ℓ
+    #     g = degeneracy(orb)
+    #     sub_shell = orbitals[orb]
+    #     if length(sub_shell) == g
+    #         format("{1:s}{2:s}", orb, to_superscript(g))
+    #     else
+    #         map(Iterators.product()mℓrange(orb)) do mℓ
+    #             mℓshell = findall(o -> o.mℓ == mℓ, sub_shell)
+    #             if length(mℓshell) == 2
+    #                 format("{1:s}{2:s}{3:s}", orb, to_subscript(mℓ), to_superscript(2))
+    #             elseif length(mℓshell) == 1
+    #                 string(sub_shell[mℓshell[1]])
+    #             else
+    #                 ""
+    #             end
+    #         end |> so -> join(filter(s -> !isempty(s), so), " ")
+    #     end
+    # end |> so -> write(io, join(so, " "))
 end
 
 """
@@ -1084,7 +1097,7 @@ Reduces a relativistic configuration down to the corresponding non-relativistic 
 
 ```jldoctest
 julia> c = rc"1s2 2p-2 2s 2p2 3s2 3p-"s
-1s² 2s 2p⁻² 2p² 3s² 3p⁻
+1s² 2s 2p-² 2p² 3s² 3p-
 
 julia> nonrelconfiguration(c)
 1s² 2s 2p⁴ 3s² 3p

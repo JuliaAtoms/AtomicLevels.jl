@@ -13,6 +13,8 @@ using Compat
 include("common.jl")
 include("parity.jl")
 include("orbitals.jl")
+include("relativistic_orbitals.jl")
+include("spin_orbitals.jl")
 include("configurations.jl")
 include("excited_configurations.jl")
 include("terms.jl")

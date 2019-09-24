@@ -213,7 +213,7 @@ ispermutation(a, b; cmp=isequal) =
         @testset "Continuum substitutions" begin
             gst = first(scs"1s2 2s2")
             orbitals = sos"k[s]"
-            ionize = (subs_orb, orb) -> isbound(orb) ? SpinOrbital(Orbital(Symbol("[$(orb)]"), subs_orb.orb.ℓ), subs_orb.mℓ, subs_orb.spin) : subs_orb
+            ionize = (subs_orb, orb) -> isbound(orb) ? SpinOrbital(Orbital(Symbol("[$(orb)]"), subs_orb.orb.ℓ), subs_orb.m) : subs_orb
             singles = [replace(gst, o => ionize(so,o))
                        for so in orbitals
                        for o in gst.orbitals]
@@ -238,7 +238,7 @@ ispermutation(a, b; cmp=isequal) =
     @testset "Ion–continuum" begin
         ic = ion_continuum(c"1s2", os"k[s-d]")
         @test ic == [c"1s2", c"1s ks", c"1s kp", c"1s kd"]
-        @test spin_configurations(ic) isa Vector{<:Configuration{SpinOrbital}}
+        @test spin_configurations(ic) isa Vector{<:Configuration{<:SpinOrbital{<:Orbital,Tuple{Int,HalfInt}}}}
     end
 
     @testset "GRASP comparisons" begin

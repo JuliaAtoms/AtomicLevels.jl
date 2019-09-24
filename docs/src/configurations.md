@@ -108,8 +108,8 @@ relativistic configurations from a non-relativistic definition:
 ```jldoctest
 julia> rc"[Ne] 3s2" ⊗ rcs"3p2"
 3-element Array{Configuration{RelativisticOrbital{Int64}},1}:
- [Ne]ᶜ 3s² 3p⁻²
- [Ne]ᶜ 3s² 3p⁻ 3p
+ [Ne]ᶜ 3s² 3p-²
+ [Ne]ᶜ 3s² 3p- 3p
  [Ne]ᶜ 3s² 3p²
 ```
 
@@ -196,7 +196,7 @@ in-place:
 
 ```jldoctest
 julia> excited_configurations(first(scs"1s2"), sos"2[s-p]"...)
-21-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:
+21-element Array{Configuration{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}}},1}:
  1s₀α 1s₀β
  2s₀α 1s₀β
  2s₀β 1s₀β

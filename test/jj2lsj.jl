@@ -1,5 +1,4 @@
 using LinearAlgebra
-using Parameters
 
 @testset "jj2lsj" begin
     @testset "Transform matrix" begin
@@ -12,9 +11,9 @@ using Parameters
         for o in [o"5s", o"5p", o"5d"]
             for so in spin_orbitals(o)
                 ℓ = so.orb.ℓ
-                @unpack mℓ,spin = so
-                mj = mℓ + (spin ? 1 : -1)//2
-                pure = abs(mj) == ℓ + 1//2
+                mℓ,ms = so.m
+                mj = mℓ + ms
+                pure = abs(mj) == ℓ + half(1)
                 linear_combination = jj2lsj(so)
                 @test length(linear_combination) == (pure ? 1 : 2)
                 @test norm(last.(linear_combination)) ≈ 1
