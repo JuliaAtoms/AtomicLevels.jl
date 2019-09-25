@@ -405,9 +405,15 @@
     end
 
     @testset "Configuration transformations" begin
-        @test nonrelconfiguration(rc"1s2 2p-2 2s 2p2 3s2 3p-"s) == c"1s2 2s 2p4 3s2 3p"s
-        @test nonrelconfiguration(rc"1s2 ks2"s) == c"1s2 ks2"s
-        @test nonrelconfiguration(rc"kp-2 kp4 lp-2 lp"s) == c"kp6 lp3"s
+        @testset "Relativistic -> non-relativistic" begin
+            @test nonrelconfiguration(rc"1s2 2p-2 2s 2p2 3s2 3p-"s) == c"1s2 2s 2p4 3s2 3p"s
+            @test nonrelconfiguration(rc"1s2 ks2"s) == c"1s2 ks2"s
+            @test nonrelconfiguration(rc"kp-2 kp4 lp-2 lp"s) == c"kp6 lp3"s
+        end
+        @testset "Non-relativistic -> relativistic" begin
+            @test relconfigurations(c"[He] 2p") == [rc"[He] 2p-", rc"[He] 2p"]
+            @test relconfigurations(c"[Ne]"s) == [rc"[Ne]"s]
+        end
     end
 
     @testset "Internal utilities" begin
