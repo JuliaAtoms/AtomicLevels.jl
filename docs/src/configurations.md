@@ -86,6 +86,7 @@ bound
 continuum
 parity(::Configuration)
 nonrelconfiguration
+relconfigurations
 ```
 
 ## Generating configuration lists

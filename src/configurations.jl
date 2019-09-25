@@ -900,6 +900,27 @@ function rconfigurations_from_nrstring(orb_str::AbstractString)
 end
 
 """
+    relconfigurations(c::Configuration{<:Orbital}) -> Vector{<:Configuration{<:RelativisticOrbital}}
+
+Generate all relativistic configurations from the non-relativistic
+configuration `c`, by applying [`rconfigurations_from_orbital`](@ref)
+to each subshell and combining the results.
+"""
+function relconfigurations(c::Configuration{<:Orbital})
+    rcs = map(c) do (orb,occ,state)
+        orcs = rconfigurations_from_orbital(orb, occ)
+        if state == :closed
+            close!.(orcs)
+        end
+        orcs
+    end
+    rcs = map(Iterators.product(rcs...)) do subshells
+        reduce(⊗, subshells)
+    end
+    reduce(vcat, rcs)
+end
+
+"""
     @rcs_str -> Vector{Configuration{RelativisticOrbital}}
 
 Construct a `Vector` of all `Configuration`s corresponding to the non-relativistic `nℓ`
@@ -1123,4 +1144,5 @@ end
 
 export Configuration, @c_str, @rc_str, @scs_str, issimilar,
     num_electrons, core, peel, active, inactive, bound, continuum, parity, ⊗, @rcs_str,
-    SpinConfiguration, spin_configurations, substitutions, close!, nonrelconfiguration
+    SpinConfiguration, spin_configurations, substitutions, close!,
+    nonrelconfiguration, relconfigurations
