@@ -1128,7 +1128,7 @@ function nonrelconfiguration(c::Configuration{<:RelativisticOrbital})
     mq = Union{mqtype.(c.orbitals)...}
     nrorbitals, nroccupancies, nrstates = Orbital{<:mq}[], Int[], Symbol[]
     for (orbital, occupancy, state) in c
-        nrorbital = Orbital(orbital.n, orbital.ℓ)
+        nrorbital = nonrelorbital(orbital)
         nridx = findfirst(isequal(nrorbital), nrorbitals)
         if isnothing(nridx)
             push!(nrorbitals, nrorbital)
