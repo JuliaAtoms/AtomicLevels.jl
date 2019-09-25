@@ -76,6 +76,10 @@ using Random
         @test_throws ArgumentError RelativisticOrbital(0, 0)
         @test_throws ArgumentError RelativisticOrbital(1, 1)
         @test_throws ArgumentError RelativisticOrbital(1, 0, 3//2)
+
+        @test nonrelorbital(o"2p") == o"2p"
+        @test nonrelorbital(ro"2p") == o"2p"
+        @test nonrelorbital(ro"2p-") == o"2p"
     end
 
     @testset "Properties" begin

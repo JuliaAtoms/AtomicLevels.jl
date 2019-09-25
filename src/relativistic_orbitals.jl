@@ -253,4 +253,22 @@ macro κ_str(κ_str)
     kappa_from_string(κ_str)
 end
 
-export RelativisticOrbital, @ro_str, @ros_str, @κ_str
+"""
+    nonrelorbital(o)
+
+Return the non-relativistic orbital corresponding to `o`.
+
+# Examples
+
+```jldoctest
+julia> nonrelorbital(o"2p")
+2p
+
+julia> nonrelorbital(ro"2p-")
+2p
+```
+"""
+nonrelorbital(o::Orbital) = o
+nonrelorbital(o::RelativisticOrbital) = Orbital(o.n, o.ℓ)
+
+export RelativisticOrbital, @ro_str, @ros_str, @κ_str, nonrelorbital
