@@ -53,7 +53,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Orbitals",
     "title": "AtomicLevels.RelativisticOrbital",
     "category": "type",
-    "text": "struct RelativisticOrbital{N <: AtomicLevels.MQ} <: AbstractOrbital\n\nLabel for an atomic orbital with a principal quantum number n::N and well-defined total angular momentum j. The angular component of the orbital is labelled by the (ell j) pair, conventionally written as ell_j (e.g. p_32).\n\nThe ell and j can not be arbitrary, but must satisfy j = ell pm 12. Internally, the kappa quantum number, which is a unique integer corresponding to every physical (ell j) pair, is used to label each allowed pair. When j = ell pm 12, the corresponding kappa = mp(j + 12).\n\nWhen printing and parsing RelativisticOrbitals, the notation nℓ and nℓ- is used (e.g. 2p and 2p-), corresponding to the orbitals with j = ell + 12 and j = ell - 12, respectively.\n\nThe type parameter N has to be such that it can represent a proper principal quantum number (i.e. a subtype of AtomicLevels.MQ).\n\nProperties\n\nThe following properties are part of the public API:\n\n.n :: N – principal quantum number n\n.κ :: Int – kappa quantum number\n.ℓ :: Int – the orbital angular momentum label ell\n.j :: HalfInteger – total angular momentum j\n\njulia> orb = ro\"5g-\"\n5g⁻\n\njulia> orb.n\n5\n\njulia> orb.j\n7/2\n\njulia> orb.ℓ\n4\n\nConstructors\n\nRelativisticOrbital(n::Integer, κ::Integer)\nRelativisticOrbital(n::Symbol, κ::Integer)\nRelativisticOrbital(n, ℓ::Integer, j::Real)\n\nConstruct an orbital label with the quantum numbers n and κ. If the principal quantum number n is an integer, it has to positive and the orbital angular momentum must satisfy 0 <= ℓ < n. Instead of κ, valid ℓ and j values can also be specified instead.\n\njulia> RelativisticOrbital(1, 0, 1//2)\n1s\n\njulia> RelativisticOrbital(2, -1)\n2s\n\njulia> RelativisticOrbital(:K, 2, 3//2)\nKd⁻\n\n\n\n\n\n"
+    "text": "struct RelativisticOrbital{N <: AtomicLevels.MQ} <: AbstractOrbital\n\nLabel for an atomic orbital with a principal quantum number n::N and well-defined total angular momentum j. The angular component of the orbital is labelled by the (ell j) pair, conventionally written as ell_j (e.g. p_32).\n\nThe ell and j can not be arbitrary, but must satisfy j = ell pm 12. Internally, the kappa quantum number, which is a unique integer corresponding to every physical (ell j) pair, is used to label each allowed pair. When j = ell pm 12, the corresponding kappa = mp(j + 12).\n\nWhen printing and parsing RelativisticOrbitals, the notation nℓ and nℓ- is used (e.g. 2p and 2p-), corresponding to the orbitals with j = ell + 12 and j = ell - 12, respectively.\n\nThe type parameter N has to be such that it can represent a proper principal quantum number (i.e. a subtype of AtomicLevels.MQ).\n\nProperties\n\nThe following properties are part of the public API:\n\n.n :: N – principal quantum number n\n.κ :: Int – kappa quantum number\n.ℓ :: Int – the orbital angular momentum label ell\n.j :: HalfInteger – total angular momentum j\n\njulia> orb = ro\"5g-\"\n5g-\n\njulia> orb.n\n5\n\njulia> orb.j\n7/2\n\njulia> orb.ℓ\n4\n\nConstructors\n\nRelativisticOrbital(n::Integer, κ::Integer)\nRelativisticOrbital(n::Symbol, κ::Integer)\nRelativisticOrbital(n, ℓ::Integer, j::Real)\n\nConstruct an orbital label with the quantum numbers n and κ. If the principal quantum number n is an integer, it has to positive and the orbital angular momentum must satisfy 0 <= ℓ < n. Instead of κ, valid ℓ and j values can also be specified instead.\n\njulia> RelativisticOrbital(1, 0, 1//2)\n1s\n\njulia> RelativisticOrbital(2, -1)\n2s\n\njulia> RelativisticOrbital(:K, 2, 3//2)\nKd-\n\n\n\n\n\n"
 },
 
 {
@@ -69,7 +69,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Orbitals",
     "title": "AtomicLevels.SpinOrbital",
     "category": "type",
-    "text": "struct SpinOrbital{O<:Orbital} <: AbstractOrbital\n\nSpin orbitals are fully characterized orbitals, i.e. the quantum numbers n, ℓ, mℓ and ms are all specified.\n\n\n\n\n\n"
+    "text": "struct SpinOrbital{O<:Orbital} <: AbstractOrbital\n\nSpin orbitals are fully characterized orbitals, i.e. the projections of all angular momenta are specified.\n\n\n\n\n\n"
 },
 
 {
@@ -85,7 +85,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Orbitals",
     "title": "AtomicLevels.@ro_str",
     "category": "macro",
-    "text": "@ro_str -> RelativisticOrbital\n\nA string macro to construct an RelativisticOrbital from the canonical string representation.\n\njulia> ro\"1s\"\n1s\n\njulia> ro\"2p-\"\n2p⁻\n\njulia> ro\"Kf-\"\nKf⁻\n\n\n\n\n\n"
+    "text": "@ro_str -> RelativisticOrbital\n\nA string macro to construct an RelativisticOrbital from the canonical string representation.\n\njulia> ro\"1s\"\n1s\n\njulia> ro\"2p-\"\n2p-\n\njulia> ro\"Kf-\"\nKf-\n\n\n\n\n\n"
 },
 
 {
@@ -101,7 +101,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Orbitals",
     "title": "AtomicLevels.@sos_str",
     "category": "macro",
-    "text": "@sos_str -> Vector{SpinOrbital}\n\nCan be used to easily construct a list of SpinOrbitals.\n\nExamples\n\njulia> sos\"3[s-p]\"\n8-element Array{SpinOrbital{Orbital{Int64}},1}:\n 3s₀α\n 3s₀β\n 3p₋₁α\n 3p₋₁β\n 3p₀α\n 3p₀β\n 3p₁α\n 3p₁β\n\n\n\n\n\n"
+    "text": "@sos_str -> Vector{<:SpinOrbital{<:Orbital}}\n\nCan be used to easily construct a list of SpinOrbitals.\n\nExamples\n\njulia> sos\"3[s-p]\"\n8-element Array{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}},1}:\n 3s₀α\n 3s₀β\n 3p₋₁α\n 3p₋₁β\n 3p₀α\n 3p₀β\n 3p₁α\n 3p₁β\n\n\n\n\n\n"
 },
 
 {
@@ -109,7 +109,15 @@ var documenterSearchIndex = {"docs": [
     "page": "Orbitals",
     "title": "AtomicLevels.@ros_str",
     "category": "macro",
-    "text": "@ros_str -> Vector{RelativisticOrbital}\n\nCan be used to easily construct a list of RelativisticOrbitals.\n\nExamples\n\njulia> ros\"2[s-p] 3[p] k[0-d]\"\n10-element Array{RelativisticOrbital,1}:\n 2s\n 2p⁻\n 2p\n 3p⁻\n 3p\n ks\n kp⁻\n kp\n kd⁻\n kd\n\n\n\n\n\n"
+    "text": "@ros_str -> Vector{RelativisticOrbital}\n\nCan be used to easily construct a list of RelativisticOrbitals.\n\nExamples\n\njulia> ros\"2[s-p] 3[p] k[0-d]\"\n10-element Array{RelativisticOrbital,1}:\n 2s\n 2p-\n 2p\n 3p-\n 3p\n ks\n kp-\n kp\n kd-\n kd\n\n\n\n\n\n"
+},
+
+{
+    "location": "orbitals/#AtomicLevels.@rsos_str",
+    "page": "Orbitals",
+    "title": "AtomicLevels.@rsos_str",
+    "category": "macro",
+    "text": "@rsos_str -> Vector{<:SpinOrbital{<:RelativisticOrbital}}\n\nCan be used to easily construct a list of SpinOrbitals.\n\nExamples\n\njulia> rsos\"3[s-p]\"\n8-element Array{SpinOrbital{RelativisticOrbital{Int64},Tuple{HalfIntegers.Half{Int64}}},1}:\n 3s(-1/2)\n 3s(1/2)\n 3p-(-1/2)\n 3p-(1/2)\n 3p(-3/2)\n 3p(-1/2)\n 3p(1/2)\n 3p(3/2)\n\n\n\n\n\n"
 },
 
 {
@@ -117,7 +125,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Orbitals",
     "title": "Orbital types",
     "category": "section",
-    "text": "AtomicLevels provides two basic types for labelling atomic orbitals: Orbital and RelativisticOrbital. Stricly speaking, these types do not label orbitals, but groups of orbitals with the same angular symmetry and radial behaviour (i.e. a subshell).All orbitals are subtypes of AbstractOrbital. Types and methods that work on generic orbitals can dispatch on that.Orbital\nRelativisticOrbital\nAbstractOrbitalThe SpinOrbital type can be used to fully qualify all the quantum numbers (that is, also m_ell and m_s) of an Orbital. It represent a since, distinct orbital.SpinOrbitalThe string macros @o_str and @ro_str can be used to conveniently construct orbitals, while @os_str, @sos_str and @ros_str can be used to construct whole lists of them very easily.@o_str\n@ro_str\n@os_str\n@sos_str\n@ros_str"
+    "text": "AtomicLevels provides two basic types for labelling atomic orbitals: Orbital and RelativisticOrbital. Stricly speaking, these types do not label orbitals, but groups of orbitals with the same angular symmetry and radial behaviour (i.e. a subshell).All orbitals are subtypes of AbstractOrbital. Types and methods that work on generic orbitals can dispatch on that.Orbital\nRelativisticOrbital\nAbstractOrbitalThe SpinOrbital type can be used to fully qualify all the quantum numbers (that is, also m_ell and m_s) of an Orbital. It represent a since, distinct orbital.SpinOrbitalThe string macros @o_str and @ro_str can be used to conveniently construct orbitals, while @os_str, @sos_str, @ros_str, and @rsos_str can be used to construct whole lists of them very easily.@o_str\n@ro_str\n@os_str\n@sos_str\n@ros_str\n@rsos_str"
 },
 
 {
@@ -161,11 +169,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "orbitals/#AtomicLevels.mℓrange",
+    "location": "orbitals/#AtomicLevels.angular_momenta",
     "page": "Orbitals",
-    "title": "AtomicLevels.mℓrange",
+    "title": "AtomicLevels.angular_momenta",
     "category": "function",
-    "text": "mℓrange(orbital::Orbital)\n\nReturns the range of valid values of mℓ for orbital.\n\nExamples\n\njulia> mℓrange(o\"2p\")\n-1:1\n\n\n\n\n\n"
+    "text": "angular_momenta(orbital)\n\nReturns the angular momentum quantum numbers of orbital.\n\nExamples\n\njulia> angular_momenta(o\"2s\")\n(0, 1/2)\n\njulia> angular_momenta(o\"3d\")\n(2, 1/2)\n\n\n\n\n\nangular_momenta(orbital)\n\nReturns the angular momentum quantum numbers of orbital.\n\nExamples\n\njulia> angular_momenta(ro\"2p-\")\n(1/2,)\n\njulia> angular_momenta(ro\"3d\")\n(5/2,)\n\n\n\n\n\n"
+},
+
+{
+    "location": "orbitals/#AtomicLevels.angular_momentum_ranges",
+    "page": "Orbitals",
+    "title": "AtomicLevels.angular_momentum_ranges",
+    "category": "function",
+    "text": "angular_momentum_ranges(orbital)\n\nReturn the valid ranges within which projections of each of the angular momentum quantum numbers of orbital must fall.\n\nExamples\n\njulia> angular_momentum_ranges(o\"2s\")\n(0:0, -1/2:1/2)\n\njulia> angular_momentum_ranges(o\"4f\")\n(-3:3, -1/2:1/2)\n\n\n\n\n\n"
 },
 
 {
@@ -173,7 +189,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Orbitals",
     "title": "AtomicLevels.spin_orbitals",
     "category": "function",
-    "text": "spin_orbitals(orbital)\n\nGenerate all permissible spin-orbitals for a given orbital, e.g. 2p -> 2p ⊗ mℓ = {-1,0,1} ⊗ s = {α,β}\n\nExamples\n\njulia> spin_orbitals(o\"2p\")\n6-element Array{SpinOrbital{Orbital{Int64}},1}:\n 2p₋₁α\n 2p₋₁β\n 2p₀α\n 2p₀β\n 2p₁α\n 2p₁β\n\n\n\n\n\n"
+    "text": "spin_orbitals(orbital)\n\nGenerate all permissible spin-orbitals for a given orbital, e.g. 2p -> 2p ⊗ mℓ = {-1,0,1} ⊗ ms = {α,β}\n\nExamples\n\njulia> spin_orbitals(o\"2p\")\n6-element Array{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}},1}:\n 2p₋₁α\n 2p₋₁β\n 2p₀α\n 2p₀β\n 2p₁α\n 2p₁β\n\njulia> spin_orbitals(ro\"2p-\")\n2-element Array{SpinOrbital{RelativisticOrbital{Int64},Tuple{HalfIntegers.Half{Int64}}},1}:\n 2p-(-1/2)\n 2p-(1/2)\n\njulia> spin_orbitals(ro\"2p\")\n4-element Array{SpinOrbital{RelativisticOrbital{Int64},Tuple{HalfIntegers.Half{Int64}}},1}:\n 2p(-3/2)\n 2p(-1/2)\n 2p(1/2)\n 2p(3/2)\n\n\n\n\n\n"
 },
 
 {
@@ -185,11 +201,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "orbitals/#AtomicLevels.nonrelorbital",
+    "page": "Orbitals",
+    "title": "AtomicLevels.nonrelorbital",
+    "category": "function",
+    "text": "nonrelorbital(o)\n\nReturn the non-relativistic orbital corresponding to o.\n\nExamples\n\njulia> nonrelorbital(o\"2p\")\n2p\n\njulia> nonrelorbital(ro\"2p-\")\n2p\n\n\n\n\n\n"
+},
+
+{
     "location": "orbitals/#Methods-1",
     "page": "Orbitals",
     "title": "Methods",
     "category": "section",
-    "text": "isless\ndegeneracy\nparity(::Orbital)\nsymmetry\nisbound\nmℓrange\nspin_orbitals\n@κ_strDocTestSetup = nothing"
+    "text": "isless\ndegeneracy\nparity(::Orbital)\nsymmetry\nisbound\nangular_momenta\nangular_momentum_ranges\nspin_orbitals\n@κ_str\nnonrelorbitalDocTestSetup = nothing"
 },
 
 {
@@ -221,7 +245,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "AtomicLevels.@rc_str",
     "category": "macro",
-    "text": "@rc_str -> Configuration{RelativisticOrbital}\n\nConstruct a Configuration representing a relativistic configuration out of a string. With the added string macro suffix s, the configuration is sorted.\n\nExamples\n\njulia> rc\"[Ne] 3s 3p- 3p\"\n[Ne]ᶜ 3s 3p⁻ 3p\n\njulia> rc\"[Ne] 3s 3p-2 3p4\"\n[Ne]ᶜ 3s 3p⁻² 3p⁴\n\njulia> rc\"2p- 1s\"s\n1s 2p⁻\n\n\n\n\n\n"
+    "text": "@rc_str -> Configuration{RelativisticOrbital}\n\nConstruct a Configuration representing a relativistic configuration out of a string. With the added string macro suffix s, the configuration is sorted.\n\nExamples\n\njulia> rc\"[Ne] 3s 3p- 3p\"\n[Ne]ᶜ 3s 3p- 3p\n\njulia> rc\"[Ne] 3s 3p-2 3p4\"\n[Ne]ᶜ 3s 3p-² 3p⁴\n\njulia> rc\"2p- 1s\"s\n1s 2p-\n\n\n\n\n\n"
 },
 
 {
@@ -301,7 +325,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "AtomicLevels.close!",
     "category": "function",
-    "text": "close!(c::Configuration)\n\nMarks all the orbitals in configuration c to be closed.\n\nSee also: close\n\n\n\n\n\n"
+    "text": "close!(c::Configuration)\n\nMarks all the orbitals in configuration c as closed.\n\nSee also: close\n\n\n\n\n\n"
 },
 
 {
@@ -413,7 +437,15 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "AtomicLevels.nonrelconfiguration",
     "category": "function",
-    "text": "nonrelconfiguration(c::Configuration{<:RelativisticOrbital}) -> Configuration{<:Orbital}\n\nReduces a relativistic configuration down to the corresponding non-relativistic configuration.\n\njulia> c = rc\"1s2 2p-2 2s 2p2 3s2 3p-\"s\n1s² 2s 2p⁻² 2p² 3s² 3p⁻\n\njulia> nonrelconfiguration(c)\n1s² 2s 2p⁴ 3s² 3p\n\n\n\n\n\n"
+    "text": "nonrelconfiguration(c::Configuration{<:RelativisticOrbital}) -> Configuration{<:Orbital}\n\nReduces a relativistic configuration down to the corresponding non-relativistic configuration.\n\njulia> c = rc\"1s2 2p-2 2s 2p2 3s2 3p-\"s\n1s² 2s 2p-² 2p² 3s² 3p-\n\njulia> nonrelconfiguration(c)\n1s² 2s 2p⁴ 3s² 3p\n\n\n\n\n\n"
+},
+
+{
+    "location": "configurations/#AtomicLevels.relconfigurations",
+    "page": "Configurations",
+    "title": "AtomicLevels.relconfigurations",
+    "category": "function",
+    "text": "relconfigurations(c::Configuration{<:Orbital}) -> Vector{<:Configuration{<:RelativisticOrbital}}\n\nGenerate all relativistic configurations from the non-relativistic configuration c, by applying rconfigurations_from_orbital to each subshell and combining the results.\n\n\n\n\n\n"
 },
 
 {
@@ -421,7 +453,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "Interface",
     "category": "section",
-    "text": "For example, it is possible to index into a configuration, including with a range of indices, returning a sub-configuration consisting of only those orbitals. With an integer index, an (orbital, occupancy, state) tuple is returned.julia> config = c\"1s2c 2si 2p3\"\n[He]ᶜ 2sⁱ 2p³\n\njulia> config[2]\n(2s, 1, :inactive)\n\njulia> config[1:2]\n[He]ᶜ 2sⁱ\n\njulia> config[[3,1]]\n[He]ᶜ 2p³The configuration can also be iterated over. Each item is a (orbital, occupancy, state) tuple.julia> for (o, nelec, s) in config\n           @show o, nelec, s\n       end\n(o, nelec, s) = (1s, 2, :closed)\n(o, nelec, s) = (2s, 1, :inactive)\n(o, nelec, s) = (2p, 3, :open)Various other methods exist to manipulate or transform configurations or to query them for information.issimilar\nBase.:(==)(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbital}\nnum_electrons(::Configuration)\nnum_electrons(::Configuration, ::AtomicLevels.AbstractOrbital)\nBase.delete!\nBase.:(+)\nBase.:(-)\nBase.close\nclose!\nBase.fill\nBase.fill!\nBase.in\nBase.filter\nBase.count\nBase.replace\ncore\npeel\nactive\ninactive\nbound\ncontinuum\nparity(::Configuration)\nnonrelconfiguration"
+    "text": "For example, it is possible to index into a configuration, including with a range of indices, returning a sub-configuration consisting of only those orbitals. With an integer index, an (orbital, occupancy, state) tuple is returned.julia> config = c\"1s2c 2si 2p3\"\n[He]ᶜ 2sⁱ 2p³\n\njulia> config[2]\n(2s, 1, :inactive)\n\njulia> config[1:2]\n[He]ᶜ 2sⁱ\n\njulia> config[[3,1]]\n[He]ᶜ 2p³The configuration can also be iterated over. Each item is a (orbital, occupancy, state) tuple.julia> for (o, nelec, s) in config\n           @show o, nelec, s\n       end\n(o, nelec, s) = (1s, 2, :closed)\n(o, nelec, s) = (2s, 1, :inactive)\n(o, nelec, s) = (2p, 3, :open)Various other methods exist to manipulate or transform configurations or to query them for information.issimilar\nBase.:(==)(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbital}\nnum_electrons(::Configuration)\nnum_electrons(::Configuration, ::AtomicLevels.AbstractOrbital)\nBase.delete!\nBase.:(+)\nBase.:(-)\nBase.close\nclose!\nBase.fill\nBase.fill!\nBase.in\nBase.filter\nBase.count\nBase.replace\ncore\npeel\nactive\ninactive\nbound\ncontinuum\nparity(::Configuration)\nnonrelconfiguration\nrelconfigurations"
 },
 
 {
@@ -429,7 +461,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "AtomicLevels.:⊗",
     "category": "function",
-    "text": "⊗(::Union{Configuration, Vector{Configuration}}, ::Union{Configuration, Vector{Configuration}})\n\nGiven two collections of Configurations, it creates an array of Configurations with all possible juxtapositions of configurations from each collection.\n\nExamples\n\njulia> c\"1s\" ⊗ [c\"2s2\", c\"2s 2p\"]\n2-element Array{Configuration{Orbital{Int64}},1}:\n 1s 2s²\n 1s 2s 2p\n\njulia> [rc\"1s\", rc\"2s\"] ⊗ [rc\"2p-\", rc\"2p\"]\n4-element Array{Configuration{RelativisticOrbital{Int64}},1}:\n 1s 2p⁻\n 1s 2p\n 2s 2p⁻\n 2s 2p\n\n\n\n\n\n"
+    "text": "⊗(::Union{Configuration, Vector{Configuration}}, ::Union{Configuration, Vector{Configuration}})\n\nGiven two collections of Configurations, it creates an array of Configurations with all possible juxtapositions of configurations from each collection.\n\nExamples\n\njulia> c\"1s\" ⊗ [c\"2s2\", c\"2s 2p\"]\n2-element Array{Configuration{Orbital{Int64}},1}:\n 1s 2s²\n 1s 2s 2p\n\njulia> [rc\"1s\", rc\"2s\"] ⊗ [rc\"2p-\", rc\"2p\"]\n4-element Array{Configuration{RelativisticOrbital{Int64}},1}:\n 1s 2p-\n 1s 2p\n 2s 2p-\n 2s 2p\n\n\n\n\n\n"
 },
 
 {
@@ -437,7 +469,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "AtomicLevels.@rcs_str",
     "category": "macro",
-    "text": "@rcs_str -> Vector{Configuration{RelativisticOrbital}}\n\nConstruct a Vector of all Configurations corresponding to the non-relativistic nℓ orbital with the given occupancy from the input string.\n\nThe string is assumed to have the following syntax: $(n)$(ℓ)$(occupancy), where n and occupancy are integers, and ℓ is in spectroscopic notation.\n\nExamples\n\njulia> rcs\"3p2\"\n3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:\n 3p⁻²\n 3p⁻ 3p\n 3p²\n\n\n\n\n\n"
+    "text": "@rcs_str -> Vector{Configuration{RelativisticOrbital}}\n\nConstruct a Vector of all Configurations corresponding to the non-relativistic nℓ orbital with the given occupancy from the input string.\n\nThe string is assumed to have the following syntax: $(n)$(ℓ)$(occupancy), where n and occupancy are integers, and ℓ is in spectroscopic notation.\n\nExamples\n\njulia> rcs\"3p2\"\n3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:\n 3p-²\n 3p- 3p\n 3p²\n\n\n\n\n\n"
 },
 
 {
@@ -445,7 +477,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "Generating configuration lists",
     "category": "section",
-    "text": "The ⊗ operator can be used to easily generate lists of configurations from existing pieces. E.g. to create all the valence configurations on top of an closed core, you only need to writejulia> c\"[Ne]\" ⊗ [c\"3s2\", c\"3s 3p\", c\"3p2\"]\n3-element Array{Configuration{Orbital{Int64}},1}:\n [Ne]ᶜ 3s²\n [Ne]ᶜ 3s 3p\n [Ne]ᶜ 3p²That can be combined with the @rcs_str string macro to easily generate all possible relativistic configurations from a non-relativistic definition:julia> rc\"[Ne] 3s2\" ⊗ rcs\"3p2\"\n3-element Array{Configuration{RelativisticOrbital{Int64}},1}:\n [Ne]ᶜ 3s² 3p⁻²\n [Ne]ᶜ 3s² 3p⁻ 3p\n [Ne]ᶜ 3s² 3p²⊗\n@rcs_str"
+    "text": "The ⊗ operator can be used to easily generate lists of configurations from existing pieces. E.g. to create all the valence configurations on top of an closed core, you only need to writejulia> c\"[Ne]\" ⊗ [c\"3s2\", c\"3s 3p\", c\"3p2\"]\n3-element Array{Configuration{Orbital{Int64}},1}:\n [Ne]ᶜ 3s²\n [Ne]ᶜ 3s 3p\n [Ne]ᶜ 3p²That can be combined with the @rcs_str string macro to easily generate all possible relativistic configurations from a non-relativistic definition:julia> rc\"[Ne] 3s2\" ⊗ rcs\"3p2\"\n3-element Array{Configuration{RelativisticOrbital{Int64}},1}:\n [Ne]ᶜ 3s² 3p-²\n [Ne]ᶜ 3s² 3p- 3p\n [Ne]ᶜ 3s² 3p²⊗\n@rcs_str"
 },
 
 {
@@ -461,7 +493,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "AtomicLevels.spin_configurations",
     "category": "function",
-    "text": "spin_configurations(configuration)\n\nGenerate all possible configurations of spin-orbitals from configuration, i.e. all permissible values for the quantum numbers n, ℓ, mℓ, ms for each electron. Example:\n\njulia> spin_configurations(c\"1s2\")\n1-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:\n 1s₀α 1s₀β\n\njulia> spin_configurations(c\"1s2\"s)\n1-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:\n 1s²\n\njulia> spin_configurations(c\"1s ks\")\n4-element Array{Configuration{SpinOrbital},1}:\n 1s₀α ks₀α\n 1s₀β ks₀α\n 1s₀α ks₀β\n 1s₀β ks₀β\n\n\n\n\n\nspin_configurations(configurations)\n\nFor each configuration in configurations, generate all possible configurations of spin-orbitals.\n\n\n\n\n\n"
+    "text": "spin_configurations(configuration)\n\nGenerate all possible configurations of spin-orbitals from configuration, i.e. all permissible values for the quantum numbers n, ℓ, mℓ, ms for each electron. Example:\n\njulia> spin_configurations(c\"1s2\")\n1-element Array{Configuration{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}}},1}:\n 1s₀α 1s₀β\n\njulia> spin_configurations(c\"1s2\"s)\n1-element Array{Configuration{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}}},1}:\n 1s²\n\njulia> spin_configurations(c\"1s ks\")\n4-element Array{Configuration{SpinOrbital{#s16,Tuple{Int64,HalfIntegers.Half{Int64}}} where #s16<:Orbital},1}:\n 1s₀α ks₀α\n 1s₀β ks₀α\n 1s₀α ks₀β\n 1s₀β ks₀β\n\n\n\n\n\nspin_configurations(configurations)\n\nFor each configuration in configurations, generate all possible configurations of spin-orbitals.\n\n\n\n\n\n"
 },
 
 {
@@ -477,7 +509,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "AtomicLevels.@scs_str",
     "category": "macro",
-    "text": "@scs_str -> Vector{<:SpinConfiguration}\n\nGenerate all possible spin-configurations out of a string. With the added string macro suffix s, the configuration is sorted.\n\nExamples\n\njulia> scs\"1s2 2p2\"\n15-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:\n 1s₀α 1s₀β 2p₋₁α 2p₋₁β\n 1s₀α 1s₀β 2p₋₁α 2p₀α\n 1s₀α 1s₀β 2p₋₁α 2p₀β\n 1s₀α 1s₀β 2p₋₁α 2p₁α\n 1s₀α 1s₀β 2p₋₁α 2p₁β\n 1s₀α 1s₀β 2p₋₁β 2p₀α\n 1s₀α 1s₀β 2p₋₁β 2p₀β\n 1s₀α 1s₀β 2p₋₁β 2p₁α\n 1s₀α 1s₀β 2p₋₁β 2p₁β\n 1s₀α 1s₀β 2p₀α 2p₀β\n 1s₀α 1s₀β 2p₀α 2p₁α\n 1s₀α 1s₀β 2p₀α 2p₁β\n 1s₀α 1s₀β 2p₀β 2p₁α\n 1s₀α 1s₀β 2p₀β 2p₁β\n 1s₀α 1s₀β 2p₁α 2p₁β\n\n\n\n\n\n"
+    "text": "@scs_str -> Vector{<:SpinConfiguration}\n\nGenerate all possible spin-configurations out of a string. With the added string macro suffix s, the configuration is sorted.\n\nExamples\n\njulia> scs\"1s2 2p2\"\n15-element Array{Configuration{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}}},1}:\n 1s₀α 1s₀β 2p₋₁α 2p₋₁β\n 1s₀α 1s₀β 2p₋₁α 2p₀α\n 1s₀α 1s₀β 2p₋₁α 2p₀β\n 1s₀α 1s₀β 2p₋₁α 2p₁α\n 1s₀α 1s₀β 2p₋₁α 2p₁β\n 1s₀α 1s₀β 2p₋₁β 2p₀α\n 1s₀α 1s₀β 2p₋₁β 2p₀β\n 1s₀α 1s₀β 2p₋₁β 2p₁α\n 1s₀α 1s₀β 2p₋₁β 2p₁β\n 1s₀α 1s₀β 2p₀α 2p₀β\n 1s₀α 1s₀β 2p₀α 2p₁α\n 1s₀α 1s₀β 2p₀α 2p₁β\n 1s₀α 1s₀β 2p₀β 2p₁α\n 1s₀α 1s₀β 2p₀β 2p₁β\n 1s₀α 1s₀β 2p₁α 2p₁β\n\n\n\n\n\n"
 },
 
 {
@@ -493,7 +525,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "AtomicLevels.excited_configurations",
     "category": "function",
-    "text": "excited_configurations([fun::Function, ] cfg::Configuration,\n                       orbitals::AbstractOrbital...\n                       [; min_excitations=0, max_excitations=:doubles,\n                        min_occupancy=[0, 0, ...], max_occupancy=[..., g_i, ...],\n                        keep_parity=true])\n\nGenerate all excitations from the reference set cfg by substituting at least min_excitations and at most max_excitations of the substitution orbitals. min_occupancy specifies the minimum occupation number for each of the source orbitals (default 0) and equivalently max_occupancy specifies the maximum occupation number (default is the degeneracy for each orbital). keep_parity controls whether the excited configuration has to have the same parity as cfg. Finally, fun allows modification of the substitution orbitals depending on the source orbitals, which is useful for generating ionized configurations.\n\nExamples\n\njulia> excited_configurations(c\"1s2\", o\"2s\", o\"2p\")\n4-element Array{Configuration{Orbital{Int64}},1}:\n 1s²\n 1s 2s\n 2s²\n 2p²\n\njulia> excited_configurations(c\"1s2 2p\", o\"2p\")\n2-element Array{Configuration{Orbital{Int64}},1}:\n 1s² 2p\n 2p³\n\njulia> excited_configurations(c\"1s2 2p\", o\"2p\", max_occupancy=[2,2])\n1-element Array{Configuration{Orbital{Int64}},1}:\n 1s² 2p\n\njulia> excited_configurations(first(scs\"1s2\"), sos\"k[s]\"...) do dst,src\n           if isbound(src)\n               # Generate label that indicates src orbital,\n               # i.e. the resultant hole\n               SpinOrbital(Orbital(Symbol(\"[$(src)]\"), dst.orb.ℓ), \n                           dst.mℓ, dst.spin)\n           else\n               dst\n           end\n       end\n9-element Array{Configuration,1}:\n 1s₀α 1s₀β\n [1s₀α]s₀α 1s₀β\n [1s₀α]s₀β 1s₀β\n 1s₀α [1s₀β]s₀α\n 1s₀α [1s₀β]s₀β\n [1s₀α]s₀α [1s₀β]s₀α\n [1s₀α]s₀β [1s₀β]s₀α\n [1s₀α]s₀α [1s₀β]s₀β\n [1s₀α]s₀β [1s₀β]s₀β\n\n\n\n\n\n"
+    "text": "excited_configurations([fun::Function, ] cfg::Configuration,\n                       orbitals::AbstractOrbital...\n                       [; min_excitations=0, max_excitations=:doubles,\n                        min_occupancy=[0, 0, ...], max_occupancy=[..., g_i, ...],\n                        keep_parity=true])\n\nGenerate all excitations from the reference set cfg by substituting at least min_excitations and at most max_excitations of the substitution orbitals. min_occupancy specifies the minimum occupation number for each of the source orbitals (default 0) and equivalently max_occupancy specifies the maximum occupation number (default is the degeneracy for each orbital). keep_parity controls whether the excited configuration has to have the same parity as cfg. Finally, fun allows modification of the substitution orbitals depending on the source orbitals, which is useful for generating ionized configurations. If fun returns nothing, that particular substitution will be rejected.\n\nExamples\n\njulia> excited_configurations(c\"1s2\", o\"2s\", o\"2p\")\n4-element Array{Configuration{Orbital{Int64}},1}:\n 1s²\n 1s 2s\n 2s²\n 2p²\n\njulia> excited_configurations(c\"1s2 2p\", o\"2p\")\n2-element Array{Configuration{Orbital{Int64}},1}:\n 1s² 2p\n 2p³\n\njulia> excited_configurations(c\"1s2 2p\", o\"2p\", max_occupancy=[2,2])\n1-element Array{Configuration{Orbital{Int64}},1}:\n 1s² 2p\n\njulia> excited_configurations(first(scs\"1s2\"), sos\"k[s]\"...) do dst,src\n           if isbound(src)\n               # Generate label that indicates src orbital,\n               # i.e. the resultant hole\n               SpinOrbital(Orbital(Symbol(\"[$(src)]\"), dst.orb.ℓ), dst.m)\n           else\n               dst\n           end\n       end\n9-element Array{Configuration{SpinOrbital{#s16,Tuple{Int64,HalfIntegers.Half{Int64}}} where #s16<:Orbital},1}:\n 1s₀α 1s₀β\n [1s₀α]s₀α 1s₀β\n [1s₀α]s₀β 1s₀β\n 1s₀α [1s₀β]s₀α\n 1s₀α [1s₀β]s₀β\n [1s₀α]s₀α [1s₀β]s₀α\n [1s₀α]s₀β [1s₀β]s₀α\n [1s₀α]s₀α [1s₀β]s₀β\n [1s₀α]s₀β [1s₀β]s₀β\n\njulia> excited_configurations((a,b) -> a.m == b.m ? a : nothing,\n                              spin_configurations(c\"1s\"), sos\"k[s-d]\"..., keep_parity=false)\n8-element Array{Configuration{SpinOrbital{#s16,Tuple{Int64,Half{Int64}}} where #s16<:Orbital},1}:\n 1s₀α\n ks₀α\n kp₀α\n kd₀α\n 1s₀β\n ks₀β\n kp₀β\n kd₀β\n\n\n\n\n\n"
 },
 
 {
@@ -501,7 +533,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Configurations",
     "title": "Excited configurations",
     "category": "section",
-    "text": "AtomicLevels.jl provides an easy interface for generating lists of configurations which are the result of exciting one or more orbitals of a reference set to a set of substitution orbitals. This is done with excited_configurations, which provides various parameters for controlling which excitations are generated. A very simple example could bejulia> excited_configurations(c\"1s2\", os\"2[s-p]\"...)\n4-element Array{Configuration{Orbital{Int64}},1}:\n 1s²\n 1s 2s\n 2s²\n 2p²which as we see contains all configurations generated by at most exciting two orbitals 1s² and keeping the overall parity. By lifting these restrictions, more configurations can be generated:julia> excited_configurations(c\"1s2 2s\", os\"3[s-p]\"...,\n                              keep_parity=false, max_excitations=2)\n14-element Array{Configuration{Orbital{Int64}},1}:\n 1s² 2s\n 1s 2s²\n 1s 2s 3s\n 1s 2s 3p\n 1s² 3s\n 1s² 3p\n 2s² 3s\n 2s² 3p\n 2s 3s²\n 2s 3s 3p\n 1s 3s²\n 1s 3s 3p\n 2s 3p²\n 1s 3p²\n\njulia> excited_configurations(c\"1s2 2s\", os\"3[s-p]\"...,\n                              keep_parity=false, max_excitations=3)\n17-element Array{Configuration{Orbital{Int64}},1}:\n 1s² 2s\n 1s 2s²\n 1s 2s 3s\n 1s 2s 3p\n 1s² 3s\n 1s² 3p\n 2s² 3s\n 2s² 3p\n 2s 3s²\n 2s 3s 3p\n 1s 3s²\n 1s 3s 3p\n 2s 3p²\n 1s 3p²\n 3s² 3p\n 3s 3p²\n 3p³Since configurations by default are unsorted, when exciting from SpinConfigurations, the substitutions are performed in-place:julia> excited_configurations(first(scs\"1s2\"), sos\"2[s-p]\"...)\n21-element Array{Configuration{SpinOrbital{Orbital{Int64}}},1}:\n 1s₀α 1s₀β\n 2s₀α 1s₀β\n 2s₀β 1s₀β\n 1s₀α 2s₀α\n 1s₀α 2s₀β\n 2s₀α 2s₀β\n 2p₋₁α 2p₋₁β\n 2p₋₁α 2p₀α\n 2p₋₁α 2p₀β\n 2p₋₁α 2p₁α\n 2p₋₁α 2p₁β\n 2p₋₁β 2p₀α\n 2p₋₁β 2p₀β\n 2p₋₁β 2p₁α\n 2p₋₁β 2p₁β\n 2p₀α 2p₀β\n 2p₀α 2p₁α\n 2p₀α 2p₁β\n 2p₀β 2p₁α\n 2p₀β 2p₁β\n 2p₁α 2p₁βexcited_configurationsDocTestSetup = nothing"
+    "text": "AtomicLevels.jl provides an easy interface for generating lists of configurations which are the result of exciting one or more orbitals of a reference set to a set of substitution orbitals. This is done with excited_configurations, which provides various parameters for controlling which excitations are generated. A very simple example could bejulia> excited_configurations(c\"1s2\", os\"2[s-p]\"...)\n4-element Array{Configuration{Orbital{Int64}},1}:\n 1s²\n 1s 2s\n 2s²\n 2p²which as we see contains all configurations generated by at most exciting two orbitals 1s² and keeping the overall parity. By lifting these restrictions, more configurations can be generated:julia> excited_configurations(c\"1s2 2s\", os\"3[s-p]\"...,\n                              keep_parity=false, max_excitations=2)\n14-element Array{Configuration{Orbital{Int64}},1}:\n 1s² 2s\n 1s 2s²\n 1s 2s 3s\n 1s 2s 3p\n 1s² 3s\n 1s² 3p\n 2s² 3s\n 2s² 3p\n 2s 3s²\n 2s 3s 3p\n 1s 3s²\n 1s 3s 3p\n 2s 3p²\n 1s 3p²\n\njulia> excited_configurations(c\"1s2 2s\", os\"3[s-p]\"...,\n                              keep_parity=false, max_excitations=3)\n17-element Array{Configuration{Orbital{Int64}},1}:\n 1s² 2s\n 1s 2s²\n 1s 2s 3s\n 1s 2s 3p\n 1s² 3s\n 1s² 3p\n 2s² 3s\n 2s² 3p\n 2s 3s²\n 2s 3s 3p\n 1s 3s²\n 1s 3s 3p\n 2s 3p²\n 1s 3p²\n 3s² 3p\n 3s 3p²\n 3p³Since configurations by default are unsorted, when exciting from SpinConfigurations, the substitutions are performed in-place:julia> excited_configurations(first(scs\"1s2\"), sos\"2[s-p]\"...)\n21-element Array{Configuration{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}}},1}:\n 1s₀α 1s₀β\n 2s₀α 1s₀β\n 2s₀β 1s₀β\n 1s₀α 2s₀α\n 1s₀α 2s₀β\n 2s₀α 2s₀β\n 2p₋₁α 2p₋₁β\n 2p₋₁α 2p₀α\n 2p₋₁α 2p₀β\n 2p₋₁α 2p₁α\n 2p₋₁α 2p₁β\n 2p₋₁β 2p₀α\n 2p₋₁β 2p₀β\n 2p₋₁β 2p₁α\n 2p₋₁β 2p₁β\n 2p₀α 2p₀β\n 2p₀α 2p₁α\n 2p₀α 2p₁β\n 2p₀β 2p₁α\n 2p₀β 2p₁β\n 2p₁α 2p₁βexcited_configurationsDocTestSetup = nothing"
 },
 
 {
@@ -729,7 +761,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "internals/#AtomicLevels.final_terms-Union{Tuple{Array{#s37,1} where #s37<:(Array{#s21,1} where #s21<:T)}, Tuple{T}} where T<:Union{Term, Real}",
+    "location": "internals/#AtomicLevels.final_terms-Union{Tuple{Array{#s39,1} where #s39<:(Array{#s37,1} where #s37<:T)}, Tuple{T}} where T<:Union{Term, Real}",
     "page": "Internals",
     "title": "AtomicLevels.final_terms",
     "category": "method",
@@ -789,7 +821,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Internals",
     "title": "AtomicLevels.rconfigurations_from_orbital",
     "category": "method",
-    "text": "rconfigurations_from_orbital(orbital::Orbital, occupancy)\n\nGenerate all Configurations with relativistic orbitals corresponding to the non-relativistic version of the orbital with a given occupancy.\n\nExamples\n\njulia> AtomicLevels.rconfigurations_from_orbital(o\"3p\", 2)\n3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:\n 3p⁻²\n 3p⁻ 3p\n 3p²\n\n\n\n\n\n"
+    "text": "rconfigurations_from_orbital(orbital::Orbital, occupancy)\n\nGenerate all Configurations with relativistic orbitals corresponding to the non-relativistic version of the orbital with a given occupancy.\n\nExamples\n\njulia> AtomicLevels.rconfigurations_from_orbital(o\"3p\", 2)\n3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:\n 3p-²\n 3p- 3p\n 3p²\n\n\n\n\n\n"
 },
 
 {
@@ -797,7 +829,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Internals",
     "title": "AtomicLevels.rconfigurations_from_orbital",
     "category": "method",
-    "text": "rconfigurations_from_orbital(n, ℓ, occupancy)\n\nGenerate all Configurations with relativistic orbitals corresponding to the non-relativistic orbital with n and ℓ quantum numbers, with given occupancy.\n\nExamples\n\njulia> AtomicLevels.rconfigurations_from_orbital(3, 1, 2)\n3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:\n 3p⁻²\n 3p⁻ 3p\n 3p²\n\n\n\n\n\n"
+    "text": "rconfigurations_from_orbital(n, ℓ, occupancy)\n\nGenerate all Configurations with relativistic orbitals corresponding to the non-relativistic orbital with n and ℓ quantum numbers, with given occupancy.\n\nExamples\n\njulia> AtomicLevels.rconfigurations_from_orbital(3, 1, 2)\n3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:\n 3p-²\n 3p- 3p\n 3p²\n\n\n\n\n\n"
 },
 
 {
