@@ -196,6 +196,12 @@ ispermutation(a, b; cmp=isequal) =
                                      ]
     end
 
+    @testset "Multiple references" begin
+        @test ispermutation(excited_configurations([c"1s2"s, c"2s2"s], o"1s", o"2s",
+                                                   max_excitations=:singles, keep_parity=false),
+                            [c"1s2", c"1s 2s", c"2s2"])
+    end
+
     @testset "Spin-configurations" begin
         @testset "Bound substitutions" begin
             cfg = first(scs"1s2")
