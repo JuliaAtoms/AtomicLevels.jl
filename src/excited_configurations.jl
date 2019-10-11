@@ -269,13 +269,16 @@ function excited_configurations(fun::Function,
     Cfg[ref_set_core + e for e in excitations]
 end
 
-excited_configurations(ref_set::Configuration,
-                       orbitals...;
-                       kwargs...) =
-                           excited_configurations((subs_orb,orb)->subs_orb,
-                                                  ref_set, orbitals...;
-                                                  kwargs...)
+excited_configurations(fun::Function, ref_set::Vector{<:Configuration}, args...; kwargs...) =
+    unique(reduce(vcat, map(r -> excited_configurations(fun, r, args...; kwargs...), ref_set)))
 
+default_substitution(subs_orb,orb) = subs_orb
+
+excited_configurations(ref_set::Configuration, args...; kwargs...) =
+    excited_configurations(default_substitution, ref_set, args...; kwargs...)
+
+excited_configurations(ref_set::Vector{<:Configuration}, args...; kwargs...) =
+    excited_configurations(default_substitution, ref_set, args...; kwargs...)
 
 ion_continuum(neutral::Configuration{<:Orbital{<:Integer}},
               continuum_orbitals::Vector{Orbital{Symbol}},
