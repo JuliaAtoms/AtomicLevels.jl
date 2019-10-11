@@ -228,7 +228,7 @@ Base.close(config::Configuration) = close!(deepcopy(config))
 """
     close!(c::Configuration)
 
-Marks all the orbitals in configuration `c` to be closed.
+Marks all the orbitals in configuration `c` as closed.
 
 See also: [`close`](@ref)
 """
@@ -919,6 +919,9 @@ function relconfigurations(c::Configuration{<:Orbital})
     end
     reduce(vcat, rcs)
 end
+
+relconfigurations(cs::Vector{<:Configuration{<:Orbital}}) =
+    reduce(vcat, map(relconfigurations, cs))
 
 """
     @rcs_str -> Vector{Configuration{RelativisticOrbital}}
