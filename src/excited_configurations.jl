@@ -117,11 +117,12 @@ function substitutions!(fun, excitations::Vector{<:SpinConfiguration},
                         ref_set::SpinConfiguration, orbitals::Vector{<:SpinOrbital},
                         min_excitations, max_excitations,
                         min_occupancy, max_occupancy)
-    subs_orbs = map(ref_set.orbitals) do orb
-        map(subs_orb -> fun(subs_orb, orb), orbitals)
+    subs_orbs = Vector{Vector{eltype(orbitals)}}()
+    for orb ∈ ref_set.orbitals
+        push!(subs_orbs, filter(!isnothing, map(subs_orb -> fun(subs_orb, orb), orbitals)))
     end
 
-    # Either all subsitution orbitals are the same for all source
+    # Either all substitution orbitals are the same for all source
     # orbitals, or all source orbitals have unique substitution
     # orbitals (generated using `fun`); for simplicity, we do not
     # support a mixture.
@@ -144,7 +145,7 @@ function substitutions!(fun, excitations::Vector{<:SpinConfiguration},
                 # In this case, in the first slot, any of the i..n
                 # substitution orbitals goes, in the next i+1..n, in
                 # the second i+2..n, &c.
-                combinations(orbitals, i)
+                combinations(subs_orbs[1], i)
             else
                 # In this case, we simply form the direct product of
                 # the source-orbital specific substitution orbitals.
@@ -178,7 +179,8 @@ equivalently `max_occupancy` specifies the maximum occupation number
 whether the excited configuration has to have the same parity as
 `cfg`. Finally, `fun` allows modification of the substitution orbitals
 depending on the source orbitals, which is useful for generating
-ionized configurations.
+ionized configurations. If `fun` returns `nothing`, that particular
+substitution will be rejected.
 
 # Examples
 
@@ -218,6 +220,18 @@ julia> excited_configurations(first(scs"1s2"), sos"k[s]"...) do dst,src
  [1s₀α]s₀β [1s₀β]s₀α
  [1s₀α]s₀α [1s₀β]s₀β
  [1s₀α]s₀β [1s₀β]s₀β
+
+julia> excited_configurations((a,b) -> a.m == b.m ? a : nothing,
+                              spin_configurations(c"1s"), sos"k[s-d]"..., keep_parity=false)
+8-element Array{Configuration{SpinOrbital{#s16,Tuple{Int64,Half{Int64}}} where #s16<:Orbital},1}:
+ 1s₀α
+ ks₀α
+ kp₀α
+ kd₀α
+ 1s₀β
+ ks₀β
+ kp₀β
+ kd₀β
 ```
 """
 function excited_configurations(fun::Function,

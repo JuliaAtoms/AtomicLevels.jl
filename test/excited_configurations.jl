@@ -196,6 +196,21 @@ ispermutation(a, b; cmp=isequal) =
                                      ]
     end
 
+    @testset "Custom filtering of substitutions" begin
+        cfg = spin_configurations(c"1s")[1]
+
+        ecfgs = excited_configurations((a,b) -> a.m == b.m ? a : nothing,
+                                       cfg, sos"k[s-d]"..., keep_parity=false)
+        @test ecfgs == [Configuration([SpinOrbital(orb, (0,half(1)))],[1],[:open])
+                        for orb in vcat(o"1s", os"k[s-d]")]
+
+        ecfgs = excited_configurations(cfg, sos"k[s-d]"..., keep_parity=false) do a,b
+            a.m == b.m ? SpinOrbital(Orbital(Symbol("{$b}"), a.orb.ℓ), a.m) : nothing
+        end
+        @test ecfgs == [Configuration([SpinOrbital(orb, (0,half(1)))],[1],[:open])
+                        for orb in vcat(o"1s", [Orbital(Symbol("{1s₀α}"), ℓ) for ℓ ∈ 0:2])]
+    end
+
     @testset "Multiple references" begin
         @test ispermutation(excited_configurations([c"1s2"s, c"2s2"s], o"1s", o"2s",
                                                    max_excitations=:singles, keep_parity=false),
