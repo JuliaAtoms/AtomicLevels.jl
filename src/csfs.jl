@@ -1,3 +1,38 @@
+"""
+    struct CSF
+
+Represents a single _configuration state function_ (CSF) adapted to angular
+momentum symmetries. Depending on the type parameters, it can represent both
+non-relativistic CSFs in [``LS``-coupling](@ref) and relativistic CSFs in
+[``jj``-coupling](@ref).
+
+A CSF is defined by the following information:
+
+* The configuration, i.e. an ordered list of subshells together with their
+  occupations.
+* A list of intermediate coupling terms (including the seniority quantum number
+  to label states in degenerate subspaces) for each subshell in the
+  configuration.
+* A list of coupling terms for the coupling tree. The coupling is assume to be
+  done by first two orbitals together, then coupling that to the next orbital
+  and so on.
+
+An instance of a [`CSF`](@ref) object does not specify the ``J_z`` or
+``L_z``/``S_z`` quantum number(s).
+
+# Constructors
+
+    CSF(configuration::Configuration, subshell_terms::Vector, terms::Vector)
+
+Constructs an instance of a [`CSF`](@ref) from the information provided. The
+arguments have different requirements depending on whether it is `configuration`
+is based on relativistic or non-relativistic orbitals.
+
+* If the configuration is based on [`Orbital`](@ref)s, `subshell_terms` must be
+  a list of [`IntermediateTerm`](@ref)s and `terms` a list of [`Term`](@ref)s.
+* If it is a configuration of [`RelativisticOrbital`](@ref)s, both
+  `subshell_terms` and `terms` should both be a list of half-integer values.
+"""
 struct CSF{O<:AbstractOrbital, IT<:Union{IntermediateTerm,HalfInteger}, T<:Union{Term,HalfInteger}}
     config::Configuration{<:O}
     subshell_terms::Vector{IT}
