@@ -8,14 +8,13 @@ using WignerSymbols
 using HalfIntegers
 using Combinatorics
 
-if VERSION < v"1.1-DEV"
-    isnothing(::Nothing) = true
-    isnothing(::Any) = false
-end
+using Compat
 
 include("common.jl")
 include("parity.jl")
 include("orbitals.jl")
+include("relativistic_orbitals.jl")
+include("spin_orbitals.jl")
 include("configurations.jl")
 include("excited_configurations.jl")
 include("terms.jl")
