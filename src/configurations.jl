@@ -1145,6 +1145,13 @@ function nonrelconfiguration(c::Configuration{<:RelativisticOrbital})
     Configuration(nrorbitals, nroccupancies, nrstates)
 end
 
+"""
+    multiplicity(::Configuration)
+
+Calculates the number of Slater determinants corresponding to the configuration.
+"""
+multiplicity(c::Configuration) = prod(binomial.(degeneracy.(c.orbitals), c.occupancy))
+
 export Configuration, @c_str, @rc_str, @scs_str, issimilar,
     num_electrons, core, peel, active, inactive, bound, continuum, parity, ⊗, @rcs_str,
     SpinConfiguration, spin_configurations, substitutions, close!,
