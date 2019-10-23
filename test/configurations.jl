@@ -483,4 +483,33 @@
         @test string(rc"[Ar]*") == "1s² 2s² 2p⁴ 2p-² 3s² 3p⁴ 3p-²"
         @test ascii(rc"[Ar]*") == "1s2 2s2 2p4 2p-2 3s2 3p4 3p-2"
     end
+
+    @testset "multiplicity" begin
+        @test multiplicity(c"1s") == 2
+        @test multiplicity(c"2s2") == 1
+        @test multiplicity(c"2p") == 6
+        @test multiplicity(c"2p5") == 6
+        @test multiplicity(c"2p2") == 15
+        @test multiplicity(rc"1s") == 2
+        @test multiplicity(rc"2p-2") == 1
+        @test multiplicity(rc"2p4") == 1
+        @test multiplicity(rc"3d3") == 20
+        @test multiplicity(c"1s 2s") == 4
+        @test multiplicity(c"1s 2s 2p") == 24
+        @test multiplicity(c"1s2 2s2 2p6") == 1
+        @test multiplicity(rc"1s2 2s2 2p-2 2p4") == 1
+
+        let c = c"1s 2s2 2p3"; @test multiplicity(c) == length(spin_configurations(c)) end
+        let c = c"1s2 4f1 5g1"; @test multiplicity(c) == length(spin_configurations(c)) end
+        let c = rc"1s 2s2 2p3 2p-"; @test multiplicity(c) == length(spin_configurations(c)) end
+        let c = rc"1s2 2s2 2p-2"; @test multiplicity(c) == length(spin_configurations(c)) end
+        let c = rc"ag-6 bf4"; @test multiplicity(c) == length(spin_configurations(c)) end
+
+        for c in spin_configurations(c"1s 2s2 2p3")
+            @test multiplicity(c) == 1
+        end
+        for c in spin_configurations(rc"1s2 2s2 2p- 2p2")
+            @test multiplicity(c) == 1
+        end
+    end
 end
