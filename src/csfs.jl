@@ -72,6 +72,15 @@ Base.isless(a::CSF, b::CSF) = last(a.terms) < last(b.terms)
 
 num_electrons(csf::CSF) = num_electrons(csf.config)
 
+"""
+    csfs(::Configuration) -> Vector{CSF}
+    csfs(::Vector{Configuration}) -> Vector{CSF}
+
+Generate all [`CSF`](@ref)s corresponding to a particular configuration or a set
+of configurations.
+"""
+function csfs end
+
 function csfs(config::Configuration)
     map(allchoices(intermediate_terms(peel(config)))) do subshell_terms
         map(intermediate_couplings(subshell_terms)) do coupled_terms
