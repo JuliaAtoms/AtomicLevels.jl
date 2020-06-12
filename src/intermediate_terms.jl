@@ -9,6 +9,11 @@ occupancy, that are assigned the same term symbols. For partially
 filled f-shells (in ``LS`` coupling) or partially filled ``9/2``
 shells (in ``jj`` coupling), seniority alone is not enough to
 disambiguate all the arising terms.
+
+The seniority number is defined as the minimum occupancy number `ν ∈
+n:-2:0` for which the term first appears, e.g. the ²D term first
+occurs in the d¹ configuration, then twice in the d³ configuration
+(which will then have the terms ₁²D and ₃²D).
 """
 struct Seniority
     ν::Int
@@ -37,18 +42,18 @@ istermvalid(term, s::Seniority) =
 # This is too strict, i.e. there are partially filled (ℓ ≥ f)-shells
 # for which seniority /is/ enough, but I don't know which, so better
 # play it safe.
-assert_unique_classification(orb::Orbital, occ, term::Term, s::Seniority) =
+assert_unique_classification(orb::Orbital, occupation, term::Term, s::Seniority) =
     istermvalid(term, s) &&
-    (orb.ℓ < 3 || occ == degeneracy(orb))
+    (orb.ℓ < 3 || occupation == degeneracy(orb))
 
-function assert_unique_classification(orb::RelativisticOrbital, occ, J::HalfInteger, s::Seniority)
+function assert_unique_classification(orb::RelativisticOrbital, occupation, J::HalfInteger, s::Seniority)
     ν = s.ν
     # This is deduced by looking at Table A.10 of
     #
     # - Grant, I. P. (2007). Relativistic Quantum Theory of Atoms and
     #   Molecules : Theory and Computation. New York: Springer.
     istermvalid(J, s) &&
-        !((orb.j == half(9) && (occ == 4 || occ == 6) &&
+        !((orb.j == half(9) && (occupation == 4 || occupation == 6) &&
            (J == 4 || J == 6) && ν == 4) ||
           orb.j > half(9)) # Again, too strict.
 end
@@ -131,12 +136,7 @@ function intermediate_terms(orb::Union{<:Orbital,<:RelativisticOrbital}, w::Int=
     its = map(unique(ts)) do t
         its = IntermediateTerm{typeof(t),Seniority}[]
         previously_seen = 0
-        # The seniority number is defined as the minimum occupancy
-        # number ν ∈ n:-2:0 for which the term first appears, e.g. the
-        # ²D term first occurs in the d¹ configuration, then twice in
-        # the d³ configuration (which will then have the terms ₁²D and
-        # ₃²D).
-        #
+
         # We have to loop in reverse, since odd occupation numbers
         # should go from 1 and even from 0.
         for ν ∈ reverse(w:-2:0)
@@ -169,12 +169,12 @@ julia> intermediate_terms(rc"3d2 5g3")
 ```
 """
 function intermediate_terms(config::Configuration)
-    map(config) do (orb,occ,state)
-        intermediate_terms(orb,occ)
+    map(config) do (orb,occupation,state)
+        intermediate_terms(orb,occupation)
     end
 end
 
-assert_unique_classification(orb, occ, it::IntermediateTerm) =
-    assert_unique_classification(orb, occ, it.term, it.ν)
+assert_unique_classification(orb, occupation, it::IntermediateTerm) =
+    assert_unique_classification(orb, occupation, it.term, it.ν)
 
 export IntermediateTerm, intermediate_terms, Seniority

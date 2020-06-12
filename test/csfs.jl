@@ -25,7 +25,7 @@ using .ATSPParser
 @testset "CSFs" begin
     @testset "Construction" begin
         csf = CSF(rc"1s2 2p- 2p", [IntermediateTerm(0,Seniority(0)), IntermediateTerm(1//2,Seniority(1)), IntermediateTerm(3//2,Seniority(1))], [0, 1//2, 2])
-        @test csf isa CSF{RelativisticOrbital{Int},<:IntermediateTerm{<:HalfInt},HalfInt}
+        @test csf isa CSF{RelativisticOrbital{Int},HalfInt}
         @test csf isa RelativisticCSF
         @test csf == csf
         @test csf != CSF(rc"1s2 2p- 2p", [IntermediateTerm(0,Seniority(0)), IntermediateTerm(1//2,Seniority(1)), IntermediateTerm(3//2,Seniority(1))], [0, 1//2, 1])

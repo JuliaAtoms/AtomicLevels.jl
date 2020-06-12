@@ -73,7 +73,6 @@
                 foreach(wsj) do (ws,j)
                     js = map(HalfInteger, isa(j, Number) ? [j] : j)
                     foreach(ws) do w
-                        # Should actually test without unique
                         @test terms(orb,w) == js
                     end
                 end
