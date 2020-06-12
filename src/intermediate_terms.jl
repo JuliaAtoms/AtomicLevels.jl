@@ -1,33 +1,89 @@
+# * Seniority
+
+"""
+    Seniority(ν)
+
+Seniority is an extra quantum number introduced by Giulio Racah (1943)
+to disambiguate between terms belonging to a subshell with a specific
+occupancy, that are assigned the same term symbols. For partially
+filled f-shells (in ``LS`` coupling) or partially filled ``9/2``
+shells (in ``jj`` coupling), seniority alone is not enough to
+disambiguate all the arising terms.
+"""
+struct Seniority
+    ν::Int
+end
+
+Base.isless(a::Seniority, b::Seniority) = a.ν < b.ν
+Base.iseven(s::Seniority) = iseven(s.ν)
+Base.isodd(s::Seniority) = isodd(s.ν)
+
+# This is the notation by Giulio Racah, p.377:
+# - Racah, G. (1943). Theory of complex spectra. III. Physical Review,
+#   63(9-10), 367–382. http://dx.doi.org/10.1103/physrev.63.367
+Base.show(io::IO, s::Seniority) = write(io, to_subscript(s.ν))
+
+istermvalid(term, s::Seniority) =
+    iseven(multiplicity(term)) ⊻ iseven(s)
+
+# This is due to the statement "For partially filled f-shells,
+# seniority alone is not sufficient to distinguish all possible
+# states." on page 24 of
+#
+# - Froese Fischer, C., Brage, T., & Jönsson, P. (1997). Computational
+#   Atomic Structure : An Mchf Approach. Bristol, UK Philadelphia, Penn:
+#   Institute of Physics Publ.
+#
+# This is too strict, i.e. there are partially filled (ℓ ≥ f)-shells
+# for which seniority /is/ enough, but I don't know which, so better
+# play it safe.
+assert_unique_classification(orb::Orbital, occ, term::Term, s::Seniority) =
+    istermvalid(term, s) &&
+    (orb.ℓ < 3 || occ == degeneracy(orb))
+
+function assert_unique_classification(orb::RelativisticOrbital, occ, J::HalfInteger, s::Seniority)
+    ν = s.ν
+    # This is deduced by looking at Table A.10 of
+    #
+    # - Grant, I. P. (2007). Relativistic Quantum Theory of Atoms and
+    #   Molecules : Theory and Computation. New York: Springer.
+    istermvalid(J, s) &&
+        !((orb.j == half(9) && (occ == 4 || occ == 6) &&
+           (J == 4 || J == 6) && ν == 4) ||
+          orb.j > half(9)) # Again, too strict.
+end
+
+
 # * Intermediate terms, seniority
 """
-    IntermediateTerm(term, seniority)
+    IntermediateTerm(term, ν)
 
-Represents a term together with its seniority quantum number.
+Represents a term together with its extra disambiguating quantum numbers.
 """
 struct IntermediateTerm{T,S}
     term::T
-    seniority::S # This could allow multiple seniority numbers for
-                 # higher sub-shells.
-    function IntermediateTerm(term::T, seniority::Int) where {T<:Union{Term,<:HalfInteger}}
-        iseven(multiplicity(term)) ⊻ iseven(seniority) ||
-            throw(ArgumentError("Invalid seniority $(seniority) for term $(term)"))
-        new{T,Int}(term, seniority)
-    end
-    IntermediateTerm(term::Real, seniority) =
-        IntermediateTerm(convert(HalfInt, term), seniority)
+    ν::S
+    IntermediateTerm(term::T, ν::S) where {T<:Union{Term,<:HalfInteger}, S} =
+        new{T,S}(term, ν)
+    IntermediateTerm(term::Real, ν) =
+        IntermediateTerm(convert(HalfInt, term), ν)
+end
+
+function Base.show(io::IO, iterm::IntermediateTerm{<:Any,<:Integer})
+    write(io, "₍")
+    write(io, to_subscript(iterm.ν))
+    write(io, "₎")
+    show(io, iterm.term)
 end
 
 function Base.show(io::IO, iterm::IntermediateTerm)
-    # This is the notation by Giulio Racah, p.377:
-    # - Racah, G. (1943). Theory of complex spectra. III. Physical Review,
-    #   63(9-10), 367–382. http://dx.doi.org/10.1103/physrev.63.367
-    write(io, to_subscript(iterm.seniority))
+    show(io, iterm.ν)
     show(io, iterm.term)
 end
 
 Base.isless(a::IntermediateTerm, b::IntermediateTerm) =
-    a.seniority < b.seniority ||
-    a.seniority == b.seniority && a.term < b.term
+    a.ν < b.ν ||
+    a.ν == b.ν && a.term < b.term
 
 """
     intermediate_terms(orb::Orbital, w::Int=one(Int))
@@ -73,7 +129,7 @@ function intermediate_terms(orb::Union{<:Orbital,<:RelativisticOrbital}, w::Int=
     w > g÷2 && (w = g - w)
     ts = terms(orb, w)
     its = map(unique(ts)) do t
-        its = IntermediateTerm{typeof(t),Int}[]
+        its = IntermediateTerm{typeof(t),Seniority}[]
         previously_seen = 0
         # The seniority number is defined as the minimum occupancy
         # number ν ∈ n:-2:0 for which the term first appears, e.g. the
@@ -86,7 +142,7 @@ function intermediate_terms(orb::Union{<:Orbital,<:RelativisticOrbital}, w::Int=
         for ν ∈ reverse(w:-2:0)
             nn = count_terms(orb, ν, t) - previously_seen
             previously_seen += nn
-            append!(its, repeat([IntermediateTerm(t, ν)], nn))
+            append!(its, repeat([IntermediateTerm(t, Seniority(ν))], nn))
         end
         its
     end
@@ -118,4 +174,7 @@ function intermediate_terms(config::Configuration)
     end
 end
 
-export IntermediateTerm, intermediate_terms
+assert_unique_classification(orb, occ, it::IntermediateTerm) =
+    assert_unique_classification(orb, occ, it.term, it.ν)
+
+export IntermediateTerm, intermediate_terms, Seniority

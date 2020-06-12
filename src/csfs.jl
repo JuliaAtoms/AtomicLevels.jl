@@ -1,29 +1,3 @@
-# This is due to the statement "For partially filled f-shells,
-# seniority alone is not sufficient to distinguish all possible
-# states." on page 24 of
-#
-# - Froese Fischer, C., Brage, T., & Jönsson, P. (1997). Computational
-#   atomic structure : an mchf approach. Bristol, UK Philadelphia, Penn:
-#   Institute of Physics Publ.
-#
-# This is too strict, i.e. there are partially filled (ℓ ≥ f)-shells
-# for which seniority /is/ enough, but I don't know which, so better
-# play it safe.
-assert_unique_classification(orb::Orbital, occ, intermediate_term::IntermediateTerm{Term,<:Integer}) =
-    orb.ℓ < 3 || occ == degeneracy(orb)
-
-function assert_unique_classification(orb::RelativisticOrbital, occ, intermediate_term::IntermediateTerm{<:HalfInteger,<:Integer})
-    J = intermediate_term.term
-    ν = intermediate_term.seniority
-    # This is deduced by looking at table A.10 of
-    #
-    # - Grant, I. P. (2007). Relativistic quantum theory of atoms and
-    #   molecules : theory and computation. New York: Springer.
-    !((orb.j == half(9) && (occ == 4 || occ == 6) &&
-       (J == 4 || J == 6) && ν == 4) ||
-      orb.j > half(9)) # Again, too strict.
-end
-
 struct CSF{O<:AbstractOrbital, IT<:IntermediateTerm, T<:Union{Term,HalfInteger}}
     config::Configuration{<:O}
     subshell_terms::Vector{IT}
@@ -40,8 +14,9 @@ struct CSF{O<:AbstractOrbital, IT<:IntermediateTerm, T<:Union{Term,HalfInteger}}
             throw(ArgumentError("Need to provide $(length(peel(config))) terms for $(config)"))
 
         for (i,(orb,occ,_)) in enumerate(peel(config))
-            assert_unique_classification(orb, occ, subshell_terms[i]) ||
-                throw(ArgumentError("$(intermediate_term) is not a unique classification of $(orb)$(to_superscript(occ))"))
+            st = subshell_terms[i]
+            assert_unique_classification(orb, occ, st) ||
+                throw(ArgumentError("$(st) is not a unique classification of $(orb)$(to_superscript(occ))"))
         end
 
         new{O,I,T}(config, subshell_terms, terms)
@@ -51,8 +26,8 @@ struct CSF{O<:AbstractOrbital, IT<:IntermediateTerm, T<:Union{Term,HalfInteger}}
         CSF(config, subshell_terms, convert.(HalfInt, terms))
 end
 
-const NonRelativisticCSF = CSF{<:Orbital,IntermediateTerm{Term,Int},Term}
-const RelativisticCSF = CSF{<:RelativisticOrbital,IntermediateTerm{HalfInt,Int},HalfInt}
+const NonRelativisticCSF = CSF{<:Orbital,IntermediateTerm{Term,Seniority},Term}
+const RelativisticCSF = CSF{<:RelativisticOrbital,IntermediateTerm{HalfInt,Seniority},HalfInt}
 
 Base.:(==)(a::CSF{O,T}, b::CSF{O,T}) where {O,T} =
     (a.config == b.config) && (a.subshell_terms == b.subshell_terms) && (a.terms == b.terms)

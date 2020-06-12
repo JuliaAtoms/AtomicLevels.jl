@@ -20,7 +20,7 @@ function parse_rcsf(filename)
         core_occupations = map(degeneracy, core_orbitals)
 
         blockid, csfid = 1, 1
-        csfs = CSF{RelativisticOrbital{Int},IntermediateTerm{HalfInt,Int}}[]
+        csfs = CSF{RelativisticOrbital{Int},IntermediateTerm{HalfInt,Seniority}}[]
         while ! eof(io)
             line1 = readline(io)
             if startswith(line1, " *")

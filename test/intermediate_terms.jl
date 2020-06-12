@@ -1,8 +1,9 @@
 @testset "Intermediate terms" begin
     @testset "LS coupling" begin
-        @test_throws ArgumentError IntermediateTerm(T"2S", 2)
+        @test !AtomicLevels.istermvalid(T"2S", Seniority(2))
 
-        @test string(IntermediateTerm(T"2D", 3)) == "₃²D"
+        @test string(IntermediateTerm(T"2D", Seniority(3))) == "₃²D"
+        @test string(IntermediateTerm(T"2D", 3)) == "₍₃₎²D"
 
         @testset "Seniority" begin
             # Table taken from p. 25 of
@@ -30,7 +31,7 @@
                     p = parity(orb)^occ
                     expected_its = map(expected_its isa String ? (expected_its,) : expected_its) do ei
                         t_str = "$(ei[1:2])$(isodd(p) ? "o" : "")"
-                        IntermediateTerm(parse(Term, t_str), parse(Int, ei[end]))
+                        IntermediateTerm(parse(Term, t_str), Seniority(parse(Int, ei[end])))
                     end
                     its = intermediate_terms(orb, occ)
                     @test its == [expected_its...]
@@ -42,14 +43,14 @@
     @testset "jj coupling" begin
         # Taken from Table A.10 of
         #
-        # - Grant, I. P. (2007). Relativistic quantum theory of atoms and
-        #   molecules : theory and computation. New York: Springer.
+        # - Grant, I. P. (2007). Relativistic Quantum Theory of Atoms and
+        #   Molecules : Theory and Computation. New York: Springer.
         #
         # except for the last row, which seems to have a typo since J=19/2 is
         # missing. Cf. Table 4-5 of
         #
-        # - Cowan, R. (1981). The theory of atomic structure and
-        #   spectra. Berkeley: University of California Press.
+        # - Cowan, R. (1981). The Theory of Atomic Structure and
+        #   Spectra. Berkeley: University of California Press.
         ref_table = [[rc"1s2", rc"2p-2"] => [0 => [0]],
                      [rc"1s", rc"2p-"] => [1 => [1/2]],
                      [rc"2p4", rc"3d-4"] => [0 => [0]],
@@ -75,7 +76,7 @@
                                              5 => vcat(1, (5:2:19), 25)./2]]
 
         for (cfgs,cases) in ref_table
-            ref = [reduce(vcat, [[IntermediateTerm(convert(HalfInt, J), ν)
+            ref = [reduce(vcat, [[IntermediateTerm(convert(HalfInt, J), Seniority(ν))
                                   for J in Js]
                                  for (ν,Js) in cases])]
             for cfg in cfgs
