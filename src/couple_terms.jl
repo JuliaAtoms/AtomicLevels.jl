@@ -46,7 +46,7 @@ end
 Generate all coupling between all terms in `t1s` and all terms in
 `t2s`.
 """
-function couple_terms(t1s::Vector{<:Term}, t2s::Vector{<:Term})
+function couple_terms(t1s::Vector{T}, t2s::Vector{T}) where {T<:Union{Term,<:Real}}
     ts = map(t1s) do t1
         map(t2s) do t2
             couple_terms(t1, t2)
