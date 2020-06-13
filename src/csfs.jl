@@ -46,6 +46,13 @@ end
 
 csfs(configs::Vector{Configuration{O}}) where O = vcat(map(csfs, configs)...)
 
+Base.length(csf::CSF) = length(peel(csf.config))
+Base.getindex(csf::CSF, i::Integer) =
+    (peel(csf.config)[i],csf.subshell_terms[i],csf.terms[i])
+
+Base.iterate(csf::CSF, (el, i)=(length(csf)>0 ? csf[1] : nothing,1)) =
+    i > length(csf) ? nothing : (el, (csf[i==length(csf) ? i : i+1],i+1))
+
 function Base.show(io::IO, csf::CSF)
     c = core(csf.config)
     p = peel(csf.config)
@@ -55,11 +62,9 @@ function Base.show(io::IO, csf::CSF)
         write(io, " ")
     end
 
-    for (i,(orb,occ,state)) in enumerate(p)
+    for (i,((orb,occ,state),st,t)) in enumerate(csf)
         show(io, orb)
         occ > 1 && write(io, to_superscript(occ))
-        st = csf.subshell_terms[i]
-        t = csf.terms[i]
         write(io, "($(st)|$(t))")
         i != lastindex(p) && write(io, " ")
     end
