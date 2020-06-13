@@ -21,7 +21,7 @@ struct CSF{O<:AbstractOrbital, T<:Union{Term,HalfInteger}, S}
         new{O,T,S}(config, subshell_terms, terms)
     end
 
-    CSF(config, subshell_terms, terms::Vector{<:Real}) =
+    CSF(config, subshell_terms::Vector{<:IntermediateTerm}, terms::Vector{<:Real}) =
         CSF(config, subshell_terms, convert.(HalfInt, terms))
 end
 
