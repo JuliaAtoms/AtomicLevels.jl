@@ -61,5 +61,7 @@
         @test intermediate_couplings([0, 0], 0) == [[0,0,0]]
         @test intermediate_couplings([0, 0], 1) == [[1,1,1]]
         @test intermediate_couplings([1//2, 1//2], 0) == [[0,1//2,0],[0,1//2,1]]
+
+        @test terms(rc"1s 2s") == [0,1]
     end
 end
