@@ -21,7 +21,7 @@ function parse_csf(filename)
             np = length(peel_cfg)
             its = map(enumerate(ts[1:np])) do (i,t)
                 ip = p_suffix(parity(Configuration(peel_cfg[i]...)))
-                IntermediateTerm(parse(Term, "$(t[1:2])$(ip)"), parse(Int, t[end]))
+                IntermediateTerm(parse(Term, "$(t[1:2])$(ip)"), Seniority(parse(Int, t[end])))
             end
             coupled_terms = map(enumerate(ts[vcat(1,np+1:end)])) do (i,t)
                 parse(Term, "$(t[1:2])$(p_suffix(peel_cfg[1:i]))")

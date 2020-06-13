@@ -111,7 +111,7 @@ Base.copy(cfg::Configuration) =
     Configuration(copy(cfg.orbitals), copy(cfg.occupancy), copy(cfg.states),
                   sorted=cfg.sorted)
 
-const RelativisticConfiguration{N} = Configuration{RelativisticOrbital{N}}
+const RelativisticConfiguration = Configuration{<:RelativisticOrbital}
 
 """
     issorted(cfg::Configuration)
