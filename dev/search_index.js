@@ -581,7 +581,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Term symbols",
     "title": "AtomicLevels.IntermediateTerm",
     "category": "type",
-    "text": "IntermediateTerm(term, seniority)\n\nRepresents a term together with its seniority quantum number.\n\n\n\n\n\n"
+    "text": "IntermediateTerm(term, ν)\n\nRepresents a term together with its extra disambiguating quantum numbers, labelled by ν, which should be sortable (i.e. comparable by isless). The most common implementation of this is a single quantum number, Seniority.\n\n\n\n\n\n"
 },
 
 {
@@ -761,7 +761,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "internals/#AtomicLevels.final_terms-Union{Tuple{Array{#s39,1} where #s39<:(Array{#s37,1} where #s37<:T)}, Tuple{T}} where T<:Union{Term, Real}",
+    "location": "internals/#AtomicLevels.final_terms-Union{Tuple{Array{#s40,1} where #s40<:(Array{#s38,1} where #s38<:T)}, Tuple{T}} where T<:Union{Term, Real}",
     "page": "Internals",
     "title": "AtomicLevels.final_terms",
     "category": "method",
