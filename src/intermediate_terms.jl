@@ -63,7 +63,10 @@ end
 """
     IntermediateTerm(term, ν)
 
-Represents a term together with its extra disambiguating quantum numbers.
+Represents a `term` together with its extra disambiguating quantum
+numbers, labelled by `ν`, which should be sortable (i.e. comparable by
+`isless`). The most common implementation of this is a single quantum
+number, [`Seniority`](@ref).
 """
 struct IntermediateTerm{T,S}
     term::T

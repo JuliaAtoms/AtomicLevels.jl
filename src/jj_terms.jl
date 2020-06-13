@@ -46,10 +46,6 @@ function terms(orb::RelativisticOrbital, w::Int=one(Int))
 end
 
 function _terms_jw_histogram(j, w)
-    # Each of the product states is still a J_z eigenstate and the eigenvalue is just a sum
-    # of the J_z eigenvalues of the orbitals. As for every coupled J, we also get M ∈ -J:J,
-    # we can just look at the histogram of all the M quantum numbers to figure out which
-    # J states and how many of them we have.
     Jmax = j*w
     NJ = convert(Int, 2*Jmax + 1)
     hist = zeros(Int, NJ)
@@ -71,6 +67,12 @@ function _terms_jw(j::HalfInteger, w::Integer)
     Jmax = j*w
     hist = _terms_jw_histogram(j, w)
     NJ = length(hist)
+    # Each of the product states is still a J_z eigenstate and the
+    # eigenvalue is just a sum of the J_z eigenvalues of the
+    # orbitals. As for every coupled J, we also get M ∈ -J:J, we can
+    # just look at the histogram of all the M quantum numbers to
+    # figure out which J states and how many of them we have.
+
     # Go through the histogram to figure out the J terms.
     jvalues = HalfInt[]
     Jmid = div(NJ, 2) + (isodd(NJ) ? 1 : 0)
