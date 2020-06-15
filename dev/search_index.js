@@ -717,7 +717,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Other utilities",
     "title": "Other utilities",
     "category": "section",
-    "text": ""
+    "text": "DocTestSetup = :(using AtomicLevels)"
 },
 
 {
@@ -749,7 +749,23 @@ var documenterSearchIndex = {"docs": [
     "page": "Other utilities",
     "title": "Parity",
     "category": "section",
-    "text": "AtomicLevels defines the Parity type, which is used to represent the parity of atomic states etc.DocTestSetup = quote\n    using AtomicLevels\nendParity\n@p_strThe parity values also define an algebra and an ordering:julia> p\"odd\" < p\"even\"\ntrue\n\njulia> p\"even\" * p\"odd\"\nodd\n\njulia> (p\"odd\")^3\nodd\n\njulia> -p\"odd\"\nevenThe exported parity function is overloaded for many of the types in AtomicLevels, defining a uniform API to determine the parity of an object.parityDocTestSetup = nothing"
+    "text": "AtomicLevels defines the Parity type, which is used to represent the parity of atomic states etc.Parity\n@p_strThe parity values also define an algebra and an ordering:julia> p\"odd\" < p\"even\"\ntrue\n\njulia> p\"even\" * p\"odd\"\nodd\n\njulia> (p\"odd\")^3\nodd\n\njulia> -p\"odd\"\nevenThe exported parity function is overloaded for many of the types in AtomicLevels, defining a uniform API to determine the parity of an object.parity"
+},
+
+{
+    "location": "utilities/#AtomicLevels.jj2lsj",
+    "page": "Other utilities",
+    "title": "AtomicLevels.jj2lsj",
+    "category": "function",
+    "text": "jj2lsj([T=Float64, ]orbs...)\n\nGenerates the block-diagonal matrix that transforms jj-coupled configurations to lsj-coupled ones.\n\nThe blocks correspond to invariant subspaces, which rotate among themselves to form new linear combinations.\n\nThey are sorted according to n,ℓ and within the blocks, the columns are sorted according to mⱼ,j (increasing) and the rows according to s,ℓ,m (increasing).\n\nE.g. the p-block will have the following structure:\n\n ⟨p;-1,↓|3/2,-3/2⟩  │       ⋅                  ⋅             │       ⋅                ⋅           │       ⋅\n ───────────────────┼────────────────────────────────────────┼────────────────────────────────────┼─────────────────\n      ⋅             │  ⟨p;0,↓|1/2,-1/2⟩   ⟨p;0,↓|3/2,-1/2⟩   │       ⋅                ⋅           │       ⋅\n      ⋅             │  ⟨p;-1,↑|1/2,-1/2⟩  ⟨p;-1,↑|3/2,-1/2⟩  │       ⋅                ⋅           │       ⋅\n ───────────────────┼────────────────────────────────────────┼────────────────────────────────────┼─────────────────\n      ⋅             │       ⋅                  ⋅             │  ⟨p;1,↓|1/2,1/2⟩  ⟨p;1,↓|3/2,1/2⟩  │       ⋅\n      ⋅             │       ⋅                  ⋅             │  ⟨p;0,↑|1/2,1/2⟩  ⟨p;0,↑|3/2,1/2⟩  │       ⋅\n ───────────────────┼────────────────────────────────────────┼────────────────────────────────────┼─────────────────\n      ⋅             │       ⋅                  ⋅             │       ⋅                ⋅           │  ⟨p;1,↑|3/2,3/2⟩\n\n\n\n\n\n"
+},
+
+{
+    "location": "utilities/#JJ-to-LSJ-1",
+    "page": "Other utilities",
+    "title": "JJ to LSJ",
+    "category": "section",
+    "text": "jj2lsjDocTestSetup = nothing"
 },
 
 {
