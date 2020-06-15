@@ -449,11 +449,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "configurations/#AtomicLevels.multiplicity-Tuple{Configuration}",
+    "page": "Configurations",
+    "title": "AtomicLevels.multiplicity",
+    "category": "method",
+    "text": "multiplicity(::Configuration)\n\nCalculates the number of Slater determinants corresponding to the configuration.\n\n\n\n\n\n"
+},
+
+{
     "location": "configurations/#Interface-1",
     "page": "Configurations",
     "title": "Interface",
     "category": "section",
-    "text": "For example, it is possible to index into a configuration, including with a range of indices, returning a sub-configuration consisting of only those orbitals. With an integer index, an (orbital, occupancy, state) tuple is returned.julia> config = c\"1s2c 2si 2p3\"\n[He]ᶜ 2sⁱ 2p³\n\njulia> config[2]\n(2s, 1, :inactive)\n\njulia> config[1:2]\n[He]ᶜ 2sⁱ\n\njulia> config[[3,1]]\n[He]ᶜ 2p³The configuration can also be iterated over. Each item is a (orbital, occupancy, state) tuple.julia> for (o, nelec, s) in config\n           @show o, nelec, s\n       end\n(o, nelec, s) = (1s, 2, :closed)\n(o, nelec, s) = (2s, 1, :inactive)\n(o, nelec, s) = (2p, 3, :open)Various other methods exist to manipulate or transform configurations or to query them for information.issimilar\nBase.:(==)(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbital}\nnum_electrons(::Configuration)\nnum_electrons(::Configuration, ::AtomicLevels.AbstractOrbital)\nBase.delete!\nBase.:(+)\nBase.:(-)\nBase.close\nclose!\nBase.fill\nBase.fill!\nBase.in\nBase.filter\nBase.count\nBase.replace\ncore\npeel\nactive\ninactive\nbound\ncontinuum\nparity(::Configuration)\nnonrelconfiguration\nrelconfigurations"
+    "text": "For example, it is possible to index into a configuration, including with a range of indices, returning a sub-configuration consisting of only those orbitals. With an integer index, an (orbital, occupancy, state) tuple is returned.julia> config = c\"1s2c 2si 2p3\"\n[He]ᶜ 2sⁱ 2p³\n\njulia> config[2]\n(2s, 1, :inactive)\n\njulia> config[1:2]\n[He]ᶜ 2sⁱ\n\njulia> config[[3,1]]\n[He]ᶜ 2p³The configuration can also be iterated over. Each item is a (orbital, occupancy, state) tuple.julia> for (o, nelec, s) in config\n           @show o, nelec, s\n       end\n(o, nelec, s) = (1s, 2, :closed)\n(o, nelec, s) = (2s, 1, :inactive)\n(o, nelec, s) = (2p, 3, :open)Various other methods exist to manipulate or transform configurations or to query them for information.issimilar\nBase.:(==)(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbital}\nnum_electrons(::Configuration)\nnum_electrons(::Configuration, ::AtomicLevels.AbstractOrbital)\nBase.delete!\nBase.:(+)\nBase.:(-)\nBase.close\nclose!\nBase.fill\nBase.fill!\nBase.in\nBase.filter\nBase.count\nBase.replace\ncore\npeel\nactive\ninactive\nbound\ncontinuum\nparity(::Configuration)\nnonrelconfiguration\nrelconfigurations\nmultiplicity(::Configuration)"
 },
 
 {
