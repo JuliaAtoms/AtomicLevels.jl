@@ -6,7 +6,7 @@
 [[https://ci.appveyor.com/project/juliaatoms/atomiclevels-jl][https://img.shields.io/appveyor/ci/juliaatoms/atomiclevels-jl.svg?logo=appveyor]]
 [[https://codecov.io/gh/JuliaAtoms/AtomicLevels.jl][https://codecov.io/gh/JuliaAtoms/AtomicLevels.jl/branch/master/graph/badge.svg]]
 
-[[https://juliaatoms.github.io/AtomicLevels.jl/dev/index.html][https://img.shields.io/badge/docs-dev-blue.svg]]
+[[https://juliaatoms.org/AtomicLevels.jl/dev/index.html][https://img.shields.io/badge/docs-dev-blue.svg]]
 
 #+PROPERTY: header-args:julia :session *julia-README*
 

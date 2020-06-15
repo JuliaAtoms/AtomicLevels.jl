@@ -46,7 +46,7 @@ end
 Generate all coupling between all terms in `t1s` and all terms in
 `t2s`.
 """
-function couple_terms(t1s::Vector{<:Term}, t2s::Vector{<:Term})
+function couple_terms(t1s::Vector{T}, t2s::Vector{T}) where {T<:Union{Term,<:Real}}
     ts = map(t1s) do t1
         map(t2s) do t2
             couple_terms(t1, t2)
@@ -86,9 +86,6 @@ couple_terms(J1::T, J2::T) where {T <: Union{Integer,HalfInteger}} =
 couple_terms(J1::Real, J2::Real) =
     couple_terms(convert(HalfInteger, J1), convert(HalfInteger, J2))
 
-term_type(::Type{IntermediateTerm}) = Term
-term_type(::Type{T}) where {T<:Real} = T
-
 function intermediate_couplings(its::Vector{T}, t₀::T=zero(T)) where {T<:Union{Term,Integer,HalfInteger}}
     ts = Vector{Vector{T}}()
     for t in couple_terms(t₀, its[1])
@@ -118,7 +115,7 @@ julia> intermediate_couplings([IntermediateTerm(T"2S", 1), IntermediateTerm(T"2D
  [¹S, ²S, ³D]
 ```
 """
-intermediate_couplings(its::Vector{IntermediateTerm}, t₀::Term=zero(Term)) =
+intermediate_couplings(its::Vector{<:IntermediateTerm{T}}, t₀::T=zero(T)) where T =
     intermediate_couplings(map(t -> t.term, its), t₀)
 
 """

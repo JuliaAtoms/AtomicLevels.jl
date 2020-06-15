@@ -33,36 +33,35 @@ is based on relativistic or non-relativistic orbitals.
 * If it is a configuration of [`RelativisticOrbital`](@ref)s, both
   `subshell_terms` and `terms` should both be a list of half-integer values.
 """
-struct CSF{O<:AbstractOrbital, IT<:Union{IntermediateTerm,HalfInteger}, T<:Union{Term,HalfInteger}}
+struct CSF{O<:AbstractOrbital, T<:Union{Term,HalfInteger}, S}
     config::Configuration{<:O}
-    subshell_terms::Vector{IT}
+    subshell_terms::Vector{IntermediateTerm{T,S}}
     terms::Vector{T}
 
-    function CSF(config::Configuration{<:Orbital},
-                 subshell_terms::Vector{<:IntermediateTerm},
-                 terms::Vector{<:Term})
+    function CSF(config::Configuration{O},
+                 subshell_terms::Vector{IntermediateTerm{T,S}},
+                 terms::Vector{T}) where {O<:Union{<:Orbital,<:RelativisticOrbital},
+                                          T<:Union{Term,HalfInt}, S}
         length(subshell_terms) == length(peel(config)) ||
             throw(ArgumentError("Need to provide $(length(peel(config))) subshell terms for $(config)"))
         length(terms) == length(peel(config)) ||
             throw(ArgumentError("Need to provide $(length(peel(config))) terms for $(config)"))
-        new{Orbital,IntermediateTerm,Term}(config, subshell_terms, terms)
+
+        for (i,(orb,occ,_)) in enumerate(peel(config))
+            st = subshell_terms[i]
+            assert_unique_classification(orb, occ, st) ||
+                throw(ArgumentError("$(st) is not a unique classification of $(orb)$(to_superscript(occ))"))
+        end
+
+        new{O,T,S}(config, subshell_terms, terms)
     end
 
-    function CSF(config::Configuration{O},
-                 subshell_terms::Vector{R},
-                 terms::Vector{R}) where {O <: RelativisticOrbital, R <: Real}
-        length(subshell_terms) == length(peel(config)) ||
-            throw(ArgumentError("Need to provide $(length(peel(config))) subshell terms for $(config)"))
-        length(terms) == length(peel(config)) ||
-            throw(ArgumentError("Need to provide $(length(peel(config))) terms for $(config)"))
-        new{O,HalfInt,HalfInt}(config,
-                               convert.(HalfInt, subshell_terms),
-                               convert.(HalfInt, terms))
-    end
+    CSF(config, subshell_terms::Vector{<:IntermediateTerm}, terms::Vector{<:Real}) =
+        CSF(config, subshell_terms, convert.(HalfInt, terms))
 end
 
-const NonRelativisticCSF = CSF{<:Orbital,IntermediateTerm,Term}
-const RelativisticCSF = CSF{<:RelativisticOrbital,HalfInt,HalfInt}
+const NonRelativisticCSF = CSF{<:Orbital,Term}
+const RelativisticCSF = CSF{<:RelativisticOrbital,HalfInt}
 
 Base.:(==)(a::CSF{O,T}, b::CSF{O,T}) where {O,T} =
     (a.config == b.config) && (a.subshell_terms == b.subshell_terms) && (a.terms == b.terms)
@@ -91,6 +90,13 @@ end
 
 csfs(configs::Vector{Configuration{O}}) where O = vcat(map(csfs, configs)...)
 
+Base.length(csf::CSF) = length(peel(csf.config))
+Base.getindex(csf::CSF, i::Integer) =
+    (peel(csf.config)[i],csf.subshell_terms[i],csf.terms[i])
+
+Base.iterate(csf::CSF, (el, i)=(length(csf)>0 ? csf[1] : nothing,1)) =
+    i > length(csf) ? nothing : (el, (csf[i==length(csf) ? i : i+1],i+1))
+
 function Base.show(io::IO, csf::CSF)
     c = core(csf.config)
     p = peel(csf.config)
@@ -100,11 +106,9 @@ function Base.show(io::IO, csf::CSF)
         write(io, " ")
     end
 
-    for (i,(orb,occ,state)) in enumerate(p)
+    for (i,((orb,occ,state),st,t)) in enumerate(csf)
         show(io, orb)
         occ > 1 && write(io, to_superscript(occ))
-        st = csf.subshell_terms[i]
-        t = csf.terms[i]
         write(io, "($(st)|$(t))")
         i != lastindex(p) && write(io, " ")
     end
@@ -136,7 +140,8 @@ function Base.show(io::IO, ::MIME"text/plain", csf::RelativisticCSF)
     println(io)
 
     nc > 0 && printfmt(io, cfmt, "")
-    for j in csf.subshell_terms
+    for it in csf.subshell_terms
+        j = it.term
         if denominator(j) == 1
             printfmt(io, ifmt, numerator(j))
         else

@@ -239,44 +239,4 @@ using Test
         @test count_terms(o"3d", 3, T"2D") == 2
         @test count_terms(o"3d", 5, T"2D") == 3
     end
-
-    @testset "Intermediate terms" begin
-        @test_throws ArgumentError IntermediateTerm(T"2S", 2)
-
-        @test string(IntermediateTerm(T"2D", 3)) == "₃²D"
-
-        @testset "Seniority" begin
-            # Table taken from p. 25 of
-            #
-            # - Froese Fischer, C., Brage, T., & Jönsson, P. (1997). Computational
-            #   Atomic Structure : An MCHF Approach. Bristol, UK Philadelphia, Penn:
-            #   Institute of Physics Publ.
-            subshell_terms = [
-                o"1s" => (1 => "2S1",
-                         2 => "1S0"),
-                o"2p" => (1 => "2P1",
-                         2 => ("1S0", "1D2", "3P2"),
-                         3 => ("2P1", "2D3", "4S3")),
-                o"3d" => (1 => "2D1",
-                         2 => ("1S0", "1D2", "1G2", "3P2", "3F2"),
-                         3 => ("2D1", "2P3", "2D3", "2F3", "2G3", "2H3", "4P3", "4F3"),
-                         4 => ("1S0", "1D2", "1G2", "3P2", "3F2", "1S4", "1D4", "1F4", "1G4", "1I4", "3P4", "3D4", "3F4", "3G4", "3H4", "5D4"),
-                         5 => ("2D1", "2P3", "2D3", "2F3", "2G3", "2H3", "4P3", "4F3", "2S5", "2D5", "2F5", "2G5", "2I5", "4D5", "4G5", "6S5")),
-                o"4f" => (1 => "2F1",
-                         2 => ("1S0", "1D2", "1G2", "1I2", "3P2", "3F2", "3H2"))
-            ]
-
-            foreach(subshell_terms) do (orb, data)
-                foreach(data) do (occ, expected_its)
-                    p = parity(orb)^occ
-                    expected_its = map(expected_its isa String ? (expected_its,) : expected_its) do ei
-                        t_str = "$(ei[1:2])$(isodd(p) ? "o" : "")"
-                        IntermediateTerm(parse(Term, t_str), parse(Int, ei[end]))
-                    end
-                    its = intermediate_terms(orb, occ)
-                    @test its == [expected_its...]
-                end
-            end
-        end
-    end
 end

@@ -66,7 +66,7 @@ function rotate!(blocks::Vector{M}, orbs::RelativisticOrbital...) where {T,M<:Ab
         o = 2*(bi-1)
         for (b,(j,mⱼ)) in enumerate(jmⱼ)
             b-o ∉ 1:2 && continue
-            blocks[bi][a-o,b-o] = ClebschGordanℓs(ℓ,m,half(1),s,j,mⱼ)
+            blocks[bi][a-o,b-o] = convert(T, ClebschGordanℓs(ℓ,m,half(1),s,j,mⱼ))
         end
     end
     blocks
@@ -112,8 +112,8 @@ function jj2lsj(::Type{T}, orbs::RelativisticOrbital...) where T
 
         jₘₐₓ = maximum([kappa_to_j(o.κ) for o in subspace])
         pure = [Matrix{T}(undef,1,1),Matrix{T}(undef,1,1)]
-        pure[1][1]=ClebschGordanℓs(ℓ,-ℓ,half(1),-half(1),jₘₐₓ,-jₘₐₓ)
-        pure[2][1]=ClebschGordanℓs(ℓ,ℓ,half(1),half(1),jₘₐₓ,jₘₐₓ)
+        pure[1][1] = convert(T, ClebschGordanℓs(ℓ,-ℓ,half(1),-half(1),jₘₐₓ,-jₘₐₓ))
+        pure[2][1] = convert(T, ClebschGordanℓs(ℓ,ℓ,half(1),half(1),jₘₐₓ,jₘₐₓ))
 
         n = sum(length.(mⱼ))-2
         if n > 0
@@ -127,7 +127,7 @@ function jj2lsj(::Type{T}, orbs::RelativisticOrbital...) where T
     end |> b -> vcat(b...)
     rows = size.(blocks,1)
     N = sum(rows)
-    R = BlockBandedMatrix(Zeros{T}(N,N), (rows,rows), (0,0))
+    R = BlockBandedMatrix(Zeros{T}(N,N), rows,rows, (0,0))
     for (i,b) in enumerate(blocks)
         R[Block(i,i)] .= b
     end
