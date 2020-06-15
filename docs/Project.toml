@@ -1,5 +1,4 @@
 [deps]
-AtomicLevels = "10933b4c-d60f-11e8-1fc6-bd9035a249a1"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 
 [compat]
