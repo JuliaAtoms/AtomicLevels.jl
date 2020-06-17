@@ -236,15 +236,20 @@ function terms(config::Configuration{O}) where {O<:AbstractOrbital}
 end
 
 """
-    count_terms(orb, occ, term)
+    count_terms(orbital, occupation, term)
 
-Count how many times `term` occurs among the valid terms of `orb`^`occ`. For example:
+Count how many times `term` occurs among the valid terms of `orbital^occupation`.
 
 ```jldoctest
 julia> count_terms(o"1s", 2, T"1S")
 1
+
+julia> count_terms(ro"6h", 4, 8)
+4
 ```
 """
+function count_terms end
+
 function count_terms(orb::Orbital, occ::Int, term::Term)
     ℓ = orb.ℓ
     g = degeneracy(orb)
