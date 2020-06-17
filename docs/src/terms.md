@@ -1,15 +1,13 @@
 # Term symbols
 
 ```@meta
-DocTestSetup = quote
-    using AtomicLevels
-end
+DocTestSetup = :(using AtomicLevels)
 ```
 
 AtomicLevels provides types and methods to work and determine term symbols. The ["Term
 symbol"](https://en.wikipedia.org/wiki/Term_symbol) and ["Angular momentum
-coupling"](https://en.wikipedia.org/wiki/Angular_momentum_coupling) Wikipedia articles give a good basic
-overview of the terminology.
+coupling"](https://en.wikipedia.org/wiki/Angular_momentum_coupling) Wikipedia articles give
+a good basic overview of the terminology.
 
 For term symbols in LS coupling, AtomicLevels provides the [`Term`](@ref) type.
 
@@ -21,11 +19,12 @@ The [`Term`](@ref) objects can also be constructed with the [`@T_str`](@ref) str
 
 ```@docs
 @T_str
+Base.parse(::Type{Term}, ::AbstractString)
 ```
 
 The [`terms`](@ref) function can be used to generate all possible term symbols. In the case
 of relativistic orbitals, the term symbols are simply the valid ``J`` values, represented
-with the `HalfInteger` type.
+using the [`HalfInteger`](https://github.com/sostock/HalfIntegers.jl) type.
 
 ```@docs
 terms

@@ -3,9 +3,15 @@
 """
     struct Term
 
-Represent a term symbol ``{}^{2S+1}L_{J}`` with specific parity in LS-coupling. As determining
-valid ``J`` values is simple for given ``S`` and ``L`` (``|L - S| \\leq J \\leq L+S``), it
-is not specified.
+Represents a term symbol with specific parity in LS-coupling.
+
+Only the ``L``, ``S`` and parity values of the symbol ``{}^{2S+1}L_{J}`` are specified. To
+specify a _level_, the ``J`` value would have to be specified separately. The valid ``J``
+values corresponding to given ``L`` and ``S`` fall in the following range:
+
+```math
+|L - S| \\leq J \\leq L+S
+```
 
 # Constructors
 
@@ -14,6 +20,22 @@ is not specified.
 Constructs a `Term` object with the given ``L`` and ``S`` quantum numbers and parity. `L`
 and `S` both have to be convertible to `HalfInteger`s and `parity` must be of type
 [`Parity`](@ref) or `±1`.
+
+See also: [`@T_str`](@ref)
+
+# Properties
+
+To access the quantum number values, you can use the `.L`, `.S` and `.parity` properties to
+access the ``L``, ``S`` and parity values (represented with [`Parity`](@ref)), respectively.
+E.g.:
+
+```jldoctest
+julia> t = Term(2, 1//2, p"odd")
+²Dᵒ
+
+julia> t.L, t.S, t.parity
+(2, 1/2, odd)
+```
 """
 struct Term
     L::HalfInt
@@ -28,6 +50,18 @@ end
 Term(L::Real, S::Real, parity::Union{Parity,Integer}) =
     Term(convert(HalfInteger, L), convert(HalfInteger, S), convert(Parity, parity))
 
+"""
+    parse(::Type{Term}, ::AbstractString) -> Term
+
+Parses a string into a [`Term`](@ref) object.
+
+```jldoctest
+julia> parse(Term, "4Po")
+⁴Pᵒ
+```
+
+See also: [`@T_str`](@ref)
+"""
 function Base.parse(::Type{Term}, s::AbstractString)
     m = match(r"([0-9]+)([A-Z]|\[[0-9/]+\])([oe ]{0,1})", s)
     isnothing(m) && throw(ArgumentError("Invalid term string $s"))
