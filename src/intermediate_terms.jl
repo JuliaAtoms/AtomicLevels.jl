@@ -77,6 +77,9 @@ struct IntermediateTerm{T,S}
         IntermediateTerm(convert(HalfInt, term), ν)
 end
 
+Base.getproperty(it::IntermediateTerm, s::Symbol) = s == :nu ? getfield(it, :ν) : getfield(it, s)
+Base.propertynames(::IntermediateTerm, private=false) = (:term, :ν, :nu)
+
 function Base.show(io::IO, iterm::IntermediateTerm{<:Any,<:Integer})
     write(io, "₍")
     write(io, to_subscript(iterm.ν))
