@@ -61,12 +61,45 @@ end
 
 # * Intermediate terms, seniority
 """
+    struct IntermediateTerm{T,S}
+
+Represents a term together with its extra disambiguating quantum number, labelled by `ν`.
+
+The term symbol (`::T`) can either be a [`Term`](@ref) (for ``LS``-coupling) or a
+`HalfInteger` (for ``jj``-coupling).
+
+The disambiguating quantum number (`::S`) can be anything as long is it is sortable (i.e.
+implementing `isless`). It is up to the user to pick a scheme that is suitable for their
+application. See "[Disambiguating quantum numbers](@ref)" in the manual for discussion on how
+it is used in AtomicLevels.
+
+See also: [`Term`](@ref), [`Seniority`](@ref)
+
+# Constructors
+
     IntermediateTerm(term, ν)
 
-Represents a `term` together with its extra disambiguating quantum
-numbers, labelled by `ν`, which should be sortable (i.e. comparable by
-`isless`). The most common implementation of this is a single quantum
-number, [`Seniority`](@ref).
+Constructs and intermediate term with term symbol `term` and disambiguating quantum number
+`ν`.
+
+# Properties
+
+To access the term symbol and the disambiguating quantum number, you can use the
+`.term :: T` and `.ν :: S` (or `.nu :: S`) properties, respectively. E.g.:
+
+```jldoctest
+julia> it = IntermediateTerm(T"2D", 2)
+₍₂₎²D
+
+julia> it.term, it.ν
+(²D, 2)
+
+julia> it = IntermediateTerm(5//2, Seniority(2))
+₂5/2
+
+julia> it.term, it.nu
+(5/2, ₂)
+```
 """
 struct IntermediateTerm{T,S}
     term::T
