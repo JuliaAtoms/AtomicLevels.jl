@@ -1,9 +1,26 @@
+using AtomicLevels
+using HalfIntegers
+using Test
+
 @testset "Intermediate terms" begin
     @testset "LS coupling" begin
         @test !AtomicLevels.istermvalid(T"2S", Seniority(2))
 
         @test string(IntermediateTerm(T"2D", Seniority(3))) == "₃²D"
         @test string(IntermediateTerm(T"2D", 3)) == "₍₃₎²D"
+
+        for t in [T"2D", T"2Do"], ν in [1, Seniority(2), 3]
+            it = IntermediateTerm(t, ν)
+            @test length(propertynames(it)) == 3
+            @test hasproperty(it, :term)
+            @test hasproperty(it, :ν)
+            @test hasproperty(it, :nu)
+            @test it.term == t
+            @test it.ν == it.nu
+            @test it.nu == ν
+            @test !hasproperty(it, :foo)
+            @test_throws ErrorException it.foo
+        end
 
         @testset "Seniority" begin
             # Table taken from p. 25 of
