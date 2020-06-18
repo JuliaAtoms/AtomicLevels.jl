@@ -63,15 +63,15 @@ end
 """
     struct IntermediateTerm{T,S}
 
-Represents a term together with its extra disambiguating quantum number, labelled by `ν`.
+Represents a term together with its extra disambiguating quantum number(s), labelled by `ν`.
 
 The term symbol (`::T`) can either be a [`Term`](@ref) (for ``LS``-coupling) or a
 `HalfInteger` (for ``jj``-coupling).
 
-The disambiguating quantum number (`::S`) can be anything as long is it is sortable (i.e.
+The disambiguating quantum number(s) (`::S`) can be anything as long is it is sortable (i.e.
 implementing `isless`). It is up to the user to pick a scheme that is suitable for their
-application. See "[Disambiguating quantum numbers](@ref)" in the manual for discussion on how
-it is used in AtomicLevels.
+application. See "[Disambiguating quantum numbers](@ref)" in the manual for discussion on
+how it is used in AtomicLevels.
 
 See also: [`Term`](@ref), [`Seniority`](@ref)
 
@@ -79,12 +79,12 @@ See also: [`Term`](@ref), [`Seniority`](@ref)
 
     IntermediateTerm(term, ν)
 
-Constructs and intermediate term with term symbol `term` and disambiguating quantum number
-`ν`.
+Constructs and intermediate term with term symbol `term` and disambiguating quantum
+number(s) `ν`.
 
 # Properties
 
-To access the term symbol and the disambiguating quantum number, you can use the
+To access the term symbol and the disambiguating quantum number(s), you can use the
 `.term :: T` and `.ν :: S` (or `.nu :: S`) properties, respectively. E.g.:
 
 ```jldoctest
