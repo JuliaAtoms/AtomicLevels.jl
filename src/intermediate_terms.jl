@@ -68,10 +68,10 @@ Represents a term together with its extra disambiguating quantum number(s), labe
 The term symbol (`::T`) can either be a [`Term`](@ref) (for ``LS``-coupling) or a
 `HalfInteger` (for ``jj``-coupling).
 
-The disambiguating quantum number(s) (`::S`) can be anything as long is it is sortable (i.e.
-implementing `isless`). It is up to the user to pick a scheme that is suitable for their
-application. See "[Disambiguating quantum numbers](@ref)" in the manual for discussion on
-how it is used in AtomicLevels.
+The disambiguating quantum number(s) (`::S`) can be anything as long as they are sortable
+(i.e. implementing `isless`). It is up to the user to pick a scheme that is suitable for
+their application. See "[Disambiguating quantum numbers](@ref)" in the manual for discussion
+on how it is used in AtomicLevels.
 
 See also: [`Term`](@ref), [`Seniority`](@ref)
 
@@ -79,7 +79,7 @@ See also: [`Term`](@ref), [`Seniority`](@ref)
 
     IntermediateTerm(term, ν)
 
-Constructs and intermediate term with term symbol `term` and disambiguating quantum
+Constructs an intermediate term with the term symbol `term` and disambiguating quantum
 number(s) `ν`.
 
 # Properties
