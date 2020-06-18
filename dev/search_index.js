@@ -557,7 +557,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Term symbols",
     "title": "AtomicLevels.Term",
     "category": "type",
-    "text": "struct Term\n\nRepresent a term symbol ^2S+1L_J with specific parity in LS-coupling. As determining valid J values is simple for given S and L (L - S leq J leq L+S), it is not specified.\n\nConstructors\n\nTerm(L::Real, S::Real, parity::Union{Parity,Integer})\n\nConstructs a Term object with the given L and S quantum numbers and parity. L and S both have to be convertible to HalfIntegers and parity must be of type Parity or ±1.\n\n\n\n\n\n"
+    "text": "struct Term\n\nRepresents a term symbol with specific parity in LS-coupling.\n\nOnly the L, S and parity values of the symbol ^2S+1L_J are specified. To specify a level, the J value would have to be specified separately. The valid J values corresponding to given L and S fall in the following range:\n\nL - S leq J leq L+S\n\nConstructors\n\nTerm(L::Real, S::Real, parity::Union{Parity,Integer})\n\nConstructs a Term object with the given L and S quantum numbers and parity. L and S both have to be convertible to HalfIntegers and parity must be of type Parity or ±1.\n\nSee also: @T_str\n\nProperties\n\nTo access the quantum number values, you can use the .L, .S and .parity properties to access the L, S and parity values (represented with Parity), respectively. E.g.:\n\njulia> t = Term(2, 1//2, p\"odd\")\n²Dᵒ\n\njulia> t.L, t.S, t.parity\n(2, 1/2, odd)\n\n\n\n\n\n"
 },
 
 {
@@ -569,6 +569,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "terms/#Base.parse-Tuple{Type{Term},AbstractString}",
+    "page": "Term symbols",
+    "title": "Base.parse",
+    "category": "method",
+    "text": "parse(::Type{Term}, ::AbstractString) -> Term\n\nParses a string into a Term object.\n\njulia> parse(Term, \"4Po\")\n⁴Pᵒ\n\nSee also: @T_str\n\n\n\n\n\n"
+},
+
+{
     "location": "terms/#AtomicLevels.terms",
     "page": "Term symbols",
     "title": "AtomicLevels.terms",
@@ -577,11 +585,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "terms/#AtomicLevels.count_terms",
+    "page": "Term symbols",
+    "title": "AtomicLevels.count_terms",
+    "category": "function",
+    "text": "count_terms(orbital, occupation, term)\n\nCount how many times term occurs among the valid terms of orbital^occupation.\n\njulia> count_terms(o\"1s\", 2, T\"1S\")\n1\n\njulia> count_terms(ro\"6h\", 4, 8)\n4\n\n\n\n\n\n"
+},
+
+{
     "location": "terms/#Term-symbols-1",
     "page": "Term symbols",
     "title": "Term symbols",
     "category": "section",
-    "text": "DocTestSetup = quote\n    using AtomicLevels\nendAtomicLevels provides types and methods to work and determine term symbols. The \"Term symbol\" and \"Angular momentum coupling\" Wikipedia articles give a good basic overview of the terminology.For term symbols in LS coupling, AtomicLevels provides the Term type.TermThe Term objects can also be constructed with the @T_str string macro.@T_strThe terms function can be used to generate all possible term symbols. In the case of relativistic orbitals, the term symbols are simply the valid J values, represented with the HalfInteger type.terms"
+    "text": "DocTestSetup = :(using AtomicLevels)AtomicLevels provides types and methods to work and determine term symbols. The \"Term symbol\" and \"Angular momentum coupling\" Wikipedia articles give a good basic overview of the terminology.For term symbols in LS coupling, AtomicLevels provides the Term type.TermThe Term objects can also be constructed with the @T_str string macro.@T_str\nBase.parse(::Type{Term}, ::AbstractString)The terms function can be used to generate all possible term symbols. In the case of relativistic orbitals, the term symbols are simply the valid J values, represented using the HalfInteger type.terms\ncount_terms"
 },
 
 {
@@ -589,7 +605,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Term symbols",
     "title": "AtomicLevels.IntermediateTerm",
     "category": "type",
-    "text": "IntermediateTerm(term, ν)\n\nRepresents a term together with its extra disambiguating quantum numbers, labelled by ν, which should be sortable (i.e. comparable by isless). The most common implementation of this is a single quantum number, Seniority.\n\n\n\n\n\n"
+    "text": "struct IntermediateTerm{T,S}\n\nRepresents a term together with its extra disambiguating quantum number(s), labelled by ν.\n\nThe term symbol (::T) can either be a Term (for LS-coupling) or a HalfInteger (for jj-coupling).\n\nThe disambiguating quantum number(s) (::S) can be anything as long as they are sortable (i.e. implementing isless). It is up to the user to pick a scheme that is suitable for their application. See \"Disambiguating quantum numbers\" in the manual for discussion on how it is used in AtomicLevels.\n\nSee also: Term, Seniority\n\nConstructors\n\nIntermediateTerm(term, ν)\n\nConstructs an intermediate term with the term symbol term and disambiguating quantum number(s) ν.\n\nProperties\n\nTo access the term symbol and the disambiguating quantum number(s), you can use the .term :: T and .ν :: S (or .nu :: S) properties, respectively. E.g.:\n\njulia> it = IntermediateTerm(T\"2D\", 2)\n₍₂₎²D\n\njulia> it.term, it.ν\n(²D, 2)\n\njulia> it = IntermediateTerm(5//2, Seniority(2))\n₂5/2\n\njulia> it.term, it.nu\n(5/2, ₂)\n\n\n\n\n\n"
 },
 
 {
@@ -601,19 +617,27 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "terms/#AtomicLevels.count_terms",
-    "page": "Term symbols",
-    "title": "AtomicLevels.count_terms",
-    "category": "function",
-    "text": "count_terms(orb, occ, term)\n\nCount how many times term occurs among the valid terms of orb^occ. For example:\n\njulia> count_terms(o\"1s\", 2, T\"1S\")\n1\n\n\n\n\n\n"
-},
-
-{
     "location": "terms/#Term-multiplicity-and-intermediate-terms-1",
     "page": "Term symbols",
     "title": "Term multiplicity and intermediate terms",
     "category": "section",
-    "text": "For subshells starting with d³, the possible terms may occur more than once (multiplicity higher than one), corresponding to different physical states. These arise from different sequences of coupling the w equivalent electrons of the same ell, and are distinguished using a seniority number, which the IntermediateTerm type implements. For partially filled f shells, seniority is not enough to distinguish all possible couplings. Using count_terms, we can see that e.g. the ²Dᵒ has higher multiplicity than can be described with seniority only:julia> count_terms(o\"4f\", 3, T\"2Do\")\n2\n\njulia> count_terms(o\"4f\", 5, T\"2Do\")\n5IntermediateTerm\nintermediate_terms\ncount_terms"
+    "text": "For subshells starting with d³, a term symbol can occur multiple times, each occurrence corresponding to a different physical state (multiplicity higher than one). This happens when there are distinct ways of coupling the electrons, but they yield the same total angular momentum. E.g. a d³ subshell can be coupled in 8 different ways, two of which are both described by the ²D term symbol:julia> terms(o\"3d\", 3)\n8-element Array{Term,1}:\n ²P\n ²D\n ²D\n ²F\n ²G\n ²H\n ⁴P\n ⁴F\n\njulia> count_terms(o\"3d\", 3, T\"2D\")\n2The multiplicity can be even higher if more electrons and higher angular momenta are involved:julia> count_terms(o\"4f\", 5, T\"2Do\")\n5To distinguish these subshells, extra quantum numbers must be specified. In AtomicLevels, that can be done with the IntermediateTerm type. This is primarily used when specifying the subshell couplings in CSFs.IntermediateTerm\nintermediate_terms"
+},
+
+{
+    "location": "terms/#AtomicLevels.Seniority",
+    "page": "Term symbols",
+    "title": "AtomicLevels.Seniority",
+    "category": "type",
+    "text": "Seniority(ν)\n\nSeniority is an extra quantum number introduced by Giulio Racah (1943) to disambiguate between terms belonging to a subshell with a specific occupancy, that are assigned the same term symbols. For partially filled f-shells (in LS coupling) or partially filled 92 shells (in jj coupling), seniority alone is not enough to disambiguate all the arising terms.\n\nThe seniority number is defined as the minimum occupancy number ν ∈ n:-2:0 for which the term first appears, e.g. the ²D term first occurs in the d¹ configuration, then twice in the d³ configuration (which will then have the terms ₁²D and ₃²D).\n\n\n\n\n\n"
+},
+
+{
+    "location": "terms/#Disambiguating-quantum-numbers-1",
+    "page": "Term symbols",
+    "title": "Disambiguating quantum numbers",
+    "category": "section",
+    "text": "The IntermediateTerm type does not specify how to interpret the disambiguating quantum number(s) ν, or even what the type of it should be. In AtomicLevels, we use two different types, depending on the situation:A simple Integer. In this case, the quantum number nu must be in the range 1 leq nu leq N_rmterms, where N_rmterms is the multiplicity of the term symbol (i.e. the number of times this term symbol appears for this subshell ell^w or ell_j^w).\nAtomicLevels does not prescribe any further interpretation for the quantum number. It can be used as a simple counter to distinguish the different terms, or the user can define their own mapping from the set of integers to physical states.\nSeniority. In this case the number is interpreted to be Racah\'s seniority number. This gives the intermediate term a specific physical interpretation, but only works for certain subshells. See the Seniority type for more information.Seniority"
 },
 
 {
@@ -653,7 +677,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Term symbols",
     "title": "Internal implementation of term multiplicity calculation",
     "category": "section",
-    "text": "AtomicLevels.jl uses the algorithm presented inAlternative mathematical technique to determine LS spectral terms by Xu Renjun and Dai Zhenwen, published in JPhysB, 2006.\ndoi:10.1088/0953-4075/39/16/007to compute the multiplicity of individual subshells, beyond the trivial cases of a single electron or a filled subshell. These routines need not be used directly, instead use terms and count_terms.In the following, S=2SinmathbbZ and M_S=2M_SinmathbbZ, as in the original article.AtomicLevels.xu_terms\nAtomicLevels.Xu.X\nAtomicLevels.Xu.A\nAtomicLevels.Xu.f"
+    "text": "AtomicLevels.jl uses the algorithm presented inAlternative mathematical technique to determine LS spectral terms by Xu Renjun and Dai Zhenwen, published in JPhysB, 2006. doi:10.1088/0953-4075/39/16/007to compute the multiplicity of individual subshells in LS-coupling, beyond the trivial cases of a single electron or a filled subshell. These routines need not be used directly, instead use terms and count_terms.In the following, S=2SinmathbbZ and M_S=2M_SinmathbbZ, as in the original article.AtomicLevels.xu_terms\nAtomicLevels.Xu.X\nAtomicLevels.Xu.A\nAtomicLevels.Xu.f"
 },
 
 {
