@@ -1,7 +1,7 @@
 @testset "Configurations" begin
     @testset "Construction" begin
         config = Configuration([o"1s", o"2s", o"2p", o"3s", o"3p"], [2,2,6,2,6], [:closed])
-        rconfig = Configuration([ro"1s", ro"2s", ro"2p", ro"3s", ro"3p"], [2,2,6,2,6], [:closed])
+        rconfig = Configuration([ro"1s", ro"2s", ro"2p", ro"3s", ro"3p"], [2,2,6,2,6], [:closed], sorted=true)
 
         @test config.orbitals ==
             [o"1s", o"2s", o"2p", o"3s", o"3p"]
@@ -18,9 +18,12 @@
         @test c"1s2c.2s2.2p6.3s2.3p6" == config
         @test c"[He]c 2s2 2p6 3s2 3p6" == config
 
-        @test rc"1s2c 2s2 2p6 3s2 3p6" == rconfig
-        @test rc"1s2c.2s2.2p6.3s2.3p6" == rconfig
-        @test rc"[He]c 2s2 2p6 3s2 3p6" == rconfig
+        # We sort the configurations since the non-relativistic
+        # convenience labels (2p) &c expand to two orbitals each, one
+        # of which is appended to the orbitals list.
+        @test rc"1s2c 2s2 2p6 3s2 3p6"s == rconfig
+        @test rc"1s2c.2s2.2p6.3s2.3p6"s == rconfig
+        @test rc"[He]c 2s2 2p6 3s2 3p6"s == rconfig
 
         @test c"[Kr]c 5s2" == Configuration([o"1s", o"2s", o"2p", o"3s", o"3p", o"3d", o"4s", o"4p", o"5s"],
                                             [2,2,6,2,6,10,2,6,2],
@@ -29,7 +32,8 @@
         @test length(c"") == 0
         @test length(rc"") == 0
 
-        @test rc"1s ld-2 kp6" == Configuration([ro"1s", ro"kp-", ro"kp", ro"ld-"], [1, 2, 4, 2])
+        @test rc"1s ld-2 kp6" == Configuration([ro"1s", ro"ld-", ro"kp", ro"kp-"], [1, 2, 4, 2])
+        @test rc"1s ld-2 kp6"s == Configuration([ro"1s", ro"kp-", ro"kp", ro"ld-"], [1, 2, 4, 2])
 
         @test_throws ArgumentError parse(Configuration{Orbital}, "1sc")
         @test_throws ArgumentError parse(Configuration{Orbital}, "1s 1s")
@@ -44,14 +48,14 @@
         let c = c"1s2c 2s 2p"
             @test fill!(c) == c"1s2c 2s2 2p6"
             @test c == c"1s2c 2s2 2p6"
-            @test close!(c) == c"[Ne]"
-            @test c == c"[Ne]"
+            close!(c)
+            @test sort(c) == c"[Ne]"s
         end
         let c = rc"1s2c 2s 2p- 2p2"
             @test fill!(c) == rc"1s2c 2s2 2p-2 2p4"
             @test c == rc"1s2c 2s2 2p-2 2p4"
-            @test close!(c) == rc"[Ne]"
-            @test c == rc"[Ne]"
+            close!(c)
+            @test sort(c) == rc"[Ne]"s
         end
         @test_throws ArgumentError close(c"1s")
         @test_throws ArgumentError close(rc"1s2 2s")
@@ -164,14 +168,14 @@
              c"[He]c 2s2" => "[He]ᶜ 2s²",
              c"[He]i 2s2" => "1s²ⁱ 2s²",
              c"[Kr]c 5s2" => "[Kr]ᶜ 5s²",
-             Xe⁺ => "[Kr]ᶜ 5s² 5p⁻² 5p³",
+             Xe⁺ => "[Kr]ᶜ 5s² 5p-² 5p³",
              core(Xe⁺) => "[Kr]ᶜ",
-             peel(Xe⁺) => "5s² 5p⁻² 5p³",
-             rc"[Kr] 5s2c 5p6" => "[Kr]ᶜ 5s²ᶜ 5p⁻² 5p⁴",
+             peel(Xe⁺) => "5s² 5p-² 5p³",
+             rc"[Kr] 5s2c 5p6"s => "[Kr]ᶜ 5s²ᶜ 5p-² 5p⁴",
              c"[Ne]"[end:end] => "2p⁶ᶜ",
-             rc"[Ne]"[end-1:end] => "2p⁻²ᶜ 2p⁴ᶜ",
+             sort(rc"[Ne]"[end-1:end]) => "2p-²ᶜ 2p⁴ᶜ",
              c"5s2" => "5s²",
-             rc"[Kr]*" => "1s² 2s² 2p⁻² 2p⁴ 3s² 3p⁻² 3p⁴ 3d⁻⁴ 3d⁶ 4s² 4p⁻² 4p⁴",
+             rc"[Kr]*"s => "1s² 2s² 2p-² 2p⁴ 3s² 3p-² 3p⁴ 3d-⁴ 3d⁶ 4s² 4p-² 4p⁴",
              c"[Kr]c" =>"[Kr]ᶜ",
              c"1s2 kp" => "1s² kp",
              c"" => "∅"]) do (c,s)
@@ -185,6 +189,10 @@
         @test replace(c"1s kp", o"kp"=>o"ld") == c"1s ld"
         @test_throws ArgumentError replace(c"1s2", o"2p"=>o"3p")
         @test_throws ArgumentError replace(c"1s2 2s", o"2s"=>o"1s")
+
+        @test replace(c"1s2 2s", o"1s"=>o"2p") == c"1s 2p 2s"
+        @test replace(c"1s2 2s", o"1s"=>o"2p", append=true) == c"1s 2s 2p"
+        @test replace(c"1s2 2s"s, o"1s"=>o"2p") == c"1s 2s 2p"
     end
 
     @testset "Orbital removal" begin
@@ -256,56 +264,91 @@
     end
 
     @testset "Spin-orbitals" begin
+        up, down = half(1),-half(1)
+
         @test_throws ArgumentError Configuration(spin_orbitals(o"1s"), [2,1])
         @test_throws ArgumentError Configuration(spin_orbitals(o"1s"), [1,2])
 
         @test spin_configurations(c"1s2") ==
-            [Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"1s",0,false)], [1, 1])]
-        @test spin_configurations(c"1s2") isa Vector{Configuration{SpinOrbital{Orbital{Int}}}}
-        @test spin_configurations(c"ks2") isa Vector{Configuration{SpinOrbital{Orbital{Symbol}}}}
-        @test spin_configurations(c"1s ks") isa Vector{Configuration{SpinOrbital}}
+            [Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"1s",0,down)], [1, 1])]
+        @test spin_configurations(c"1s2") isa Vector{Configuration{SpinOrbital{Orbital{Int},Tuple{Int,HalfInt}}}}
+        @test spin_configurations(c"ks2") isa Vector{Configuration{SpinOrbital{Orbital{Symbol},Tuple{Int,HalfInt}}}}
+        @test spin_configurations(c"1s ks") isa Vector{Configuration{SpinOrbital{<:Orbital,Tuple{Int,HalfInt}}}}
 
-        @test spin_configurations(c"1s 2p") ==
-            [Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",-1,true)], [1, 1]),
-             Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"2p",-1,true)], [1, 1]),
-             Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",-1,false)], [1, 1]),
-             Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"2p",-1,false)], [1, 1]),
-             Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",0,true)], [1, 1]),
-             Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"2p",0,true)], [1, 1]),
-             Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",0,false)], [1, 1]),
-             Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"2p",0,false)], [1, 1]),
-             Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",1,true)], [1, 1]),
-             Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"2p",1,true)], [1, 1]),
-             Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"2p",1,false)], [1, 1]),
-             Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"2p",1,false)], [1, 1])]
+        @test scs"1s 2p" == spin_configurations(c"1s 2p") ==
+            [Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"2p",-1,up)], [1, 1]),
+             Configuration([SpinOrbital(o"1s",0,down), SpinOrbital(o"2p",-1,up)], [1, 1]),
+             Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"2p",-1,down)], [1, 1]),
+             Configuration([SpinOrbital(o"1s",0,down), SpinOrbital(o"2p",-1,down)], [1, 1]),
+             Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"2p",0,up)], [1, 1]),
+             Configuration([SpinOrbital(o"1s",0,down), SpinOrbital(o"2p",0,up)], [1, 1]),
+             Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"2p",0,down)], [1, 1]),
+             Configuration([SpinOrbital(o"1s",0,down), SpinOrbital(o"2p",0,down)], [1, 1]),
+             Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"2p",1,up)], [1, 1]),
+             Configuration([SpinOrbital(o"1s",0,down), SpinOrbital(o"2p",1,up)], [1, 1]),
+             Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"2p",1,down)], [1, 1]),
+             Configuration([SpinOrbital(o"1s",0,down), SpinOrbital(o"2p",1,down)], [1, 1])]
 
-        @test spin_configurations(
-            excited_configurations(c"1s2", os"k[s-p]"..., max_excitations=:singles, keep_parity=false)) ==
-                [Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"1s",0,false)], [1, 1]),
+        @testset "Excited spin configurations" begin
+            function excited_spin_configurations(cfg, orbitals)
+                ec = excited_configurations(cfg, orbitals...,
+                                            max_excitations=:singles, keep_parity=false)
+                spin_configurations(ec)
+            end
 
-                 Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"ks",0,true)], [1, 1]),
-                 Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"ks",0,false)], [1, 1]),
-                 Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"kp",-1,true)], [1, 1]),
-                 Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"kp",-1,false)], [1, 1]),
-                 Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"kp",0,true)], [1, 1]),
-                 Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"kp",0,false)], [1, 1]),
-                 Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"kp",1,true)], [1, 1]),
-                 Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"kp",1,false)], [1, 1]),
+            a = excited_spin_configurations(c"1s2", os"2[s-p]")
+            @test a isa Vector{Configuration{SpinOrbital{Orbital{Int},Tuple{Int,HalfInt}}}}
+            b = excited_spin_configurations(c"1s2", os"k[s-p]")
+            @test b isa Vector{<:Configuration{<:SpinOrbital{<:Orbital,Tuple{Int,HalfInt}}}}
+            c = excited_spin_configurations(c"ks2", os"l[s-p]")
+            @test c isa Vector{Configuration{SpinOrbital{Orbital{Symbol},Tuple{Int,HalfInt}}}}
 
-                 Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"ks",0,true)], [1, 1]),
-                 Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"ks",0,false)], [1, 1]),
-                 Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"kp",-1,true)], [1, 1]),
-                 Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"kp",-1,false)], [1, 1]),
-                 Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"kp",0,true)], [1, 1]),
-                 Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"kp",0,false)], [1, 1]),
-                 Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"kp",1,true)], [1, 1]),
-                 Configuration([SpinOrbital(o"1s",0,false), SpinOrbital(o"kp",1,false)], [1, 1])]
+            for (u,v) in [(a,b), (a,c), (b,c)]
+                @test vcat(u,v) isa Vector{<:Configuration{<:SpinOrbital{<:Orbital,Tuple{Int,HalfInt}}}}
+            end
 
-        @test bound(Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"ks",0,true)], [1, 1])) ==
-            Configuration([SpinOrbital(o"1s",0,true),], [1,])
+            @test b ==
+                [Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"1s",0,down)], [1, 1]),
 
-        @test continuum(Configuration([SpinOrbital(o"1s",0,true), SpinOrbital(o"ks",0,true)], [1, 1])) ==
-            Configuration([SpinOrbital(o"ks",0,true),], [1,])
+                 Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"ks",0,up)], [1, 1]),
+                 Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"ks",0,down)], [1, 1]),
+                 Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"kp",-1,up)], [1, 1]),
+                 Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"kp",-1,down)], [1, 1]),
+                 Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"kp",0,up)], [1, 1]),
+                 Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"kp",0,down)], [1, 1]),
+                 Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"kp",1,up)], [1, 1]),
+                 Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"kp",1,down)], [1, 1]),
+
+                 Configuration([SpinOrbital(o"1s",0,down), SpinOrbital(o"ks",0,up)], [1, 1]),
+                 Configuration([SpinOrbital(o"1s",0,down), SpinOrbital(o"ks",0,down)], [1, 1]),
+                 Configuration([SpinOrbital(o"1s",0,down), SpinOrbital(o"kp",-1,up)], [1, 1]),
+                 Configuration([SpinOrbital(o"1s",0,down), SpinOrbital(o"kp",-1,down)], [1, 1]),
+                 Configuration([SpinOrbital(o"1s",0,down), SpinOrbital(o"kp",0,up)], [1, 1]),
+                 Configuration([SpinOrbital(o"1s",0,down), SpinOrbital(o"kp",0,down)], [1, 1]),
+                 Configuration([SpinOrbital(o"1s",0,down), SpinOrbital(o"kp",1,up)], [1, 1]),
+                 Configuration([SpinOrbital(o"1s",0,down), SpinOrbital(o"kp",1,down)], [1, 1])]
+
+            d=excited_spin_configurations(rc"1s2", ros"2[s-p]")
+            @test d isa Vector{Configuration{SpinOrbital{RelativisticOrbital{Int},Tuple{HalfInt}}}}
+            e=excited_spin_configurations(rc"1s2", ros"k[s-p]")
+            @test e isa Vector{<:Configuration{<:SpinOrbital{<:RelativisticOrbital,Tuple{HalfInt}}}}
+            f=excited_spin_configurations(rc"ks2", ros"l[s-p]")
+            @test f isa Vector{Configuration{SpinOrbital{RelativisticOrbital{Symbol},Tuple{HalfInt}}}}
+
+            for (u,v) in [(d,e), (d,f), (e,f)]
+                @test vcat(u,v) isa Vector{<:Configuration{<:SpinOrbital{<:RelativisticOrbital,Tuple{HalfInt}}}}
+            end
+
+            for (u,v) in Iterators.product([a,b,c], [d,e,f])
+                @test vcat(u,v) isa Vector{<:Configuration{<:SpinOrbital}}
+            end
+        end
+
+        @test bound(Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"ks",0,up)], [1, 1])) ==
+            Configuration([SpinOrbital(o"1s",0,up),], [1,])
+
+        @test continuum(Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"ks",0,up)], [1, 1])) ==
+            Configuration([SpinOrbital(o"ks",0,up),], [1,])
 
         @test all([o ∈ spin_configurations(c"1s2")[1]
                    for o in spin_orbitals(o"1s")])
@@ -314,7 +357,7 @@
             orb.orb.n < 5 && state == :closed || orb.orb.n == 5 && state == :open
         end |> all
 
-        @test string.(spin_configurations(c"2s2 2p")) ==
+        @test_broken string.(spin_configurations(c"2s2 2p"s)) ==
             ["2s² 2p₋₁α",
              "2s² 2p₋₁β",
              "2s² 2p₀α",
@@ -322,7 +365,7 @@
              "2s² 2p₁α",
              "2s² 2p₁β"]
 
-        @test string.(spin_configurations(c"[Kr] 5s2 5p5 ks")) ==
+        @test_broken string.(spin_configurations(c"[Kr] 5s2 5p5 ks"s)) ==
             ["[Kr]ᶜ 5s² 5p₋₁² 5p₀² 5p₁α ks₀α",
              "[Kr]ᶜ 5s² 5p₋₁² 5p₀² 5p₁β ks₀α",
              "[Kr]ᶜ 5s² 5p₋₁² 5p₀α 5p₁² ks₀α",
@@ -336,7 +379,7 @@
              "[Kr]ᶜ 5s² 5p₋₁α 5p₀² 5p₁² ks₀β",
              "[Kr]ᶜ 5s² 5p₋₁β 5p₀² 5p₁² ks₀β"]
 
-        @test string.(spin_configurations(c"[Kr] 5s2 5p4")) ==
+        @test_broken string.(spin_configurations(c"[Kr] 5s2 5p4"s)) ==
             ["[Kr]ᶜ 5s² 5p₋₁² 5p₀²",
              "[Kr]ᶜ 5s² 5p₋₁² 5p₀α 5p₁α",
              "[Kr]ᶜ 5s² 5p₋₁² 5p₀α 5p₁β",
@@ -358,13 +401,20 @@
 
         @test substitutions(spin_configurations(c"1s2")[1],
                             spin_configurations(c"1s ks")[2]) ==
-                                [SpinOrbital(o"1s",0,true)=>SpinOrbital(o"ks",0,true)]
+                                [SpinOrbital(o"1s",0,up)=>SpinOrbital(o"ks",0,up)]
     end
 
     @testset "Configuration transformations" begin
-        @test nonrelconfiguration(rc"1s2 2p-2 2s 2p2 3s2 3p-") == c"1s2 2s 2p4 3s2 3p"
-        @test nonrelconfiguration(rc"1s2 ks2") == c"1s2 ks2"
-        @test nonrelconfiguration(rc"kp-2 kp4 lp-2 lp") == c"kp6 lp3"
+        @testset "Relativistic -> non-relativistic" begin
+            @test nonrelconfiguration(rc"1s2 2p-2 2s 2p2 3s2 3p-"s) == c"1s2 2s 2p4 3s2 3p"s
+            @test nonrelconfiguration(rc"1s2 ks2"s) == c"1s2 ks2"s
+            @test nonrelconfiguration(rc"kp-2 kp4 lp-2 lp"s) == c"kp6 lp3"s
+        end
+        @testset "Non-relativistic -> relativistic" begin
+            @test relconfigurations(c"[He] 2p") == [rc"[He] 2p-", rc"[He] 2p"]
+            @test relconfigurations(c"[Ne]"s) == [rc"[Ne]"s]
+            @test relconfigurations([c"1s 2p", c"2s 2p"]) == [rc"1s 2p-", rc"1s 2p", rc"2s 2p-", rc"2s 2p"]
+        end
     end
 
     @testset "Internal utilities" begin
@@ -377,6 +427,89 @@
             @test AtomicLevels.get_noble_core_name(c) === gas
             rc = parse(Configuration{RelativisticOrbital}, "[$gas]")
             @test AtomicLevels.get_noble_core_name(rc) === gas
+        end
+    end
+
+    @testset "Unsorted configurations" begin
+        @testset "Comparisons" begin
+            # These configurations should be similar but not equal
+            @test issimilar(c"1s 2s", c"1s 2si")
+            @test issimilar(c"1s 2s", c"2s 1s")
+            @test issimilar(c"1s 2s", c"2si 1s")
+
+            @test c"1s 2s" != c"1s 2si"
+            @test c"1s 2s" != c"2s 1s"
+            @test c"1s 2s" == c"2s 1s"s
+            @test c"1s 2s" != c"2si 1s"
+
+            @test rc"1s 2s" != rc"1s 2si"
+            @test rc"1s 2s" != rc"2s 1s"
+            @test rc"1s 2s" == rc"2s 1s"s
+            @test rc"1s 2s" != rc"2si 1s"
+        end
+        @testset "Substitutions" begin
+            @testset "Spatial orbitals" begin
+                # Sorted case
+                a = Configuration([o"1s", o"2s"], [1,1], [:open, :open], sorted=true)
+                @test replace(a, o"1s" => o"2p").orbitals == [o"2s", o"2p"]
+
+                b = Configuration([o"1s", o"2s"], [1,1], [:open, :open], sorted=false)
+                c = replace(b, o"1s" => o"2p")
+                @test c.orbitals == [o"2p", o"2s"]
+                @test "$c" == "2p 2s"
+
+                d = c"[He]" + Configuration([o"2p"], [1], [:open], sorted=false) + c"2s"
+                @test core(d) == c"[He]"
+                @test peel(d) == c
+            end
+
+            @testset "Spin orbitals" begin
+                orbs = [spin_orbitals(o) for o in [o"1s", o"2s"]]
+
+                a = spin_configurations(Configuration(o"1s", 2, :open, sorted=true))[1]
+                @test replace(a, orbs[1][1]=>orbs[2][1]).orbitals == [orbs[1][2], orbs[2][1]]
+
+                b = spin_configurations(Configuration(o"1s", 2, :open, sorted=false))[1]
+                c = replace(b, orbs[1][1]=>orbs[2][1])
+                @test c.orbitals == [orbs[2][1], orbs[1][2]]
+                @test "$c" == "2s₀α 1s₀β"
+            end
+        end
+    end
+
+    @testset "String representation" begin
+        @test string(c"[Ar]c 3d10c 4s2c 4p6 4d10 5s2i 5p6") == "[Ar]ᶜ 3d¹⁰ᶜ 4s²ᶜ 4p⁶ 4d¹⁰ 5s²ⁱ 5p⁶"
+        @test ascii(c"[Ar]c 3d10c 4s2c 4p6 4d10 5s2i 5p6") == "[Ar]c 3d10c 4s2c 4p6 4d10 5s2i 5p6"
+        @test string(rc"[Ar]*") == "1s² 2s² 2p⁴ 2p-² 3s² 3p⁴ 3p-²"
+        @test ascii(rc"[Ar]*") == "1s2 2s2 2p4 2p-2 3s2 3p4 3p-2"
+    end
+
+    @testset "multiplicity" begin
+        @test multiplicity(c"1s") == 2
+        @test multiplicity(c"2s2") == 1
+        @test multiplicity(c"2p") == 6
+        @test multiplicity(c"2p5") == 6
+        @test multiplicity(c"2p2") == 15
+        @test multiplicity(rc"1s") == 2
+        @test multiplicity(rc"2p-2") == 1
+        @test multiplicity(rc"2p4") == 1
+        @test multiplicity(rc"3d3") == 20
+        @test multiplicity(c"1s 2s") == 4
+        @test multiplicity(c"1s 2s 2p") == 24
+        @test multiplicity(c"1s2 2s2 2p6") == 1
+        @test multiplicity(rc"1s2 2s2 2p-2 2p4") == 1
+
+        let c = c"1s 2s2 2p3"; @test multiplicity(c) == length(spin_configurations(c)) end
+        let c = c"1s2 4f1 5g1"; @test multiplicity(c) == length(spin_configurations(c)) end
+        let c = rc"1s 2s2 2p3 2p-"; @test multiplicity(c) == length(spin_configurations(c)) end
+        let c = rc"1s2 2s2 2p-2"; @test multiplicity(c) == length(spin_configurations(c)) end
+        let c = rc"ag-6 bf4"; @test multiplicity(c) == length(spin_configurations(c)) end
+
+        for c in spin_configurations(c"1s 2s2 2p3")
+            @test multiplicity(c) == 1
+        end
+        for c in spin_configurations(rc"1s2 2s2 2p- 2p2")
+            @test multiplicity(c) == 1
         end
     end
 end

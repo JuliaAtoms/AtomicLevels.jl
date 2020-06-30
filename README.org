@@ -6,7 +6,7 @@
 [[https://ci.appveyor.com/project/juliaatoms/atomiclevels-jl][https://img.shields.io/appveyor/ci/juliaatoms/atomiclevels-jl.svg?logo=appveyor]]
 [[https://codecov.io/gh/JuliaAtoms/AtomicLevels.jl][https://codecov.io/gh/JuliaAtoms/AtomicLevels.jl/branch/master/graph/badge.svg]]
 
-[[https://juliaatoms.github.io/AtomicLevels.jl/dev/index.html][https://img.shields.io/badge/docs-dev-blue.svg]]
+[[https://juliaatoms.org/AtomicLevels.jl/dev/index.html][https://img.shields.io/badge/docs-dev-blue.svg]]
 
 #+PROPERTY: header-args:julia :session *julia-README*
 
@@ -15,7 +15,7 @@
     using Pkg
     Pkg.activate(".")
   #+END_SRC
-  
+
   #+BEGIN_SRC julia :exports code
     using AtomicLevels
   #+END_SRC
@@ -38,7 +38,7 @@
    #+END_SRC
 
    #+RESULTS:
-   : [Kr]ᶜ 5s² 5p⁻² 5p⁴
+   : [Kr]ᶜ 5s² 5p-² 5p⁴
 
    As we see above, by default, the krypton core is declared
    "closed". This is useful for calculations when the core should be
@@ -48,29 +48,29 @@
    #+END_SRC
 
    #+RESULTS:
-   : 1s² 2s² 2p⁻² 2p⁴ 3s² 3p⁻² 3p⁴ 3d⁻⁴ 3d⁶ 4s² 4p⁻² 4p⁴ 5s² 5p⁻² 5p⁴
+   : 1s² 2s² 2p-² 2p⁴ 3s² 3p-² 3p⁴ 3d-⁴ 3d⁶ 4s² 4p-² 4p⁴ 5s² 5p-² 5p⁴
 
    Note that the 5p shell was broken up into 2 5p- electrons and 4 5p
    electrons. If we are not filling the shell, occupancy of the spin-up
    and spin-down electrons has to be given separately:
-  
+
    #+BEGIN_SRC julia :exports both
      Xe⁺ = rc"[Kr] 5s2 5p-2 5p3"
    #+END_SRC
 
    #+RESULTS:
-   : [Kr]ᶜ 5s² 5p⁻² 5p³
+   : [Kr]ᶜ 5s² 5p-² 5p³
 
    It is also possible to work with "continuum orbitals", where the
    main quantum number is replaced by a =Symbol=:
-  
+
    #+BEGIN_SRC julia :exports both
      Xe⁺e = rc"[Kr] 5s2 5p-2 5p3 ks"
    #+END_SRC
 
    #+RESULTS:
-   : [Kr]ᶜ 5s² 5p⁻² 5p³ ks
-  
+   : [Kr]ᶜ 5s² 5p-² 5p³ ks
+
 ** Orbitals
    A single orbital is constructed this way:
    #+BEGIN_SRC julia :exports both :results verbatim
@@ -78,7 +78,7 @@
    #+END_SRC
 
    #+RESULTS:
-   : (2s, 5f⁻)
+   : (2s, 5f-)
 
    Their parities and degeneracies are given by
    #+BEGIN_SRC julia :exports both :results verbatim
@@ -110,19 +110,19 @@
    #+RESULTS:
    #+begin_example
    13-element Array{RelativisticOrbital,1}:
-    5d⁻
-    5d 
-    6s 
-    6p⁻
-    6p 
-    kk⁻
-    kk 
-    kl⁻
-    kl 
-    km⁻
-    km 
-    kn⁻
-    kn 
+    5d-
+    5d
+    6s
+    6p-
+    6p
+    kk-
+    kk
+    kl-
+    kl
+    km-
+    km
+    kn-
+    kn
    #+end_example
 
 ** Excitations
@@ -135,8 +135,8 @@
 
    #+RESULTS:
    : 2-element Array{Configuration{RelativisticOrbital{Int64}},1}:
-   :  [Kr]ᶜ 5s² 5p⁻² 5p³
-   :  [Kr]ᶜ 5s² 5p⁻ 5p⁴ 
+   :  [Kr]ᶜ 5s² 5p-² 5p³c
+   :  [Kr]ᶜ 5s² 5p- 5p⁴
 
    By appending virtual orbitals, we can generate excitations to
    configurations beyond those spanned by the reference set:
@@ -147,76 +147,76 @@
    #+RESULTS:
    #+begin_example
    64-element Array{Configuration{RelativisticOrbital{Int64}},1}:
-    [Kr]ᶜ 5s² 5p⁻² 5p³       
-    [Kr]ᶜ 5s 5p⁻² 5p³ 5d⁻    
-    [Kr]ᶜ 5s 5p⁻² 5p³ 5d     
-    [Kr]ᶜ 5s 5p⁻² 5p³ 6s     
-    [Kr]ᶜ 5s² 5p⁻ 5p⁴        
-    [Kr]ᶜ 5s² 5p⁻ 5p³ 6p⁻    
-    [Kr]ᶜ 5s² 5p⁻ 5p³ 6p     
-    [Kr]ᶜ 5s² 5p⁻² 5p² 6p⁻   
-    [Kr]ᶜ 5s² 5p⁻² 5p² 6p    
-    [Kr]ᶜ 5p⁻² 5p⁴ 6p⁻       
-    [Kr]ᶜ 5p⁻² 5p⁴ 6p        
-    [Kr]ᶜ 5s 5p⁻ 5p⁴ 5d⁻     
-    [Kr]ᶜ 5s 5p⁻ 5p⁴ 5d      
-    [Kr]ᶜ 5s 5p⁻ 5p⁴ 6s      
-    [Kr]ᶜ 5p⁻² 5p³ 5d⁻²      
-    [Kr]ᶜ 5p⁻² 5p³ 5d⁻ 5d    
-    [Kr]ᶜ 5p⁻² 5p³ 5d⁻ 6s    
-    [Kr]ᶜ 5s 5p⁻ 5p³ 5d⁻ 6p⁻ 
-    [Kr]ᶜ 5s 5p⁻ 5p³ 5d⁻ 6p  
-    [Kr]ᶜ 5s 5p⁻² 5p² 5d⁻ 6p⁻
-    [Kr]ᶜ 5s 5p⁻² 5p² 5d⁻ 6p 
-    [Kr]ᶜ 5p⁻² 5p³ 5d²       
-    [Kr]ᶜ 5p⁻² 5p³ 5d 6s     
-    [Kr]ᶜ 5s 5p⁻ 5p³ 5d 6p⁻  
-    [Kr]ᶜ 5s 5p⁻ 5p³ 5d 6p   
-    [Kr]ᶜ 5s 5p⁻² 5p² 5d 6p⁻ 
-    [Kr]ᶜ 5s 5p⁻² 5p² 5d 6p  
-    [Kr]ᶜ 5p⁻² 5p³ 6s²       
-    [Kr]ᶜ 5s 5p⁻ 5p³ 6s 6p⁻  
-    [Kr]ᶜ 5s 5p⁻ 5p³ 6s 6p   
-    [Kr]ᶜ 5s 5p⁻² 5p² 6s 6p⁻ 
-    [Kr]ᶜ 5s 5p⁻² 5p² 6s 6p  
-    [Kr]ᶜ 5p⁻² 5p³ 6p⁻²      
-    [Kr]ᶜ 5p⁻² 5p³ 6p⁻ 6p    
-    [Kr]ᶜ 5p⁻² 5p³ 6p²       
-    [Kr]ᶜ 5s² 5p⁴ 6p⁻        
-    [Kr]ᶜ 5s² 5p⁴ 6p         
-    [Kr]ᶜ 5s² 5p³ 5d⁻²       
-    [Kr]ᶜ 5s² 5p³ 5d⁻ 5d     
-    [Kr]ᶜ 5s² 5p³ 5d⁻ 6s     
-    [Kr]ᶜ 5s² 5p⁻ 5p² 5d⁻²   
-    [Kr]ᶜ 5s² 5p⁻ 5p² 5d⁻ 5d 
-    [Kr]ᶜ 5s² 5p⁻ 5p² 5d⁻ 6s 
-    [Kr]ᶜ 5s² 5p³ 5d²        
-    [Kr]ᶜ 5s² 5p³ 5d 6s      
-    [Kr]ᶜ 5s² 5p⁻ 5p² 5d²    
-    [Kr]ᶜ 5s² 5p⁻ 5p² 5d 6s  
-    [Kr]ᶜ 5s² 5p³ 6s²        
-    [Kr]ᶜ 5s² 5p⁻ 5p² 6s²    
-    [Kr]ᶜ 5s² 5p³ 6p⁻²       
-    [Kr]ᶜ 5s² 5p³ 6p⁻ 6p     
-    [Kr]ᶜ 5s² 5p⁻ 5p² 6p⁻²   
-    [Kr]ᶜ 5s² 5p⁻ 5p² 6p⁻ 6p 
-    [Kr]ᶜ 5s² 5p³ 6p²        
-    [Kr]ᶜ 5s² 5p⁻ 5p² 6p²    
-    [Kr]ᶜ 5s² 5p⁻² 5p 5d⁻²   
-    [Kr]ᶜ 5s² 5p⁻² 5p 5d⁻ 5d 
-    [Kr]ᶜ 5s² 5p⁻² 5p 5d⁻ 6s 
-    [Kr]ᶜ 5s² 5p⁻² 5p 5d²    
-    [Kr]ᶜ 5s² 5p⁻² 5p 5d 6s  
-    [Kr]ᶜ 5s² 5p⁻² 5p 6s²    
-    [Kr]ᶜ 5s² 5p⁻² 5p 6p⁻²   
-    [Kr]ᶜ 5s² 5p⁻² 5p 6p⁻ 6p 
-    [Kr]ᶜ 5s² 5p⁻² 5p 6p²    
+    [Kr]ᶜ 5s² 5p-² 5p³
+    [Kr]ᶜ 5s 5p-² 5p³ 5d-
+    [Kr]ᶜ 5s 5p-² 5p³ 5d
+    [Kr]ᶜ 5s 5p-² 5p³ 6s
+    [Kr]ᶜ 5s² 5p- 5p⁴
+    [Kr]ᶜ 5s² 5p- 5p³ 6p-
+    [Kr]ᶜ 5s² 5p- 5p³ 6p
+    [Kr]ᶜ 5s² 5p-² 5p² 6p-
+    [Kr]ᶜ 5s² 5p-² 5p² 6p
+    [Kr]ᶜ 5p-² 5p⁴ 6p-
+    [Kr]ᶜ 5p-² 5p⁴ 6p
+    [Kr]ᶜ 5s 5p- 5p⁴ 5d-
+    [Kr]ᶜ 5s 5p- 5p⁴ 5d
+    [Kr]ᶜ 5s 5p- 5p⁴ 6s
+    [Kr]ᶜ 5p-² 5p³ 5d-²
+    [Kr]ᶜ 5p-² 5p³ 5d- 5d
+    [Kr]ᶜ 5p-² 5p³ 5d- 6s
+    [Kr]ᶜ 5s 5p- 5p³ 5d- 6p-
+    [Kr]ᶜ 5s 5p- 5p³ 5d- 6p
+    [Kr]ᶜ 5s 5p-² 5p² 5d- 6p-
+    [Kr]ᶜ 5s 5p-² 5p² 5d- 6p
+    [Kr]ᶜ 5p-² 5p³ 5d²
+    [Kr]ᶜ 5p-² 5p³ 5d 6s
+    [Kr]ᶜ 5s 5p- 5p³ 5d 6p-
+    [Kr]ᶜ 5s 5p- 5p³ 5d 6p
+    [Kr]ᶜ 5s 5p-² 5p² 5d 6p-
+    [Kr]ᶜ 5s 5p-² 5p² 5d 6p
+    [Kr]ᶜ 5p-² 5p³ 6s²
+    [Kr]ᶜ 5s 5p- 5p³ 6s 6p-
+    [Kr]ᶜ 5s 5p- 5p³ 6s 6p
+    [Kr]ᶜ 5s 5p-² 5p² 6s 6p-
+    [Kr]ᶜ 5s 5p-² 5p² 6s 6p
+    [Kr]ᶜ 5p-² 5p³ 6p-²
+    [Kr]ᶜ 5p-² 5p³ 6p- 6p
+    [Kr]ᶜ 5p-² 5p³ 6p²
+    [Kr]ᶜ 5s² 5p⁴ 6p-
+    [Kr]ᶜ 5s² 5p⁴ 6p
+    [Kr]ᶜ 5s² 5p³ 5d-²
+    [Kr]ᶜ 5s² 5p³ 5d- 5d
+    [Kr]ᶜ 5s² 5p³ 5d- 6s
+    [Kr]ᶜ 5s² 5p- 5p² 5d-²
+    [Kr]ᶜ 5s² 5p- 5p² 5d- 5d
+    [Kr]ᶜ 5s² 5p- 5p² 5d- 6s
+    [Kr]ᶜ 5s² 5p³ 5d²
+    [Kr]ᶜ 5s² 5p³ 5d 6s
+    [Kr]ᶜ 5s² 5p- 5p² 5d²
+    [Kr]ᶜ 5s² 5p- 5p² 5d 6s
+    [Kr]ᶜ 5s² 5p³ 6s²
+    [Kr]ᶜ 5s² 5p- 5p² 6s²
+    [Kr]ᶜ 5s² 5p³ 6p-²
+    [Kr]ᶜ 5s² 5p³ 6p- 6p
+    [Kr]ᶜ 5s² 5p- 5p² 6p-²
+    [Kr]ᶜ 5s² 5p- 5p² 6p- 6p
+    [Kr]ᶜ 5s² 5p³ 6p²
+    [Kr]ᶜ 5s² 5p- 5p² 6p²
+    [Kr]ᶜ 5s² 5p-² 5p 5d-²
+    [Kr]ᶜ 5s² 5p-² 5p 5d- 5d
+    [Kr]ᶜ 5s² 5p-² 5p 5d- 6s
+    [Kr]ᶜ 5s² 5p-² 5p 5d²
+    [Kr]ᶜ 5s² 5p-² 5p 5d 6s
+    [Kr]ᶜ 5s² 5p-² 5p 6s²
+    [Kr]ᶜ 5s² 5p-² 5p 6p-²
+    [Kr]ᶜ 5s² 5p-² 5p 6p- 6p
+    [Kr]ᶜ 5s² 5p-² 5p 6p²
    #+end_example
 
    Again, using the "continuum orbitals", it is possible to generate
    the state space accessible via one-photon transitions from the
    ground state:
-   
+
    #+BEGIN_SRC julia :exports both :results verbatim
      Xe⁺e = excited_configurations(rc"[Kr] 5s2 5p6", ros"k[s-d]"...,
                                    max_excitations=:singles,
@@ -226,26 +226,26 @@
    #+RESULTS:
    #+begin_example
    16-element Array{Configuration,1}:
-    [Kr]ᶜ 5s² 5p⁻² 5p⁴    
-    [Kr]ᶜ 5s 5p⁻² 5p⁴ ks  
-    [Kr]ᶜ 5s 5p⁻² 5p⁴ kp⁻ 
-    [Kr]ᶜ 5s 5p⁻² 5p⁴ kp  
-    [Kr]ᶜ 5s 5p⁻² 5p⁴ kd⁻ 
-    [Kr]ᶜ 5s 5p⁻² 5p⁴ kd  
-    [Kr]ᶜ 5s² 5p⁻ 5p⁴ ks  
-    [Kr]ᶜ 5s² 5p⁻ 5p⁴ kp⁻ 
-    [Kr]ᶜ 5s² 5p⁻ 5p⁴ kp  
-    [Kr]ᶜ 5s² 5p⁻ 5p⁴ kd⁻ 
-    [Kr]ᶜ 5s² 5p⁻ 5p⁴ kd  
-    [Kr]ᶜ 5s² 5p⁻² 5p³ ks 
-    [Kr]ᶜ 5s² 5p⁻² 5p³ kp⁻
-    [Kr]ᶜ 5s² 5p⁻² 5p³ kp 
-    [Kr]ᶜ 5s² 5p⁻² 5p³ kd⁻
-    [Kr]ᶜ 5s² 5p⁻² 5p³ kd 
+    [Kr]ᶜ 5s² 5p-² 5p⁴
+    [Kr]ᶜ 5s 5p-² 5p⁴ ks
+    [Kr]ᶜ 5s 5p-² 5p⁴ kp-
+    [Kr]ᶜ 5s 5p-² 5p⁴ kp
+    [Kr]ᶜ 5s 5p-² 5p⁴ kd-
+    [Kr]ᶜ 5s 5p-² 5p⁴ kd
+    [Kr]ᶜ 5s² 5p- 5p⁴ ks
+    [Kr]ᶜ 5s² 5p- 5p⁴ kp-
+    [Kr]ᶜ 5s² 5p- 5p⁴ kp
+    [Kr]ᶜ 5s² 5p- 5p⁴ kd-
+    [Kr]ᶜ 5s² 5p- 5p⁴ kd
+    [Kr]ᶜ 5s² 5p-² 5p³ ks
+    [Kr]ᶜ 5s² 5p-² 5p³ kp-
+    [Kr]ᶜ 5s² 5p-² 5p³ kp
+    [Kr]ᶜ 5s² 5p-² 5p³ kd-
+    [Kr]ᶜ 5s² 5p-² 5p³ kd
    #+end_example
 
    We can then query for the bound and continuum orbitals thus:
-   
+
    #+BEGIN_SRC julia :exports both :results verbatim
      map(Xe⁺e) do c
          b = bound(c)
@@ -256,24 +256,24 @@
    #+RESULTS:
    #+begin_example
    16-element Array{Pair{Int64,Configuration{RelativisticOrbital{Int64}}},1}:
-    44 => [Kr]ᶜ 5s² 5p⁻² 5p⁴
-    43 => [Kr]ᶜ 5s 5p⁻² 5p⁴ 
-    43 => [Kr]ᶜ 5s 5p⁻² 5p⁴ 
-    43 => [Kr]ᶜ 5s 5p⁻² 5p⁴ 
-    43 => [Kr]ᶜ 5s 5p⁻² 5p⁴ 
-    43 => [Kr]ᶜ 5s 5p⁻² 5p⁴ 
-    43 => [Kr]ᶜ 5s² 5p⁻ 5p⁴ 
-    43 => [Kr]ᶜ 5s² 5p⁻ 5p⁴ 
-    43 => [Kr]ᶜ 5s² 5p⁻ 5p⁴ 
-    43 => [Kr]ᶜ 5s² 5p⁻ 5p⁴ 
-    43 => [Kr]ᶜ 5s² 5p⁻ 5p⁴ 
-    43 => [Kr]ᶜ 5s² 5p⁻² 5p³
-    43 => [Kr]ᶜ 5s² 5p⁻² 5p³
-    43 => [Kr]ᶜ 5s² 5p⁻² 5p³
-    43 => [Kr]ᶜ 5s² 5p⁻² 5p³
-    43 => [Kr]ᶜ 5s² 5p⁻² 5p³
+    44 => [Kr]ᶜ 5s² 5p-² 5p⁴
+    43 => [Kr]ᶜ 5s 5p-² 5p⁴
+    43 => [Kr]ᶜ 5s 5p-² 5p⁴
+    43 => [Kr]ᶜ 5s 5p-² 5p⁴
+    43 => [Kr]ᶜ 5s 5p-² 5p⁴
+    43 => [Kr]ᶜ 5s 5p-² 5p⁴
+    43 => [Kr]ᶜ 5s² 5p- 5p⁴
+    43 => [Kr]ᶜ 5s² 5p- 5p⁴
+    43 => [Kr]ᶜ 5s² 5p- 5p⁴
+    43 => [Kr]ᶜ 5s² 5p- 5p⁴
+    43 => [Kr]ᶜ 5s² 5p- 5p⁴
+    43 => [Kr]ᶜ 5s² 5p-² 5p³
+    43 => [Kr]ᶜ 5s² 5p-² 5p³
+    43 => [Kr]ᶜ 5s² 5p-² 5p³
+    43 => [Kr]ᶜ 5s² 5p-² 5p³
+    43 => [Kr]ᶜ 5s² 5p-² 5p³
    #+end_example
-   
+
    #+BEGIN_SRC julia :exports both :results verbatim
      map(Xe⁺e) do c
          b = continuum(c)
@@ -284,22 +284,22 @@
    #+RESULTS:
    #+begin_example
    16-element Array{Pair{Int64,_1} where _1,1}:
-    0 => ∅  
-    1 => ks 
-    1 => kp⁻
-    1 => kp 
-    1 => kd⁻
-    1 => kd 
-    1 => ks 
-    1 => kp⁻
-    1 => kp 
-    1 => kd⁻
-    1 => kd 
-    1 => ks 
-    1 => kp⁻
-    1 => kp 
-    1 => kd⁻
-    1 => kd 
+    0 => ∅
+    1 => ks
+    1 => kp-
+    1 => kp
+    1 => kd-
+    1 => kd
+    1 => ks
+    1 => kp-
+    1 => kp
+    1 => kd-
+    1 => kd
+    1 => ks
+    1 => kp-
+    1 => kp
+    1 => kd-
+    1 => kd
    #+end_example
 
 ** Term symbol calculation
@@ -314,7 +314,7 @@
     #+RESULTS:
     : 1-element Array{Term{Int64},1}:
     :  ²S
-    
+
     #+BEGIN_SRC julia :exports both :results verbatim
       terms(c"[Kr] 5s2 5p5")
     #+END_SRC
@@ -322,7 +322,7 @@
     #+RESULTS:
     : 1-element Array{Term{Int64},1}:
     :  ²Pᵒ
-    
+
     #+BEGIN_SRC julia :exports both :results verbatim
       terms(c"[Kr] 5s2 5p4 6s 7g")
     #+END_SRC
@@ -356,7 +356,7 @@
     #+RESULTS:
     : 1-element Array{Rational{Int64},1}:
     :  1//2
-    
+
     #+BEGIN_SRC julia :exports both :results verbatim
       intermediate_terms(ro"5p", 2)
     #+END_SRC
@@ -365,7 +365,7 @@
     : 2-element Array{Rational{Int64},1}:
     :  0//1
     :  2//1
-    
+
     #+BEGIN_SRC julia :exports both :results verbatim
       intermediate_terms(ro"7g", 3)
     #+END_SRC
@@ -383,7 +383,7 @@
      17//2
      21//2
     #+end_example
-    
+
 ** Configuration state functions
    CSFs are formed from electronic configurations and their possible
    term couplings (along with intermediate terms, resulting from
@@ -394,13 +394,13 @@
 
    #+RESULTS:
    : 7-element Array{CSF{RelativisticOrbital,Rational{Int64}},1}:
-   :  3s(1/2|1/2) 3p²(0|1/2)+            
-   :  3s(1/2|1/2) 3p⁻(1/2|1) 3p(3/2|1/2)+
-   :  3s(1/2|1/2) 3p²(2|3/2)+            
-   :  3s(1/2|1/2) 3p⁻(1/2|0) 3p(3/2|3/2)+
-   :  3s(1/2|1/2) 3p⁻(1/2|1) 3p(3/2|3/2)+
-   :  3s(1/2|1/2) 3p²(2|5/2)+            
-   :  3s(1/2|1/2) 3p⁻(1/2|1) 3p(3/2|5/2)+
+   :  3s(1/2|1/2) 3p²(0|1/2)+
+   :  3s(1/2|1/2) 3p-(1/2|1) 3p(3/2|1/2)+
+   :  3s(1/2|1/2) 3p²(2|3/2)+
+   :  3s(1/2|1/2) 3p-(1/2|0) 3p(3/2|3/2)+
+   :  3s(1/2|1/2) 3p-(1/2|1) 3p(3/2|3/2)+
+   :  3s(1/2|1/2) 3p²(2|5/2)+
+   :  3s(1/2|1/2) 3p-(1/2|1) 3p(3/2|5/2)+
 
 * Ideas
   - [x] Generate configurations with cores; [He], [Ne], &.
