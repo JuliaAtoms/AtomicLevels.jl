@@ -838,7 +838,7 @@ non-relativistic orbital with `n` and `ℓ` quantum numbers, with given occupanc
 
 ```jldoctest
 julia> AtomicLevels.rconfigurations_from_orbital(3, 1, 2)
-3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:
+3-element Array{Configuration{#s21} where #s21<:RelativisticOrbital,1}:
  3p-²
  3p- 3p
  3p²
@@ -880,7 +880,7 @@ non-relativistic version of the `orbital` with a given occupancy.
 
 ```jldoctest
 julia> AtomicLevels.rconfigurations_from_orbital(o"3p", 2)
-3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:
+3-element Array{Configuration{#s21} where #s21<:RelativisticOrbital,1}:
  3p-²
  3p- 3p
  3p²
@@ -936,7 +936,7 @@ and `occupancy` are integers, and `ℓ` is in spectroscopic notation.
 
 ```jldoctest
 julia> rcs"3p2"
-3-element Array{Configuration{RelativisticOrbital{N}} where N,1}:
+3-element Array{Configuration{#s21} where #s21<:RelativisticOrbital,1}:
  3p-²
  3p- 3p
  3p²

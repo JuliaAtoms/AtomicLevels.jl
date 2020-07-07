@@ -139,7 +139,7 @@ orbital `orb` and occupation `w`.
 
 ```jldoctest
 julia> intermediate_terms(o"2p", 2)
-3-element Array{IntermediateTerm,1}:
+3-element Array{IntermediateTerm{Term,Seniority},1}:
  ₀¹S
  ₂¹D
  ₂³P
@@ -150,11 +150,11 @@ which occupancy a certain term is first seen, cf.
 
 ```jldoctest
 julia> intermediate_terms(o"3d", 1)
-1-element Array{IntermediateTerm,1}:
+1-element Array{IntermediateTerm{Term,Seniority},1}:
  ₁²D
 
 julia> intermediate_terms(o"3d", 3)
-8-element Array{IntermediateTerm,1}:
+8-element Array{IntermediateTerm{Term,Seniority},1}:
  ₁²D
  ₃²P
  ₃²D
@@ -197,7 +197,7 @@ Generate the intermediate terms for each subshell of `config`.
 
 ```jldoctest
 julia> intermediate_terms(c"1s 2p3")
-2-element Array{Array{IntermediateTerm,1},1}:
+2-element Array{Array{IntermediateTerm{Term,Seniority},1},1}:
  [₁²S]
  [₁²Pᵒ, ₃²Dᵒ, ₃⁴Sᵒ]
 
