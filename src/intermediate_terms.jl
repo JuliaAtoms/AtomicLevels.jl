@@ -202,9 +202,9 @@ julia> intermediate_terms(c"1s 2p3")
  [₁²Pᵒ, ₃²Dᵒ, ₃⁴Sᵒ]
 
 julia> intermediate_terms(rc"3d2 5g3")
-2-element Array{Array{HalfIntegers.Half{Int64},1},1}:
- [0, 2, 4]
- [3/2, 5/2, 7/2, 9/2, 9/2, 11/2, 13/2, 15/2, 17/2, 21/2]
+2-element Array{Array{IntermediateTerm{HalfIntegers.Half{Int64},Seniority},1},1}:
+ [₀0, ₂2, ₂4]
+ [₁9/2, ₃3/2, ₃5/2, ₃7/2, ₃9/2, ₃11/2, ₃13/2, ₃15/2, ₃17/2, ₃21/2]
 ```
 """
 function intermediate_terms(config::Configuration)
