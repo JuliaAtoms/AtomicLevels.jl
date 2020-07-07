@@ -960,7 +960,7 @@ julia> spin_configurations(c"1s2")
 
 julia> spin_configurations(c"1s2"s)
 1-element Array{Configuration{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}}},1}:
- 1s²
+ 1s₀α 1s₀β
 
 julia> spin_configurations(c"1s ks")
 4-element Array{Configuration{SpinOrbital{#s16,Tuple{Int64,HalfIntegers.Half{Int64}}} where #s16<:Orbital},1}:
