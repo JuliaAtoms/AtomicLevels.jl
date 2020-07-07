@@ -223,7 +223,7 @@ julia> excited_configurations(first(scs"1s2"), sos"k[s]"...) do dst,src
 
 julia> excited_configurations((a,b) -> a.m == b.m ? a : nothing,
                               spin_configurations(c"1s"), sos"k[s-d]"..., keep_parity=false)
-8-element Array{Configuration{SpinOrbital{#s16,Tuple{Int64,Half{Int64}}} where #s16<:Orbital},1}:
+8-element Array{Configuration{SpinOrbital{#s16,Tuple{Int64,HalfIntegers.Half{Int64}}} where #s16<:Orbital},1}:
  1s₀α
  ks₀α
  kp₀α
