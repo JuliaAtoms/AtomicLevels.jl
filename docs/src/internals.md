@@ -13,6 +13,7 @@ end
 ```@autodocs
 Modules = [AtomicLevels]
 Public = false
+Filter = fn -> fn !== Base.parse
 ```
 
 ```@meta
