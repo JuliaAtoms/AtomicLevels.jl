@@ -151,7 +151,7 @@ individual subshells:
 
 ```jldoctest intermediate_term_examples
 julia> its = intermediate_terms(c"3p2 4s 5p2")
-3-element Array{Array{IntermediateTerm,1},1}:
+3-element Array{Array{IntermediateTerm{Term,Seniority},1},1}:
  [₀¹S, ₂¹D, ₂³P]
  [₁²S]
  [₀¹S, ₂¹D, ₂³P]
@@ -243,7 +243,7 @@ each subshell of `3p² 4s 5p²`
 
 ```jldoctest intermediate_term_examples
 julia> last.(its)
-3-element Array{IntermediateTerm,1}:
+3-element Array{IntermediateTerm{Term,Seniority},1}:
  ₂³P
  ₁²S
  ₂³P
