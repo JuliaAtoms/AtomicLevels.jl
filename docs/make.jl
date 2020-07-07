@@ -45,7 +45,8 @@ makedocs(
                 )
             )
         ))
-    )
+    ),
+    strict = true,
 )
 
 deploydocs(repo = "github.com/JuliaAtoms/AtomicLevels.jl.git")
