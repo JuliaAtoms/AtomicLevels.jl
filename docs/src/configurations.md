@@ -209,8 +209,7 @@ julia> excited_configurations(first(scs"1s2"), sos"2[s-p]"...)
  2p₋₁α 2p₀α
  2p₋₁α 2p₀β
  2p₋₁α 2p₁α
- 2p₋₁α 2p₁β
- 2p₋₁β 2p₀α
+ ⋮
  2p₋₁β 2p₀β
  2p₋₁β 2p₁α
  2p₋₁β 2p₁β
