@@ -1,37 +1,33 @@
 """
     struct CSF
 
-Represents a single _configuration state function_ (CSF) adapted to angular
-momentum symmetries. Depending on the type parameters, it can represent both
-non-relativistic CSFs in [``LS``-coupling](@ref) and relativistic CSFs in
-[``jj``-coupling](@ref).
+Represents a single _configuration state function_ (CSF) adapted to angular momentum
+symmetries. Depending on the type parameters, it can represent both non-relativistic CSFs in
+[``LS``-coupling](@ref) and relativistic CSFs in [``jj``-coupling](@ref).
 
 A CSF is defined by the following information:
 
-* The configuration, i.e. an ordered list of subshells together with their
-  occupations.
-* A list of intermediate coupling terms (including the seniority quantum number
-  to label states in degenerate subspaces) for each subshell in the
-  configuration.
-* A list of coupling terms for the coupling tree. The coupling is assume to be
-  done by first two orbitals together, then coupling that to the next orbital
-  and so on.
+* The configuration, i.e. an ordered list of subshells together with their occupations.
+* A list of intermediate coupling terms (including the seniority quantum number to label *
+  states in degenerate subspaces) for each subshell in the configuration.
+* A list of coupling terms for the coupling tree. The coupling is assume to be done by first
+ two orbitals together, then coupling that to the next orbital and so on.
 
-An instance of a [`CSF`](@ref) object does not specify the ``J_z`` or
-``L_z``/``S_z`` quantum number(s).
+An instance of a [`CSF`](@ref) object does not specify the ``J_z`` or ``L_z``/``S_z``
+quantum number(s).
 
 # Constructors
 
     CSF(configuration::Configuration, subshell_terms::Vector, terms::Vector)
 
-Constructs an instance of a [`CSF`](@ref) from the information provided. The
-arguments have different requirements depending on whether it is `configuration`
-is based on relativistic or non-relativistic orbitals.
+Constructs an instance of a [`CSF`](@ref) from the information provided. The arguments have
+different requirements depending on whether it is `configuration` is based on relativistic
+or non-relativistic orbitals.
 
-* If the configuration is based on [`Orbital`](@ref)s, `subshell_terms` must be
-  a list of [`IntermediateTerm`](@ref)s and `terms` a list of [`Term`](@ref)s.
-* If it is a configuration of [`RelativisticOrbital`](@ref)s, both
-  `subshell_terms` and `terms` should both be a list of half-integer values.
+* If the configuration is based on [`Orbital`](@ref)s, `subshell_terms` must be a list of
+  [`IntermediateTerm`](@ref)s and `terms` a list of [`Term`](@ref)s.
+* If it is a configuration of [`RelativisticOrbital`](@ref)s, both `subshell_terms` and
+  `terms` should both be a list of half-integer values.
 """
 struct CSF{O<:AbstractOrbital, T<:Union{Term,HalfInteger}, S}
     config::Configuration{<:O}
@@ -60,7 +56,14 @@ struct CSF{O<:AbstractOrbital, T<:Union{Term,HalfInteger}, S}
         CSF(config, subshell_terms, convert.(HalfInt, terms))
 end
 
+"""
+    const NonRelativisticCSF = CSF{<:Orbital,Term}
+"""
 const NonRelativisticCSF = CSF{<:Orbital,Term}
+
+"""
+    const RelativisticCSF = CSF{<:RelativisticOrbital,HalfInt}
+"""
 const RelativisticCSF = CSF{<:RelativisticOrbital,HalfInt}
 
 Base.:(==)(a::CSF{O,T}, b::CSF{O,T}) where {O,T} =
@@ -75,8 +78,8 @@ num_electrons(csf::CSF) = num_electrons(csf.config)
     csfs(::Configuration) -> Vector{CSF}
     csfs(::Vector{Configuration}) -> Vector{CSF}
 
-Generate all [`CSF`](@ref)s corresponding to a particular configuration or a set
-of configurations.
+Generate all [`CSF`](@ref)s corresponding to a particular configuration or a set of
+configurations.
 """
 function csfs end
 

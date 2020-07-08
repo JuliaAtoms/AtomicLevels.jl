@@ -84,14 +84,20 @@ When coupling is performed, the ``L`` and ``S`` spaces are coupled separately, w
 
 The CSF will then be a simultaneous eigenstate of ``L`` and ``S``, but does not define a ``J`` value. In other words, AtomicLevels currently does not perform ``LSJ``-coupling.
 
+The convenience type [`NonRelativisticCSF`](@ref) is provided to construct CSFs with non-relativistic orbitals in ``LS``-coupling.
+
 ### ``jj``-coupling
 
 ``jj``-coupling is used for [`RelativisticOrbital`](@ref)s, where each orbital only has the total angular momentum value ``J``. In this coupling scheme, only the ``J`` values coupled. Intermediate terms are the ``J`` values (together with disambiguating quantum numbers, like seniority), and the intra-shell couplings are also defined by their ``J`` value.
+
+The convenience type [`RelativisticCSF`](@ref) is provided to construct CSFs with relativistic orbitals in ``jj``-coupling.
 
 ## Reference
 
 ```@docs
 CSF
+NonRelativisticCSF
+RelativisticCSF
 csfs
 ```
 
