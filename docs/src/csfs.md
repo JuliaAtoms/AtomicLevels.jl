@@ -10,118 +10,83 @@ AtomicLevels also provides types to represent symmetry-adapted atomic states, co
 
     With relativistic orbitals and ``jj``-coupling, _angular momentum operators_ refer to the ``J^2`` and ``J_z`` operators.
 
-    However, when working with non-relativistic orbitals and in ``LS``-coupling, they refer to both the orbital angular momentum operators``L^2, S^2`` and the spin angular momentum operators ``L_z, S_z``. In  this case, the orbitals and CSFs are simultaneous eigenstates of both the orbital and spin angular momentum.
+    However, when working with non-relativistic orbitals and in ``LS``-coupling, they refer to both the orbital angular momentum operators (``L^2``, ``L_z``) and the spin angular momentum operators (``S^2``, ``S_z``). In  this case, the orbitals and CSFs are simultaneous eigenstates of both the orbital and spin angular momentum.
 
-    In the [Background](@ref) section, we use just the total angular momentum operators ``J^2, J_z`` when illustrating the theoretical background.
+    In the [Background](@ref) section, we use just the total angular momentum operators (``J^2``, ``J_z``) when illustrating the theoretical background.
 
 ## Background
 
 When constructing a basis for many-particle atomic states, you start from a set of single-particle states (orbitals) and form anti-symmetric many-particle product states (Slater determinants) of the desired number of particles. Superpositions of said determinants can then represent full many-electron wavefunctions. In principle, if the set of one-particle orbitals is complete, the set of all Slater determinants would form a complete many-particle basis.
 
-However, even if your orbitals are eigenstates of the angular momentum operators ``J^2`` and ``J_z``, the Slater determinants formed out of these orbitals, in general, are not. As angular momentum symmetry is a useful symmetry to adhere to when working with atomic states, this is where CSFs come in: they form a _symmetry adapted_ many body basis, representing the same many-particle space, but each state is now also an eigenstate of angular momentum. They are related to the underlying Slater determinats via a basis transformation.
+However, even if your orbitals are eigenstates of the angular momentum operators ``J^2`` and ``J_z``, the Slater determinants, formed from these orbitals, in general, are not. As angular momentum symmetry is a useful symmetry to adhere to when working with atomic states, this is where CSFs come in: they form a _symmetry adapted_ many body basis, representing the same many-particle space, but each state is now also an eigenstate of angular momentum. They are related to the underlying Slater determinats via a basis transformation.
 
 !!! note "Other symmetries"
 
-    You can also imagine CSFs that are adapted to other symmetries. However, at this stage, AtomicLevels only supports CSFs adapted to angular momentum.
+    You can also imagine CSFs that are adapted to other symmetries. However, at this time, AtomicLevels only supports CSFs adapted to angular momentum.
 
 ### Forming a CSF
 
-The philosophy behind CSFs is similar to how you can use the [Clebch-Gordan coefficients](https://en.wikipedia.org/wiki/Clebsch%E2%80%93Gordan_coefficients) ``C_{j_1m_1j_2m_2}^{j_3m_3}`` to couple product states of angular momentum eigenstates ``\ket{j_1 m_1} \ket{j_2 m_2}``, which themselves in general are not eigenstates of total angular momentum, into angular momentum eigenstates ``\ket{j_1, j_2; j_3 m_3}`` by creating superpositions with appropriate coefficients. The corresponding formula in this case is
+The philosophy behind CSFs is similar to how you can use the [Clebch-Gordan coefficients](https://en.wikipedia.org/wiki/Clebsch%E2%80%93Gordan_coefficients) ``C_{j_1m_1j_2m_2}^{J M}`` to couple product states of angular momentum eigenstates ``\ket{j_1 m_1} \ket{j_2 m_2}``, which themselves in general are not eigenstates of total angular momentum, into angular momentum eigenstates ``\ket{j_1, j_2; J M}`` by creating superpositions with appropriate coefficients:
 
 ```math
-\ket{j_1, j_2; j_3 m_3} = \sum_{m_1,m_2,m_3}
-C_{j_1m_1j_2m_2}^{j_3m_3}
+\ket{j_1, j_2; J M} = \sum_{m_1,m_2,M}
+C_{j_1m_1j_2m_2}^{J M}
 \ket{j_1 m_1} \ket{j_2 m_2}
 ```
 
-where valid ``j_3`` values are ``|j_1 - j_2| \leq j_3 \leq j_1 + j_2``.
+where the valid ``J`` values are ``|j_1 - j_2| \leq J \leq j_1 + j_2``.
 
 In the multi-electron case, the states that you multiply together are the atomic orbitals. However, it is complicated by two facts:
 
 1. There are usually more than two electrons.
 
-   You can apply the Clebsch-Gordan relation repeatedly until all electrons have been coupled, but in general the resulting angular momentum eigenvalues no longer uniquely specify a state. In that case the exact state you end up with depends on the order in which order you couple the electrons.
+    In a multi-electron case, it is perfectly valid to apply the Clebsch-Gordan relation recursively until all electrons have been coupled, but in general you can end up with the same total angular momentum for different states (corresponding to different coupling sequences). So, the angular momentum eigenvalues are no longer sufficient to always uniquely identify a state.
 
-2. Electrons are fermionic particles adhering to the [Pauli principle](https://en.wikipedia.org/wiki/Pauli_exclusion_principle), so not all product states are valid or unique many-electron states.
+2. Electrons are fermionic particles adhering to the [Pauli principle](https://en.wikipedia.org/wiki/Pauli_exclusion_principle).
 
-   The result is that not all the coupled eigenstates predicted by the Clebsch-Gordan relation actually exist and you can not use the Clebsch-Gordan relation directly to determine their coefficients.
+   This means that not all direct products of single-particle states are valid (the same single-particle state can not be repeated) or unique (anti-symmetry means that the order in the product does not matter). This, in turn, means that not all the coupled eigenstates predicted by the Clebsch-Gordan relation actually exist and you can not use the Clebsch-Gordan relation directly to determine their coefficients.
 
-To work within those constraints, AtomicLevels specifies are coupling scheme. CSFs are represented with the [`CSF`](@ref) type. An instance of a [`CSF`](@ref) only specifies CSFs up to the total angular momentum (i.e. it actually represent a set of states corresponding to the different possible ``J_z`` quantum numbers).
+To work within those constraints, AtomicLevels specifies a _coupling scheme_. That is, the CSFs contain additional data that allows the states to be identified uniquely.
 
-The starting point for a CSF is a configuration, i.e. a list of orbitals and their occupations (how many electrons in the orbital). Each configuration corresponds to a set of Slater determinants, generated by considering all the possible combinations of `m` quantum numbers of the orbitals.
+!!! note "Orbital vs subshell"
 
-The next step is to couple each subshell into an angular momentum eigenstate. As the single particle Hilbert spaces for the subshells are disjoint, the space of many-particle determinants can be thought of as a product space of subshells determinant spaces. This means that the individual subshells can be coupled independently.
+    In the following the word "subshell" is used to refer to the orbitals in a configuration (i.e. a set of states with e.g. the same ``n`` and ``\ell`` quantum numbers). This is because the word "orbital" can be ambiguous (referring to either to a subshell or an specific state).
 
-Due to the fermionic nature of the electrons, even determining the valid ``J`` values for the subshells is non-trivial, but can be done (see [Term symbols](@ref) for more information). The term symbols for each subshell are the second component of what determines a CSF.
+**`CSF` type.** In AtomicLevels, CSFs are represented with the [`CSF`](@ref) type. An instance of a [`CSF`](@ref) only specifies CSFs up to the total angular momentum (i.e. it actually represent a set of states corresponding to the different possible ``J_z`` quantum numbers).
 
-!!! note "Term symbols"
+Forming a CSF is a multi-step process:
 
-    AtomicLevels has methods to determine the subshell term symbols for both relativistic and non-relativistic orbitals:
+1. The starting point for a CSF is a configuration ([`Configuration`](@ref)), i.e. a list of subshells (the orbitals in the configuration) and their occupations (how many electrons on the subshell). Each configuration corresponds to a set of Slater determinants, generated by considering all the possible combinations of `m` quantum numbers of the orbitals.
 
-    ```jldoctest
-    julia> terms(ro"3d", 3)
-    3-element Array{HalfIntegers.Half{Int64},1}:
-     3/2
-     5/2
-     9/2
+2. The next step is to couple _each subshell_ into an angular momentum eigenstate (e.g. to form a single angular momentum eigenstate out of the 3 electrons on a ``3d_{5/2}`` orbital/subshell). As the single particle spaces for the subshells are disjoint, the space of many-particle determinants can be thought of as a product space of subshells determinant spaces.
 
-    julia> terms(o"2p", 3)
-    3-element Array{Term,1}:
-     ²Pᵒ
-     ²Dᵒ
-     ⁴Sᵒ
-    ```
+   Due to the fermionic nature of the electrons, even determining the valid ``J`` values for the subshells is non-trivial. Also, if you go to high enough angular momenta of the orbital and high enough particle number, the angular momentum eigenvalues are no longer sufficient to uniquely identify the subshell terms. So the [`CSF`](@ref) type stores them as instances of [`IntermediateTerm`](@ref), instead of simple numbers (see [Term symbols](@ref) for more information).
 
-One thing to keep in mind is that if you go to high enough angular momenta of the orbital and high enough particle number, the angular momentum eigenvalues are no longer sufficient to uniquely identify the subshell terms.
+3. Once the electrons on individual subshells are coupled, we can couple the subshells themselves together. As the orbitals in a subshell are distinct from the ones in other subshells, this can easily be done with just Clebch-Gordan coefficients.
 
-```jldoctest
-julia> terms(ro"4f", 4)
-8-element Array{HalfIntegers.Half{Int64},1}:
- 0
- 2
- 2
- 4
- 4
- 5
- 6
- 8
-```
+   In AtomicLevels, we assume that the coupling is done by starting from the leftmost orbital pair, coupling those subshells together. Then the coupled two subshells are taken and coupled to the next subshells, and so on. In the end, we get a _coupling tree_ that looks something like this:
 
-So for non-relativistic configurations, AtomicLevels stores the subshell couplings as instances of the [`IntermediateTerm`](@ref) type, which contains the ``L`` and ``S`` eigenvalues, but also an additional _seniority_ quantum number, which can be used to distinguish these degenerate subshell spaces.
+   ![](couplingtree.svg)
 
-!!! note "Limitations of AtomicLevels"
+    On the illustration, ``J_i, q_i`` pairs refer to the subshell couplings (``q_i`` disambiguating the state if ``J_i`` is not sufficient for uniqueness), and ``J_{1:i}`` refers to the total angular momentum of the first ``i`` coupled subshells. The total angular momenta of the last coupling (``J_{1:k}``) determines the angular momentum of the whole CSF.
 
-    AtomicLevels currently has a few limitations:
-
-    * The extra quantum number in [`IntermediateTerm`](@ref) for CSFs based on non-relativistic configurations is assume to be the _seniority_ number. However, the seniority number is not enough to uniquely define a subshell state if you go to high enough particle number and angular momentum.
-    * Subshell couplings for relativistic configurations are only stored as integer or half-integer values and hence not able to describe the the degenerate subshell spaces at all.
-
-Finally, once the electrons on individual subshells are coupled, we can couple the subshells themselves together. As the orbitals in a subshell are distinct from the ones in other subshells, this can easily be done with just Clebch-Gordan coefficients.
-
-In AtomicLevels, we assume that the coupling is done by starting from the leftmost orbital pair, coupling those subshells together. Then the coupled two subshells are taken and coupled to the next subshells, and so on. In the end, we get a coupling tree that looks something like this:
-
-![](couplingtree.svg)
-
-The total angular momenta of the last coupling (``J_{1:k}``) determines the angular momentum of the whole CSF.
+So, all in all, a CSF is a configuration, together with the numbers ``J_i``, ``q_i`` and ``J_{1:i}`` uniquely determining the coupling.
 
 ## Coupling schemes
 
-Various coupling schemes exists and AtomicLevels is currently opinionated about it, using the scheme described above. The only generality is that it allows for different coupling schemes depending on whether one works with relativistis or non-relativistic orbitals.
+Various coupling schemes exist and AtomicLevels is currently opinionated about it, using the scheme described above. The only generality is that it allows for different coupling schemes depending on whether one works with relativistic or non-relativistic orbitals.
 
 ### ``LS``-coupling
 
-In ``LS``-coupling, each orbital must be a of [`Orbital`](@ref), specified by its ``n`` and ``\ell`` quantum numbers. Implicitly, each orbital also has a spin values of ``s = 1/2``.
+In ``LS``-coupling, each orbital must be a [`Orbital`](@ref), specified by its ``n`` and ``\ell`` quantum numbers. Implicitly, each orbital also has a spin of ``s = 1/2``.
 
-When coupling is performed, the ``L`` and ``S`` spaces are coupled separately. This is possible because the spaces are orthogonal.
+When coupling is performed, the ``L`` and ``S`` spaces are coupled separately, which is possible because the real and spin spaces are orthogonal. Each subshell then gets an ``L`` and ``S`` values eigenvalue (together with an additional quantum number to resolve any ambiguity). Similarly, couplings between subshells are also defined by the ``L`` and ``S`` values separately.
 
-This means that each subshell term is represented by an ``L`` and ``S`` values, together with the seniority number. Intra-subshell couplings are defined by the ``L`` and ``S`` values.
-
-The final CSF in ``LS``-coupling does not define a ``J`` value, i.e. AtomicLevels currently does not perform ``LSJ``-coupling.
+The CSF will then be a simultaneous eigenstate of ``L`` and ``S``, but does not define a ``J`` value. In other words, AtomicLevels currently does not perform ``LSJ``-coupling.
 
 ### ``jj``-coupling
 
-``jj``-coupling is used for [`RelativisticOrbital`](@ref)s, where each orbital
-only has the total angular momentum value ``J``. In this coupling scheme, only the ``J`` values coupled. Intermediate terms are the ``J`` values, together with seniority, and the intra-shell couplings are determined according to the ``J`` value.
+``jj``-coupling is used for [`RelativisticOrbital`](@ref)s, where each orbital only has the total angular momentum value ``J``. In this coupling scheme, only the ``J`` values coupled. Intermediate terms are the ``J`` values (together with disambiguating quantum numbers, like seniority), and the intra-shell couplings are also defined by their ``J`` value.
 
 ## Reference
 
