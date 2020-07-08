@@ -10,8 +10,8 @@ A CSF is defined by the following information:
 * The configuration, i.e. an ordered list of subshells together with their occupations.
 * A list of intermediate coupling terms (including the seniority quantum number to label
   states in degenerate subspaces) for each subshell in the configuration.
-* A list of coupling terms for the coupling tree. The coupling is assume to be done by first
- two orbitals together, then coupling that to the next orbital and so on.
+* A list of coupling terms for the coupling tree. The coupling is assumed to be done by,
+  first, coupling two orbitals together, then coupling that to the next orbital, and so on.
 
 An instance of a [`CSF`](@ref) object does not specify the ``J_z`` or ``L_z``/``S_z``
 quantum number(s).
