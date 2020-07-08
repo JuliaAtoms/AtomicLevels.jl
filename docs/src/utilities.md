@@ -1,15 +1,13 @@
 # Other utilities
 
+```@meta
+DocTestSetup = :(using AtomicLevels)
+```
+
 ## Parity
 
 AtomicLevels defines the [`Parity`](@ref) type, which is used to represent the parity of
 atomic states etc.
-
-```@meta
-DocTestSetup = quote
-    using AtomicLevels
-end
-```
 
 ```@docs
 Parity
@@ -37,6 +35,12 @@ defining a uniform API to determine the parity of an object.
 
 ```@docs
 parity
+```
+
+## JJ to LSJ
+
+```@docs
+jj2lsj
 ```
 
 ```@meta

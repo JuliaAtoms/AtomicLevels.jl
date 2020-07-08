@@ -87,6 +87,7 @@ continuum
 parity(::Configuration)
 nonrelconfiguration
 relconfigurations
+multiplicity(::Configuration)
 ```
 
 ## Generating configuration lists

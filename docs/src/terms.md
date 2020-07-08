@@ -1,15 +1,13 @@
 # Term symbols
 
 ```@meta
-DocTestSetup = quote
-    using AtomicLevels
-end
+DocTestSetup = :(using AtomicLevels)
 ```
 
 AtomicLevels provides types and methods to work and determine term symbols. The ["Term
 symbol"](https://en.wikipedia.org/wiki/Term_symbol) and ["Angular momentum
-coupling"](https://en.wikipedia.org/wiki/Angular_momentum_coupling) Wikipedia articles give a good basic
-overview of the terminology.
+coupling"](https://en.wikipedia.org/wiki/Angular_momentum_coupling) Wikipedia articles give
+a good basic overview of the terminology.
 
 For term symbols in LS coupling, AtomicLevels provides the [`Term`](@ref) type.
 
@@ -21,40 +19,80 @@ The [`Term`](@ref) objects can also be constructed with the [`@T_str`](@ref) str
 
 ```@docs
 @T_str
+Base.parse(::Type{Term}, ::AbstractString)
 ```
 
 The [`terms`](@ref) function can be used to generate all possible term symbols. In the case
 of relativistic orbitals, the term symbols are simply the valid ``J`` values, represented
-with the `HalfInteger` type.
+using the [`HalfInteger`](https://github.com/sostock/HalfIntegers.jl) type.
 
 ```@docs
 terms
+count_terms
 ```
 
 ## Term multiplicity and intermediate terms
 
-For subshells starting with `d³`, the possible terms may occur more
-than once (multiplicity higher than one), corresponding to different
-physical states. These arise from different sequences of coupling the
-``w`` equivalent electrons of the same ``\ell``, and are distinguished
-using a _seniority number_, which the [`IntermediateTerm`](@ref) type
-implements. For partially filled `f` shells, seniority is not enough
-to distinguish all possible couplings. Using `count_terms`, we can see
-that e.g. the `²Dᵒ` has higher multiplicity than can be described with
-seniority only:
+For subshells starting with `d³`, a term symbol can occur multiple times, each occurrence
+corresponding to a different physical state (multiplicity higher than one). This happens
+when there are distinct ways of coupling the electrons, but they yield the same total
+angular momentum. E.g. a `d³` subshell can be coupled in 8 different ways, two of which are
+both described by the `²D` term symbol:
 
 ```jldoctest
-julia> count_terms(o"4f", 3, T"2Do")
-2
+julia> terms(o"3d", 3)
+8-element Array{Term,1}:
+ ²P
+ ²D
+ ²D
+ ²F
+ ²G
+ ²H
+ ⁴P
+ ⁴F
 
+julia> count_terms(o"3d", 3, T"2D")
+2
+```
+
+The multiplicity can be even higher if more electrons and higher angular momenta are
+involved:
+
+```jldoctest
 julia> count_terms(o"4f", 5, T"2Do")
 5
 ```
 
+To distinguish these subshells, extra quantum numbers must be specified. In AtomicLevels,
+that can be done with the [`IntermediateTerm`](@ref) type. This is primarily used when
+specifying the subshell couplings in [CSFs](@ref).
+
 ```@docs
 IntermediateTerm
 intermediate_terms
-count_terms
+```
+
+### Disambiguating quantum numbers
+
+The [`IntermediateTerm`](@ref) type does not specify how to interpret the disambiguating
+quantum number(s) ``ν``, or even what the type of it should be. In AtomicLevels, we use two
+different types, depending on the situation:
+
+* **A simple `Integer`.** In this case, the quantum number ``\nu`` must be in the range
+  ``1 \leq \nu \leq N_{\rm{terms}}``, where ``N_{\rm{terms}}`` is the multiplicity of the
+  term symbol (i.e. the number of times this term symbol appears for this subshell
+  ``\ell^w`` or ``\ell_j^w``).
+
+  AtomicLevels does not prescribe any further interpretation for the quantum number.
+  It can be used as a simple counter to distinguish the different terms, or the user can
+  define their own mapping from the set of integers to physical states.
+
+* **`Seniority`.** In this case the number is interpreted to be _Racah's seniority
+  number_. This gives the intermediate term a specific physical interpretation, but only
+  works for certain subshells. See the [`Seniority`](@ref) type for more information.
+
+```@docs
+Seniority
 ```
 
 ### Internal implementation of term multiplicity calculation
@@ -63,10 +101,9 @@ AtomicLevels.jl uses the algorithm presented in
 
 - _Alternative mathematical technique to determine LS spectral terms_
   by Xu Renjun and Dai Zhenwen, published in JPhysB, 2006.
-
   [doi:10.1088/0953-4075/39/16/007](https://dx.doi.org/10.1088/0953-4075/39/16/007)
 
-to compute the multiplicity of individual subshells, beyond the
+to compute the multiplicity of individual subshells in ``LS``-coupling, beyond the
 trivial cases of a single electron or a filled subshell. These
 routines need not be used directly, instead use [`terms`](@ref) and
 [`count_terms`](@ref).
