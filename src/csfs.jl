@@ -8,7 +8,7 @@ symmetries. Depending on the type parameters, it can represent both non-relativi
 A CSF is defined by the following information:
 
 * The configuration, i.e. an ordered list of subshells together with their occupations.
-* A list of intermediate coupling terms (including the seniority quantum number to label *
+* A list of intermediate coupling terms (including the seniority quantum number to label
   states in degenerate subspaces) for each subshell in the configuration.
 * A list of coupling terms for the coupling tree. The coupling is assume to be done by first
  two orbitals together, then coupling that to the next orbital and so on.
