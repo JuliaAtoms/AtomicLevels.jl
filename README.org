@@ -6,6 +6,7 @@
 [[https://ci.appveyor.com/project/juliaatoms/atomiclevels-jl][https://img.shields.io/appveyor/ci/juliaatoms/atomiclevels-jl.svg?logo=appveyor]]
 [[https://codecov.io/gh/JuliaAtoms/AtomicLevels.jl][https://codecov.io/gh/JuliaAtoms/AtomicLevels.jl/branch/master/graph/badge.svg]]
 
+[[https://juliaatoms.org/AtomicLevels.jl/stable/index.html][https://img.shields.io/badge/docs-stable-blue.svg]]
 [[https://juliaatoms.org/AtomicLevels.jl/dev/index.html][https://img.shields.io/badge/docs-dev-blue.svg]]
 
 #+PROPERTY: header-args:julia :session *julia-README*
@@ -401,12 +402,3 @@
    :  3s(1/2|1/2) 3p-(1/2|1) 3p(3/2|3/2)+
    :  3s(1/2|1/2) 3p²(2|5/2)+
    :  3s(1/2|1/2) 3p-(1/2|1) 3p(3/2|5/2)+
-
-* Ideas
-  - [x] Generate configurations with cores; [He], [Ne], &.
-  - [ ] Coefficient of fractional parentage
-  - [ ] Seniority number
-  - [-] Different coupling schemes
-    - [X] LS-coupling
-    - [ ] jk-coupling, e.g., Ne I, first excited state: 1s²2s²2p⁵(²P⁰₃.₂)3s ²[³/₂]⁰₀,₁
-    - [x] jj-coupling
