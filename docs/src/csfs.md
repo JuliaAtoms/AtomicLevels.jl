@@ -26,7 +26,7 @@ However, even if your orbitals are eigenstates of the angular momentum operators
 
 ### Forming a CSF
 
-The philosophy behind CSFs is similar to how you can use the [Clebch-Gordan coefficients](https://en.wikipedia.org/wiki/Clebsch%E2%80%93Gordan_coefficients) ``C_{j_1m_1j_2m_2}^{J M}`` to couple product states of angular momentum eigenstates ``\ket{j_1 m_1} \ket{j_2 m_2}``, which themselves in general are not eigenstates of total angular momentum, into angular momentum eigenstates ``\ket{j_1, j_2; J M}`` by creating superpositions with appropriate coefficients:
+The philosophy behind CSFs is similar to how you can use the [Clebsch–Gordan coefficients](https://en.wikipedia.org/wiki/Clebsch%E2%80%93Gordan_coefficients) ``C_{j_1m_1j_2m_2}^{J M}`` to couple product states of angular momentum eigenstates ``\ket{j_1 m_1} \ket{j_2 m_2}``, which themselves in general are not eigenstates of total angular momentum, into angular momentum eigenstates ``\ket{j_1, j_2; J M}`` by creating superpositions with appropriate coefficients:
 
 ```math
 \ket{j_1, j_2; J M} = \sum_{m_1,m_2,M}
@@ -40,11 +40,11 @@ In the multi-electron case, the states that you multiply together are the atomic
 
 1. There are usually more than two electrons.
 
-    In a multi-electron case, it is perfectly valid to apply the Clebsch-Gordan relation recursively until all electrons have been coupled, but in general you can end up with the same total angular momentum for different states (corresponding to different coupling sequences). So, the angular momentum eigenvalues are no longer sufficient to always uniquely identify a state.
+    In a multi-electron case, it is perfectly valid to apply the Clebsch–Gordan relation recursively until all electrons have been coupled, but in general you can end up with the same total angular momentum for different states (corresponding to different coupling sequences). So, the angular momentum eigenvalues are no longer sufficient to always uniquely identify a state.
 
 2. Electrons are fermionic particles adhering to the [Pauli principle](https://en.wikipedia.org/wiki/Pauli_exclusion_principle).
 
-   This means that not all direct products of single-particle states are valid (the same single-particle state can not be repeated) or unique (anti-symmetry means that the order in the product does not matter). This, in turn, means that not all the coupled eigenstates predicted by the Clebsch-Gordan relation actually exist and you can not use the Clebsch-Gordan relation directly to determine their coefficients.
+   This means that not all direct products of single-particle states are valid (the same single-particle state can not be repeated) or unique (anti-symmetry means that the order in the product does not matter). This, in turn, means that not all the coupled eigenstates predicted by the Clebsch-Gordan relation actually exist and you can not use the Clebsch–Gordan relation directly to determine their coefficients.
 
 To work within those constraints, AtomicLevels specifies a _coupling scheme_. That is, the CSFs contain additional data that allows the states to be identified uniquely.
 
@@ -62,7 +62,7 @@ Forming a CSF is a multi-step process:
 
    Due to the fermionic nature of the electrons, even determining the valid ``J`` values for the subshells is non-trivial. Also, if you go to high enough angular momenta of the orbital and high enough particle number, the angular momentum eigenvalues are no longer sufficient to uniquely identify the subshell terms. So the [`CSF`](@ref) type stores them as instances of [`IntermediateTerm`](@ref), instead of simple numbers (see [Term symbols](@ref) for more information).
 
-3. Once the electrons on individual subshells are coupled, we can couple the subshells themselves together. As the orbitals in a subshell are distinct from the ones in other subshells, this can easily be done with just Clebch-Gordan coefficients.
+3. Once the electrons on individual subshells are coupled, we can couple the subshells themselves together. As the orbitals in a subshell are distinct from the ones in other subshells, this can easily be done with just Clebsch–Gordan coefficients.
 
    In AtomicLevels, we assume that the coupling is done by starting from the leftmost orbital pair, coupling those subshells together. Then the coupled two subshells are taken and coupled to the next subshells, and so on. In the end, we get a _coupling tree_ that looks something like this:
 
