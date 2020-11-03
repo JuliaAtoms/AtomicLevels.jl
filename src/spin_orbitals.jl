@@ -27,6 +27,11 @@ struct SpinOrbital{O<:AbstractOrbital,M<:Tuple} <: AbstractOrbital
 end
 SpinOrbital(orb, m...) = SpinOrbital(orb, m)
 
+Base.:(==)(a::SpinOrbital, b::SpinOrbital) =
+    a.orb == b.orb && a.m == b.m
+
+Base.hash(o::SpinOrbital, h::UInt) = hash(o.orb, hash(o.m, h))
+
 function Base.show(io::IO, so::SpinOrbital)
     show(io, so.orb)
     projections = map(((l,m),) -> "m_$l = $m", zip(angular_momentum_labels(so.orb),so.m))

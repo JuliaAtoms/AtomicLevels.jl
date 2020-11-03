@@ -191,7 +191,7 @@ Base.:(==)(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbit
     a.occupancy == b.occupancy &&
     a.states == b.states
 
-Base.hash(c::Configuration) = hash(c.orbitals) ⊻ hash(c.occupancy) ⊻ hash(c.states)
+Base.hash(c::Configuration, h::UInt) = hash(c.orbitals, hash(c.occupancy, hash(c.states, h)))
 
 """
     fill(c::Configuration)

@@ -74,6 +74,11 @@ struct Orbital{N<:MQ} <: AbstractOrbital
     end
 end
 
+Base.:(==)(a::Orbital, b::Orbital) =
+    a.n == b.n && a.ℓ == b.ℓ
+
+Base.hash(o::Orbital, h::UInt) = hash(o.n, hash(o.ℓ, h))
+
 """
     mqtype(::Orbital{MQ}) = MQ
 

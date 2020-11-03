@@ -126,6 +126,11 @@ struct RelativisticOrbital{N<:MQ} <: AbstractOrbital
 end
 RelativisticOrbital(n::MQ, ℓ::Integer, j::Real) = RelativisticOrbital(n, ℓj_to_kappa(ℓ, j))
 
+Base.:(==)(a::RelativisticOrbital, b::RelativisticOrbital) =
+    a.n == b.n && a.κ == b.κ
+
+Base.hash(o::RelativisticOrbital, h::UInt) = hash(o.n, hash(o.κ, h))
+
 """
     mqtype(::RelativisticOrbital{MQ}) = MQ
 

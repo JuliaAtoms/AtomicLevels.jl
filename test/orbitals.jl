@@ -292,4 +292,9 @@ using Random
         @test string(ro"2p-") == "2p-"
         @test ascii(ro"2p-") == "2p-"
     end
+
+    @testset "Hashing" begin
+        @test hash(o"3s") == hash(o"3s")
+        @test hash(ro"3p-") == hash(ro"3p-")
+    end
 end
