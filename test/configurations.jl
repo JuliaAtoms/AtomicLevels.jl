@@ -411,6 +411,8 @@
             @test nonrelconfiguration(rc"kp-2 kp4 lp-2 lp"s) == c"kp6 lp3"s
         end
         @testset "Non-relativistic -> relativistic" begin
+            @test relconfigurations(c"1s") == [rc"1s"]
+            @test relconfigurations(c"1s2") == [rc"1s2"]
             @test relconfigurations(c"[He] 2p") == [rc"[He] 2p-", rc"[He] 2p"]
             @test relconfigurations(c"[Ne]"s) == [rc"[Ne]"s]
             @test relconfigurations([c"1s 2p", c"2s 2p"]) == [rc"1s 2p-", rc"1s 2p", rc"2s 2p-", rc"2s 2p"]

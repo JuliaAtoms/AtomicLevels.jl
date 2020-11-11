@@ -914,8 +914,10 @@ function relconfigurations(c::Configuration{<:Orbital})
         end
         orcs
     end
-    rcs = map(Iterators.product(rcs...)) do subshells
-        reduce(⊗, subshells)
+    if length(rcs) > 1
+        rcs = map(Iterators.product(rcs...)) do subshells
+            reduce(⊗, subshells)
+        end
     end
     reduce(vcat, rcs)
 end
