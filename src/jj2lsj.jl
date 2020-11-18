@@ -135,13 +135,79 @@ function jj2lsj(::Type{T}, orbs::RelativisticOrbital...) where T
 end
 jj2lsj(orbs::RelativisticOrbital...) = jj2lsj(Float64, orbs...)
 
-function jj2lsj(sorb::SpinOrbital)
+angular_integral(a::SpinOrbital{<:Orbital}, b::SpinOrbital{<:Orbital}) =
+    a.orb.ℓ == b.orb.ℓ && a.m == b.m
+
+angular_integral(a::SpinOrbital{<:RelativisticOrbital}, b::SpinOrbital{<:RelativisticOrbital}) =
+    a.orb.ℓ == b.orb.ℓ && a.m == b.m
+
+angular_integral(a::SpinOrbital{<:Orbital}, b::SpinOrbital{<:RelativisticOrbital}) =
+    Int(a.orb.ℓ == b.orb.ℓ) * clebschgordan(a.orb.ℓ, a.m[1], half(1), a.m[2], b.orb.j, b.m[1])
+
+angular_integral(a::SpinOrbital{<:RelativisticOrbital}, b::SpinOrbital{<:Orbital}) =
+    conj(angular_integral(b, a))
+
+function jj2lsj(sorb::SpinOrbital{<:Orbital})
     orb,(mℓ,ms) = sorb.orb,sorb.m
     @unpack n,ℓ = orb
     mj = mℓ + ms
     map(max(abs(mj),ℓ-half(1)):(ℓ+half(1))) do j
-        (RelativisticOrbital(n,ℓ,j),mj)=>clebschgordan(ℓ,mℓ,half(1),ms,j,mj)
+        ro = SpinOrbital(RelativisticOrbital(n,ℓ,j),mj)
+        ro => angular_integral(ro, sorb)
     end
+end
+
+function jj2lsj(sorb::SpinOrbital{<:RelativisticOrbital})
+    orb,(mj,) = sorb.orb,sorb.m
+    @unpack n,ℓ,j = orb
+    map(max(-ℓ, mj-half(1)):min(ℓ, mj+half(1))) do mℓ
+        ms = mj - mℓ
+        o = SpinOrbital(Orbital(n,ℓ),(Int(mℓ),ms))
+        o => angular_integral(o, sorb)
+    end
+end
+
+function jj2lsj(sorbs::AbstractVector{<:SpinOrbital{<:RelativisticOrbital}})
+    @assert issorted(sorbs)
+    # For each jj spin-orbital, find all corresponding ls
+    # spin-orbitals with their CG coeffs.
+    couplings = map(jj2lsj, sorbs)
+
+    CGT = typeof(couplings[1][1][2])
+    LSOT = eltype(reduce(vcat, map(c -> map(first, c), couplings)))
+    blocks = Vector{Tuple{Int,Int,Matrix{CGT}}}()
+    tmp_blocks = Vector{Matrix{CGT}}(undef, length(sorbs))
+
+    # Sort the ls spin-orbitals such that appear in the same place as
+    # those jj orbitals with the same mⱼ; this is essential to allow
+    # applying the JJ ↔ LS transform in-place via orbital
+    # rotations. Also generate the rotation matrices which are either
+    # 1×1 (for pure states) or 2×2.
+    orb_map = Dict{LSOT,Int}()
+    ls_orbitals = Vector{LSOT}(undef, length(sorbs))
+    for (i,cs) in enumerate(couplings)
+        if length(cs) == 1
+            (o,coeff) = first(cs)
+            ls_orbitals[i] = o
+            M = zeros(CGT, 1, 1)
+            M[1] = coeff
+            push!(blocks, (i,i,M))
+        else
+            (a,ca),(b,cb) = cs
+            mi,ma = minmax(a,b)
+            j = get!(orb_map, mi, i)
+            ls_orbitals[i] = if i == j # First time we see this block
+                tmp_blocks[i] = zeros(CGT, 2, 2)
+                mi
+            else # Block finished
+                push!(blocks, (j, i, tmp_blocks[j]))
+                ma
+            end
+            tmp_blocks[j][(i == j ? 1 : 2),:] .= a < b ? (ca,cb) : (cb,ca)
+        end
+    end
+
+    ls_orbitals, blocks
 end
 
 export jj2lsj, ClebschGordan, ClebschGordanℓs
