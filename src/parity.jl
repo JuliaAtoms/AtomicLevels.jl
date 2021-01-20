@@ -47,6 +47,8 @@ function Base.convert(::Type{Parity}, i::I) where {I<:Integer}
     throw(ArgumentError("Don't know how to convert $(i) to parity"))
 end
 
+Base.convert(::Type{I}, p::Parity) where {I<:Integer} = I(p.p ? 1 : -1)
+
 Base.iseven(p::Parity) = p.p
 Base.isodd(p::Parity) = !p.p
 Base.isless(a::Parity, b::Parity) = isodd(a) && iseven(b)

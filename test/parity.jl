@@ -37,6 +37,11 @@ using UnicodeFun
         @test iseven(-p"odd")
     end
 
+    @testset "Conversion" begin
+        @test convert(Int, p"even") == 1
+        @test convert(Int, p"odd") == -1
+    end
+
     @testset "Pretty-printing" begin
         @test "$(p"even")" == "even"
         @test "$(p"odd")" == "odd"
