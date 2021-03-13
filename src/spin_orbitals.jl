@@ -1,3 +1,19 @@
+parse_projection(m::Number) = m
+function parse_projection(m::AbstractString)
+    n = tryparse(Float64, m)
+    isnothing(n) || return n
+    if m == "α"
+        half(1)
+    elseif m == "β"
+        -half(1)
+    elseif occursin('/', m)
+        n,d = split(m, "/")
+        parse(Int,n)//parse(Int,d)
+    else
+        throw(ArgumentError("Don't know how to parse projection quantum number $(m)"))
+    end
+end
+
 """
     struct SpinOrbital{O<:Orbital} <: AbstractOrbital
 
@@ -17,12 +33,15 @@ struct SpinOrbital{O<:AbstractOrbital,M<:Tuple} <: AbstractOrbital
         nm = length(m)
         nm == nam ||
             throw(ArgumentError("$(nam) projection quantum numbers required, got $(nm)"))
+        newm = ()
         for (mi,ar,l) in zip(m,am,aml)
-            mi ∈ ar ||
+            mm = parse_projection(mi)
+            mm ∈ ar ||
                 throw(ArgumentError("Projection $mi of quantum number $l not in valid set $ar"))
+            newm = (newm..., convert(eltype(ar), mm))
         end
 
-        new{O,typeof(m)}(orb, m)
+        new{O,typeof(newm)}(orb, newm)
     end
 end
 SpinOrbital(orb, m...) = SpinOrbital(orb, m)
@@ -87,6 +106,64 @@ Base.promote_type(::Type{SpinOrbital}, ::Type{SpinOrbital{O}}) where O = SpinOrb
 
 Base.promote_type(::Type{SpinOrbital{A,M}}, ::Type{SpinOrbital{B,M}}) where {A,B,M} =
     SpinOrbital{<:promote_type(A,B),M}
+
+function spin_orbital_from_string(::Type{O}, orb_str) where {O<:AbstractOrbital}
+    m = match(r"^(.*)\((.*)\)$", orb_str)
+    m === nothing && throw(ArgumentError("Invalid spin-orbital string: $(orb_str)"))
+    o = orbital_from_string(O, m[1])
+    SpinOrbital(o, (split(m[2], ",")...,))
+end
+
+"""
+    @so_str -> SpinOrbital{<:Orbital}
+
+String macro to quickly construct a non-relativistic spin-orbital; it
+is similar to [`@o_str`](@ref), with the added specification of
+the magnetic quantum numbers ``m_ℓ`` and ``m_s``.
+
+# Examples
+
+```jldoctest
+julia> so"1s(0,α)"
+1s₀α
+
+julia> so"kd(2,β)"
+kd₂β
+
+julia> so"2p(1,0.5)"
+2p₁α
+
+julia> so"2p(1,-1/2)"
+2p₁β
+```
+"""
+macro so_str(orb_str)
+    :(spin_orbital_from_string(Orbital, $orb_str))
+end
+
+"""
+    @rso_str -> SpinOrbital{<:RelativisticOrbital}
+
+String macro to quickly construct a relativistic spin-orbital; it
+is similar to [`@o_str`](@ref), with the added specification of
+the magnetic quantum number ``m_j``.
+
+# Examples
+
+```jldoctest
+julia> rso"2p-(1/2)"
+2p-(1/2)
+
+julia> rso"2p(-3/2)"
+2p(-3/2)
+
+julia> rso"3d(2.5)"
+3d(5/2)
+```
+"""
+macro rso_str(orb_str)
+    :(spin_orbital_from_string(RelativisticOrbital, $orb_str))
+end
 
 """
     spin_orbitals(orbital)
@@ -174,4 +251,4 @@ macro rsos_str(orbs_str)
     reduce(vcat, map(spin_orbitals, orbitals_from_string(RelativisticOrbital, orbs_str)))
 end
 
-export SpinOrbital, spin_orbitals, @sos_str, @rsos_str
+export SpinOrbital, spin_orbitals, @so_str, @rso_str, @sos_str, @rsos_str
