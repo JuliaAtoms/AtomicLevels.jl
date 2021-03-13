@@ -634,6 +634,9 @@ Ks² Kp
 """
 continuum(conf::Configuration) = filter((orb,occ,state) -> !isbound(orb), peel(conf))
 
+Base.empty(conf::Configuration{O}) where {O<:AbstractOrbital} =
+    Configuration(empty(conf.orbitals), empty(conf.occupancy), empty(conf.states), sorted=conf.sorted)
+
 """
     parity(::Configuration) -> Parity
 
@@ -1023,6 +1026,13 @@ consisting of [`SpinOrbital`](@ref)s.
 const SpinConfiguration{O<:SpinOrbital} = Configuration{O}
 
 function Base.show(io::IO, c::SpinConfiguration)
+    ascii = get(io, :ascii, false)
+    nc = length(c)
+    if nc == 0
+        write(io, ascii ? "empty" : "∅")
+        return
+    end
+
     orbitals = Dict{Orbital, Vector{<:SpinOrbital}}()
     core_orbitals = sort(unique(map(o -> o.orb, core(c).orbitals)))
     core_cfg = Configuration(core_orbitals, ones(Int, length(core_orbitals))) |> fill |> close

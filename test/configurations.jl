@@ -98,6 +98,13 @@
         @test num_electrons(rc"[Rn]", ro"As") == 0
     end
 
+    @testset "Empty configurations" begin
+        ec = empty(c"1s2")
+        rec = empty(rc"1s2")
+        @test num_electrons(ec) == 0
+        @test num_electrons(rec) == 0
+    end
+
     @testset "Access subsets" begin
         @test core(c"[Kr]c 5s2") == c"[Kr]c"
         @test peel(c"[Kr]c 5s2") == c"5s2"
@@ -484,6 +491,7 @@
         @test ascii(c"[Ar]c 3d10c 4s2c 4p6 4d10 5s2i 5p6") == "[Ar]c 3d10c 4s2c 4p6 4d10 5s2i 5p6"
         @test string(rc"[Ar]*") == "1s² 2s² 2p⁴ 2p-² 3s² 3p⁴ 3p-²"
         @test ascii(rc"[Ar]*") == "1s2 2s2 2p4 2p-2 3s2 3p4 3p-2"
+        @test ascii(empty(c"1s2")) == "empty"
     end
 
     @testset "multiplicity" begin
