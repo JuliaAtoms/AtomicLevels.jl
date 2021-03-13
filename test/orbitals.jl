@@ -323,4 +323,56 @@ using Random
         @test hash(o"3s") == hash(o"3s")
         @test hash(ro"3p-") == hash(ro"3p-")
     end
+
+    @testset "Serialization" begin
+        @testset "Orbital" begin
+            o = o"1s"
+            p = o"kg"
+            q = Orbital(:k̃, 14)
+            oo = SpinOrbital(o, (0, 1/2))
+            r = Orbital(Symbol("[$(oo)]"), 14)
+
+            no,np,nq,nr = mktempdir() do path
+                filename = joinpath(path, "orbitals")
+                open(filename, "w") do file
+                    foreach(Base.Fix1(write, file), (o,p,q,r))
+                end
+
+                open(filename) do file
+                    [read(file, Orbital)
+                     for i = 1:4]
+                end
+            end
+
+            @test no == o
+            @test np == p
+            @test nq == q
+            @test nr == r
+        end
+    end
+
+    @testset "Relativistic orbital" begin
+        o = ro"1s"
+        p = ro"kg"
+        q = RelativisticOrbital(:k̃, 14)
+        oo = SpinOrbital(o, (1/2))
+        r = RelativisticOrbital(Symbol("[$(oo)]"), 14)
+
+        no,np,nq,nr = mktempdir() do path
+            filename = joinpath(path, "orbitals")
+            open(filename, "w") do file
+                foreach(Base.Fix1(write, file), (o,p,q,r))
+            end
+
+            open(filename) do file
+                [read(file, RelativisticOrbital)
+                 for i = 1:4]
+            end
+        end
+
+        @test no == o
+        @test np == p
+        @test nq == q
+        @test nr == r
+    end
 end

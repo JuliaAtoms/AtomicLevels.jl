@@ -188,6 +188,28 @@ julia> angular_momenta(ro"3d")
 angular_momenta(orbital::RelativisticOrbital) = (orbital.j,)
 angular_momentum_labels(::RelativisticOrbital) = ("j",)
 
+# ** Saving/loading
+
+Base.write(io::IO, o::RelativisticOrbital{Int}) = write(io, 'i', o.n, o.κ)
+Base.write(io::IO, o::RelativisticOrbital{Symbol}) = write(io, 's', sizeof(o.n), o.n, o.κ)
+
+function Base.read(io::IO, ::Type{RelativisticOrbital})
+    kind = read(io, Char)
+    n = if kind == 'i'
+        read(io, Int)
+    elseif kind == 's'
+        b = Vector{UInt8}(undef, read(io, Int))
+        readbytes!(io, b)
+        Symbol(b)
+    else
+        error("Unknown RelativisticOrbital type $(kind)")
+    end
+    κ = read(io, Int)
+    RelativisticOrbital(n, κ)
+end
+
+# * Orbital construction from strings
+
 """
     @ro_str -> RelativisticOrbital
 

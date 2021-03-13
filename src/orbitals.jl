@@ -209,6 +209,26 @@ julia> angular_momentum_ranges(o"4f")
 angular_momentum_ranges(orbital::AbstractOrbital) =
     map(j -> -j:j, angular_momenta(orbital))
 
+# ** Saving/loading
+
+Base.write(io::IO, o::Orbital{Int}) = write(io, 'i', o.n, o.ℓ)
+Base.write(io::IO, o::Orbital{Symbol}) = write(io, 's', sizeof(o.n), o.n, o.ℓ)
+
+function Base.read(io::IO, ::Type{Orbital})
+    kind = read(io, Char)
+    n = if kind == 'i'
+        read(io, Int)
+    elseif kind == 's'
+        b = Vector{UInt8}(undef, read(io, Int))
+        readbytes!(io, b)
+        Symbol(b)
+    else
+        error("Unknown Orbital type $(kind)")
+    end
+    ℓ = read(io, Int)
+    Orbital(n, ℓ)
+end
+
 # * Orbital construction from strings
 
 parse_orbital_n(m::RegexMatch,i=1) =
