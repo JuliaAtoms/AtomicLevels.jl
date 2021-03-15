@@ -2,7 +2,7 @@
 #+AUTHOR: Stefanos Carlström
 #+EMAIL: stefanos.carlstrom@gmail.com
 
-[[https://travis-ci.com/JuliaAtoms/AtomicLevels.jl][https://travis-ci.com/JuliaAtoms/AtomicLevels.jl.svg?branch=master]]
+[[https://github.com/JuliaAtoms/AtomicLevels.jl/actions][https://github.com/JuliaAtoms/AtomicLevels.jl/workflows/CI/badge.svg]]
 [[https://ci.appveyor.com/project/juliaatoms/atomiclevels-jl][https://img.shields.io/appveyor/ci/juliaatoms/atomiclevels-jl.svg?logo=appveyor]]
 [[https://codecov.io/gh/JuliaAtoms/AtomicLevels.jl][https://codecov.io/gh/JuliaAtoms/AtomicLevels.jl/branch/master/graph/badge.svg]]
 
