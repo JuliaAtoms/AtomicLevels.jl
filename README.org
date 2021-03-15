@@ -3,7 +3,6 @@
 #+EMAIL: stefanos.carlstrom@gmail.com
 
 [[https://github.com/JuliaAtoms/AtomicLevels.jl/actions][https://github.com/JuliaAtoms/AtomicLevels.jl/workflows/CI/badge.svg]]
-[[https://ci.appveyor.com/project/juliaatoms/atomiclevels-jl][https://img.shields.io/appveyor/ci/juliaatoms/atomiclevels-jl.svg?logo=appveyor]]
 [[https://codecov.io/gh/JuliaAtoms/AtomicLevels.jl][https://codecov.io/gh/JuliaAtoms/AtomicLevels.jl/branch/master/graph/badge.svg]]
 
 [[https://juliaatoms.org/AtomicLevels.jl/stable/index.html][https://img.shields.io/badge/docs-stable-blue.svg]]
