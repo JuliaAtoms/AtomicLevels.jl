@@ -325,23 +325,19 @@ using Random
     end
 
     @testset "Serialization" begin
-        @testset "Orbital" begin
+        @testset "Orbitals" begin
             o = o"1s"
             p = o"kg"
             q = Orbital(:k̃, 14)
             oo = SpinOrbital(o, (0, 1/2))
             r = Orbital(Symbol("[$(oo)]"), 14)
 
-            no,np,nq,nr = mktempdir() do path
-                filename = joinpath(path, "orbitals")
-                open(filename, "w") do file
-                    foreach(Base.Fix1(write, file), (o,p,q,r))
-                end
+            no,np,nq,nr = let io = IOBuffer()
+                foreach(Base.Fix1(write, io), (o,p,q,r))
 
-                open(filename) do file
-                    [read(file, Orbital)
-                     for i = 1:4]
-                end
+                seekstart(io)
+                [read(io, Orbital)
+                 for i = 1:4]
             end
 
             @test no == o
@@ -349,30 +345,48 @@ using Random
             @test nq == q
             @test nr == r
         end
-    end
 
-    @testset "Relativistic orbital" begin
-        o = ro"1s"
-        p = ro"kg"
-        q = RelativisticOrbital(:k̃, 14)
-        oo = SpinOrbital(o, (1/2))
-        r = RelativisticOrbital(Symbol("[$(oo)]"), 14)
+        @testset "Relativistic orbitals" begin
+            o = ro"1s"
+            p = ro"kg"
+            q = RelativisticOrbital(:k̃, 14)
+            oo = SpinOrbital(o, (1/2))
+            r = RelativisticOrbital(Symbol("[$(oo)]"), 14)
 
-        no,np,nq,nr = mktempdir() do path
-            filename = joinpath(path, "orbitals")
-            open(filename, "w") do file
-                foreach(Base.Fix1(write, file), (o,p,q,r))
-            end
+            no,np,nq,nr = let io = IOBuffer()
+                foreach(Base.Fix1(write, io), (o,p,q,r))
 
-            open(filename) do file
-                [read(file, RelativisticOrbital)
+                seekstart(io)
+                [read(io, RelativisticOrbital)
                  for i = 1:4]
             end
+
+            @test no == o
+            @test np == p
+            @test nq == q
+            @test nr == r
         end
 
-        @test no == o
-        @test np == p
-        @test nq == q
-        @test nr == r
+        @testset "Spin-orbitals" begin
+            a = so"1s(0,α)"
+            b = rso"2p-(1/2)"
+            c = rso"kd-(-1.5)"
+            d = so"3d(-2,-0.5)"
+            e = SpinOrbital(Orbital(Symbol("[$(d)]"), 14), (-13, -0.5))
+
+            na,nb,nc,nd,ne = let io = IOBuffer()
+                foreach(Base.Fix1(write, io), (a,b,c,d,e))
+
+                seekstart(io)
+                [read(io, SpinOrbital)
+                 for i = 1:5]
+            end
+
+            @test na == a
+            @test nb == b
+            @test nc == c
+            @test nd == d
+            @test ne == e
+        end
     end
 end

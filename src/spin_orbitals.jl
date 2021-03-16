@@ -107,6 +107,29 @@ Base.promote_type(::Type{SpinOrbital}, ::Type{SpinOrbital{O}}) where O = SpinOrb
 Base.promote_type(::Type{SpinOrbital{A,M}}, ::Type{SpinOrbital{B,M}}) where {A,B,M} =
     SpinOrbital{<:promote_type(A,B),M}
 
+# ** Saving/loading
+
+Base.write(io::IO, o::SpinOrbital{<:Orbital}) = write(io, 'n', o.orb, o.m[1], o.m[2].twice)
+Base.write(io::IO, o::SpinOrbital{<:RelativisticOrbital}) = write(io, 'r', o.orb, o.m[1].twice)
+
+function Base.read(io::IO, ::Type{SpinOrbital})
+    kind = read(io, Char)
+    if kind == 'n'
+        orb = read(io, Orbital)
+        mℓ = read(io, Int)
+        ms = half(read(io, Int))
+        SpinOrbital(orb, (mℓ, ms))
+    elseif kind == 'r'
+        orb = read(io, RelativisticOrbital)
+        mj = half(read(io, Int))
+        SpinOrbital(orb, mj)
+    else
+        error("Unknown SpinOrbital type $(kind)")
+    end
+end
+
+# * Orbital construction from strings
+
 function spin_orbital_from_string(::Type{O}, orb_str) where {O<:AbstractOrbital}
     m = match(r"^(.*)\((.*)\)$", orb_str)
     m === nothing && throw(ArgumentError("Invalid spin-orbital string: $(orb_str)"))
