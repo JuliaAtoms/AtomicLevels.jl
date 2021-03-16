@@ -41,7 +41,9 @@ used to construct whole lists of them very easily.
 
 ```@docs
 @o_str
+@so_str
 @ro_str
+@rso_str
 @os_str
 @sos_str
 @ros_str

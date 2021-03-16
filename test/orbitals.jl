@@ -278,6 +278,32 @@ using Random
 
         @test "$(soα)" == "1s₀α"
         @test "$(po₊β)" == "2p₁β"
+
+        @testset "Construction" begin
+            @test so"1s(0,α)" == SpinOrbital(o"1s", (0,1/2))
+            @test so"1s(0,β)" == SpinOrbital(o"1s", (0,-1/2))
+            @test so"2p(1,β)" == SpinOrbital(o"2p", (1,-1/2))
+            @test so"1s(0,-1/2)" == SpinOrbital(o"1s", (0,-1/2))
+            @test so"1s(0,-0.5)" == SpinOrbital(o"1s", (0,-1/2))
+            @test so"1s(0,1/2)" == SpinOrbital(o"1s", (0,1/2))
+            @test_throws ArgumentError rso"1s(0,1/2)"
+            @test rso"1s(1/2)" == SpinOrbital(ro"1s", (1/2))
+            @test rso"1s(α)" == SpinOrbital(ro"1s", (1/2)) # This should not work, but hey...
+            @test_throws ArgumentError rso"1s(3/2)"
+            @test rso"2p(3/2)" == SpinOrbital(ro"2p", (3/2))
+            @test rso"3p(-3/2)" == SpinOrbital(ro"3p", (-3/2))
+            @test rso"3p(-1/2)" == SpinOrbital(ro"3p", (-1/2))
+            @test_throws ArgumentError rso"3p(5/2)"
+            @test rso"3p(1/2)" == SpinOrbital(ro"3p", (1/2))
+            @test rso"3p-(1/2)" == SpinOrbital(ro"3p-", (1/2))
+            @test_throws ArgumentError rso"3p-(3/2)"
+            @test_throws ArgumentError rso"3p-(-3/2)"
+            @test rso"3p-(-1/2)" == SpinOrbital(ro"3p-", (-1/2))
+            @test_throws ArgumentError rso"3d-(-5/2)"
+            @test_throws ArgumentError rso"3d-(..)"
+            @test rso"3d-(-3/2)" == SpinOrbital(ro"3d-", (-3/2))
+            @test rso"3d(5/2)" == SpinOrbital(ro"3d", (5/2))
+        end
     end
 
     @testset "Internal methods" begin
