@@ -1,7 +1,6 @@
 using AtomicLevels
 using WignerSymbols
 using HalfIntegers
-using Compat
 using Test
 
 include("parity.jl")

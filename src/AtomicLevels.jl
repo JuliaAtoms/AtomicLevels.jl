@@ -8,8 +8,6 @@ using WignerSymbols
 using HalfIntegers
 using Combinatorics
 
-using Compat
-
 include("common.jl")
 include("parity.jl")
 include("orbitals.jl")
