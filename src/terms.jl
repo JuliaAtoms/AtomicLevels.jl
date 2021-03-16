@@ -101,7 +101,7 @@ julia> T"2[3/2]o" # jK coupling, common in noble gases
 ```
 """
 macro T_str(s::AbstractString)
-    parse(Term, s)
+    :(parse(Term, $s))
 end
 
 Base.zero(::Type{Term}) = T"1S"

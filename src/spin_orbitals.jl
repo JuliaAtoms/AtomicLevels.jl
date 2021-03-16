@@ -224,7 +224,7 @@ julia> sos"3[s-p]"
 ```
 """
 macro sos_str(orbs_str)
-    reduce(vcat, map(spin_orbitals, orbitals_from_string(Orbital, orbs_str)))
+    :(reduce(vcat, map(spin_orbitals, orbitals_from_string(Orbital, $orbs_str))))
 end
 
 """
@@ -248,7 +248,7 @@ julia> rsos"3[s-p]"
 ```
 """
 macro rsos_str(orbs_str)
-    reduce(vcat, map(spin_orbitals, orbitals_from_string(RelativisticOrbital, orbs_str)))
+    :(reduce(vcat, map(spin_orbitals, orbitals_from_string(RelativisticOrbital, $orbs_str))))
 end
 
 export SpinOrbital, spin_orbitals, @so_str, @rso_str, @sos_str, @rsos_str
