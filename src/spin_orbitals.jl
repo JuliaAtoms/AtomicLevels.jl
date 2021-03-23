@@ -130,10 +130,10 @@ end
 
 # * Orbital construction from strings
 
-function spin_orbital_from_string(::Type{O}, orb_str) where {O<:AbstractOrbital}
+function Base.parse(::Type{O}, orb_str) where {OO<:AbstractOrbital,O<:SpinOrbital{OO}}
     m = match(r"^(.*)\((.*)\)$", orb_str)
     m === nothing && throw(ArgumentError("Invalid spin-orbital string: $(orb_str)"))
-    o = orbital_from_string(O, m[1])
+    o = parse(OO, m[1])
     SpinOrbital(o, (split(m[2], ",")...,))
 end
 
@@ -161,7 +161,7 @@ julia> so"2p(1,-1/2)"
 ```
 """
 macro so_str(orb_str)
-    :(spin_orbital_from_string(Orbital, $orb_str))
+    :(parse(SpinOrbital{Orbital}, $orb_str))
 end
 
 """
@@ -185,7 +185,7 @@ julia> rso"3d(2.5)"
 ```
 """
 macro rso_str(orb_str)
-    :(spin_orbital_from_string(RelativisticOrbital, $orb_str))
+    :(parse(SpinOrbital{RelativisticOrbital}, $orb_str))
 end
 
 """

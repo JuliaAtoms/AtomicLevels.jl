@@ -337,9 +337,9 @@ function core_configuration(::Type{O}, element::AbstractString, state::AbstractS
                   sorted=sorted)
 end
 
-function parse_orbital(::Type{O}, orb_str) where {O<:AbstractOrbital}
+function parse_orbital_occupation(::Type{O}, orb_str) where {O<:AbstractOrbital}
     m = match(r"^(([0-9]+|.)([a-z]|\[[0-9]+\])[-]{0,1})([0-9]*)([*ci]{0,1})$", orb_str)
-    orbital_from_string(O, m[1]) , (m[4] == "") ? 1 : parse(Int, m[4]), state_sym(m[5])
+    parse(O, m[1]) , (m[4] == "") ? 1 : parse(Int, m[4]), state_sym(m[5])
 end
 
 function Base.parse(::Type{Configuration{O}}, conf_str::AbstractString; sorted=false) where {O<:AbstractOrbital}
@@ -349,7 +349,7 @@ function Base.parse(::Type{Configuration{O}}, conf_str::AbstractString; sorted=f
     if core_m != nothing
         core_config = core_configuration(O, core_m[1], core_m[2], sorted)
         if length(orbs) > 1
-            peel_config = Configuration(parse_orbital.(Ref(O), orbs[2:end]))
+            peel_config = Configuration(parse_orbital_occupation.(Ref(O), orbs[2:end]))
             Configuration(vcat(core_config.orbitals, peel_config.orbitals),
                           vcat(core_config.occupancy, peel_config.occupancy),
                           vcat(core_config.states, peel_config.states),
@@ -358,7 +358,7 @@ function Base.parse(::Type{Configuration{O}}, conf_str::AbstractString; sorted=f
             core_config
         end
     else
-        Configuration(parse_orbital.(Ref(O), orbs), sorted=sorted)
+        Configuration(parse_orbital_occupation.(Ref(O), orbs), sorted=sorted)
     end
 end
 

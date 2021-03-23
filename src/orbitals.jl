@@ -74,6 +74,8 @@ struct Orbital{N<:MQ} <: AbstractOrbital
     end
 end
 
+Orbital{N}(n::N, ℓ::Int) where {N<:MQ} = Orbital(n, ℓ)
+
 Base.:(==)(a::Orbital, b::Orbital) =
     a.n == b.n && a.ℓ == b.ℓ
 
@@ -245,18 +247,12 @@ function parse_orbital_ℓ(m::RegexMatch,i=2)
     end
 end
 
-function orbital_from_string(::Type{O}, orb_str::AbstractString) where {O<:AbstractOrbital}
-    m = match(r"^([0-9]+|.)([a-z]|\[[0-9]+\])([-]{0,1})$", orb_str)
-    m === nothing && throw(ArgumentError("Invalid orbital string: $(orb_str)"))
+function Base.parse(::Type{<:Orbital}, orb_str)
+    m = match(r"^([0-9]+|.)([a-z]|\[[0-9]+\])$", orb_str)
+    isnothing(m) && throw(ArgumentError("Invalid orbital string: $(orb_str)"))
     n = parse_orbital_n(m)
     ℓ = parse_orbital_ℓ(m)
-    if O == RelativisticOrbital
-        j = ℓ + (m[3] == "-" ? -1 : 1)*1//2
-        O(n, ℓ, j)
-    else
-        m[3] == "" || throw(ArgumentError("Non-relativistic orbitals cannot have their spins explicitly specified"))
-        O(n, ℓ)
-    end
+    Orbital(n, ℓ)
 end
 
 """
@@ -273,7 +269,7 @@ Fd
 ```
 """
 macro o_str(orb_str)
-    :(orbital_from_string(Orbital, $orb_str))
+    :(parse(Orbital, $orb_str))
 end
 
 function orbitals_from_string(::Type{O}, orbs_str::AbstractString) where {O<:AbstractOrbital}

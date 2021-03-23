@@ -1,4 +1,4 @@
-using AtomicLevels: CSF, orbital_from_string
+using AtomicLevels: CSF
 
 p_suffix(p::Parity) = isodd(p) ? "o" : ""
 p_suffix(cfg::Configuration) = p_suffix(parity(cfg))

@@ -56,6 +56,10 @@ using Random
         @test o"2p"   == Orbital(2, 1)
         @test o"2[1]" == Orbital(2, 1)
 
+        @test parse(Orbital, "1s") == Orbital(1, 0)
+        @test parse(Orbital{Int}, "1s") == Orbital(1, 0)
+        @test parse(Orbital{Symbol}, "ks") == Orbital(:k, 0)
+
         @test ro"1s"   == RelativisticOrbital(1, -1) # κ=-1 => s orbital
         @test ro"2p-"  == RelativisticOrbital(2,  1, half(1))
         @test ro"2p-"  == RelativisticOrbital(2,  1, 1//2)
@@ -68,8 +72,8 @@ using Random
         @test ro"kp"  == RelativisticOrbital(:k, 1, 3//2)
         @test ro"ϵd-" == RelativisticOrbital(:ϵ, 2, 3//2)
 
-        @test_throws ArgumentError AtomicLevels.orbital_from_string(Orbital, "2p-")
-        @test_throws ArgumentError AtomicLevels.orbital_from_string(Orbital, "sdkfl")
+        @test_throws ArgumentError parse(Orbital, "2p-")
+        @test_throws ArgumentError parse(Orbital, "sdkfl")
 
         @test_throws ArgumentError Orbital(0, 0)
         @test_throws ArgumentError Orbital(1, 1)
@@ -303,6 +307,10 @@ using Random
             @test_throws ArgumentError rso"3d-(..)"
             @test rso"3d-(-3/2)" == SpinOrbital(ro"3d-", (-3/2))
             @test rso"3d(5/2)" == SpinOrbital(ro"3d", (5/2))
+
+            @test parse(SpinOrbital{Orbital}, "1s(0,α)") == SpinOrbital(Orbital(1, 0), (0, up))
+            @test parse(SpinOrbital{Orbital{Int}}, "1s(0,α)") == SpinOrbital(Orbital(1, 0), (0, up))
+            @test parse(SpinOrbital{Orbital{Symbol}}, "ks(0,α)") == SpinOrbital(Orbital(:k, 0), (0, up))
         end
     end
 

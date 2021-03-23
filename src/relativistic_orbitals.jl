@@ -210,6 +210,15 @@ end
 
 # * Orbital construction from strings
 
+function Base.parse(::Type{<:RelativisticOrbital}, orb_str)
+    m = match(r"^([0-9]+|.)([a-z]|\[[0-9]+\])([-]{0,1})$", orb_str)
+    isnothing(m) && throw(ArgumentError("Invalid orbital string: $(orb_str)"))
+    n = parse_orbital_n(m)
+    ℓ = parse_orbital_ℓ(m)
+    j = ℓ + (m[3] == "-" ? -1 : 1)*1//2
+    RelativisticOrbital(n, ℓ, j)
+end
+
 """
     @ro_str -> RelativisticOrbital
 
@@ -228,7 +237,7 @@ Kf-
 ```
 """
 macro ro_str(orb_str)
-    :(orbital_from_string(RelativisticOrbital, $orb_str))
+    :(parse(RelativisticOrbital, $orb_str))
 end
 
 """
