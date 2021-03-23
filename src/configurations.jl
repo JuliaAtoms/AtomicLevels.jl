@@ -342,11 +342,11 @@ function parse_orbital_occupation(::Type{O}, orb_str) where {O<:AbstractOrbital}
     parse(O, m[1]) , (m[4] == "") ? 1 : parse(Int, m[4]), state_sym(m[5])
 end
 
-function Base.parse(::Type{Configuration{O}}, conf_str::AbstractString; sorted=false) where {O<:AbstractOrbital}
+function Base.parse(::Type{Configuration{O}}, conf_str; sorted=false) where {O<:AbstractOrbital}
     isempty(conf_str) && return Configuration{O}(sorted=sorted)
     orbs = split(conf_str, r"[\. ]")
     core_m = match(r"\[([a-zA-Z]+)\]([*ci]{0,1})", first(orbs))
-    if core_m != nothing
+    if !isnothing(core_m)
         core_config = core_configuration(O, core_m[1], core_m[2], sorted)
         if length(orbs) > 1
             peel_config = Configuration(parse_orbital_occupation.(Ref(O), orbs[2:end]))
@@ -1023,6 +1023,65 @@ consisting of [`SpinOrbital`](@ref)s.
 """
 const SpinConfiguration{O<:SpinOrbital} = Configuration{O}
 
+function Base.parse(::Type{SpinConfiguration{SO}}, conf_str; sorted=false) where {O<:AbstractOrbital,SO<:SpinOrbital{O}}
+    isempty(conf_str) && return SpinConfiguration{SO}(sorted=sorted)
+    orbs = split(conf_str, r"[ ]")
+    core_m = match(r"\[([a-zA-Z]+)\]([*ci]{0,1})", first(orbs))
+    if !isnothing(core_m)
+        core_config = first(spin_configurations(core_configuration(O, core_m[1], core_m[2], sorted)))
+        if length(orbs) > 1
+            peel_orbitals = parse.(Ref(SO), orbs[2:end])
+            orbitals = vcat(core_config.orbitals, peel_orbitals)
+            Configuration(orbitals,
+                          ones(Int, length(orbitals)),
+                          vcat(core_config.states, fill(:open, length(peel_orbitals))),
+                          sorted=sorted)
+        else
+            core_config
+        end
+    else
+        Configuration(parse.(Ref(SO), orbs), ones(Int, length(orbs)), sorted=sorted)
+    end
+end
+
+"""
+    @sc_str -> SpinConfiguration{<:SpinOrbital{<:Orbital}}
+
+A string macro to construct a non-relativistic [`SpinConfiguration`](@ref).
+
+# Examples
+
+```jldoctest
+julia> sc"1s₀α 2p₋₁β"
+1s₀α 2p₋₁β
+
+julia> sc"ks(0,-1/2) l[4](-3,1/2)"
+ks₀β lg₋₃α
+```
+"""
+macro sc_str(conf_str, suffix="")
+    parse(SpinConfiguration{SpinOrbital{Orbital}}, conf_str, sorted=suffix=="s")
+end
+
+"""
+    @rsc_str -> SpinConfiguration{<:SpinOrbital{<:RelativisticOrbital}}
+
+A string macro to construct a relativistic [`SpinConfiguration`](@ref).
+
+# Examples
+
+```jldoctest
+julia> rsc"1s(1/2) 2p(-1/2)"
+1s(1/2) 2p(-1/2)
+
+julia> rsc"ks(-1/2) l[4]-(-5/2)"
+ks(-1/2) lg-(-5/2)
+```
+"""
+macro rsc_str(conf_str, suffix="")
+    parse(SpinConfiguration{SpinOrbital{RelativisticOrbital}}, conf_str, sorted=suffix=="s")
+end
+
 function Base.show(io::IO, c::SpinConfiguration)
     ascii = get(io, :ascii, false)
     nc = length(c)
@@ -1162,7 +1221,7 @@ Calculates the number of Slater determinants corresponding to the configuration.
 """
 multiplicity(c::Configuration) = prod(binomial.(degeneracy.(c.orbitals), c.occupancy))
 
-export Configuration, @c_str, @rc_str, @scs_str, issimilar,
+export Configuration, @c_str, @rc_str, @sc_str, @rsc_str, @scs_str, issimilar,
     num_electrons, core, peel, active, inactive, bound, continuum, parity, ⊗, @rcs_str,
     SpinConfiguration, spin_configurations, substitutions, close!,
     nonrelconfiguration, relconfigurations

@@ -126,6 +126,8 @@ julia> rc"[Ne] 3s2" ⊗ rcs"3p2"
 SpinConfiguration
 spin_configurations
 substitutions
+@sc_str
+@rsc_str
 @scs_str
 ```
 
