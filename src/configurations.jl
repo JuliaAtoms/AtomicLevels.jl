@@ -467,6 +467,56 @@ Base.length(conf::Configuration) = length(conf.orbitals)
 Base.lastindex(conf::Configuration) = length(conf)
 Base.eltype(conf::Configuration{O}) where O = (O,Int,Symbol)
 
+function Base.write(io::IO, conf::Configuration{O}) where O
+    write(io, 'c')
+    if O <: Orbital
+        write(io, 'n')
+    elseif O <: RelativisticOrbital
+        write(io, 'r')
+    elseif O <: SpinOrbital
+        write(io, 's')
+    end
+    write(io, length(conf))
+    for (orb,occ,state) in conf
+        write(io, orb, occ, first(string(state)))
+    end
+    write(io, conf.sorted)
+end
+
+function Base.read(io::IO, ::Type{Configuration})
+    read(io, Char) == 'c' || throw(ArgumentError("Failed to read a Configuration from stream"))
+    kind = read(io, Char)
+    O = if kind == 'n'
+        Orbital
+    elseif kind == 'r'
+        RelativisticOrbital
+    elseif kind == 's'
+        SpinOrbital
+    else
+        throw(ArgumentError("Unknown orbital type $(kind)"))
+    end
+    n = read(io, Int)
+    occupations = Vector{Int}(undef, n)
+    states = Vector{Symbol}(undef, n)
+    orbitals = map(1:n) do i
+        orb = read(io, O)
+        occupations[i] = read(io, Int)
+        s = read(io, Char)
+        states[i] = if s == 'o'
+            :open
+        elseif s == 'c'
+            :closed
+        elseif s == 'i'
+            :inactive
+        else
+            throw(ArgumentError("Unknown orbital state $(s)"))
+        end
+        orb
+    end
+    sorted = read(io, Bool)
+    Configuration(orbitals, occupations, states, sorted=sorted)
+end
+
 function Base.isless(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbital}
     a = sorted(a)
     b = sorted(b)

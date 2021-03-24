@@ -96,21 +96,38 @@
         @test c"10s2" == Configuration([o"10s"], [2], [:open])
         @test c"9999l32" == Configuration([o"9999l"], [32], [:open])
 
-        # Hashing
-        let c1a = c"1s 2s", c1b = c"1s 2s", c2 = c"1s 2p"
-            @test c1a == c1b
-            @test isequal(c1a, c1b)
-            @test c1a != c2
-            @test !isequal(c1a, c2)
+        @testset "Hashing" begin
+            let c1a = c"1s 2s", c1b = c"1s 2s", c2 = c"1s 2p"
+                @test c1a == c1b
+                @test isequal(c1a, c1b)
+                @test c1a != c2
+                @test !isequal(c1a, c2)
 
-            @test hash(c1a) == hash(c1a)
-            @test hash(c1a) == hash(c1b)
+                @test hash(c1a) == hash(c1a)
+                @test hash(c1a) == hash(c1b)
 
-            # If hashing is not properly implemented, unique fails to detect all equal pairs
-            @test unique([c1a, c1b]) == [c1a]
-            @test unique([c1a, c1a]) == [c1a]
-            @test unique([c1a, c1a, c1b]) == [c1a]
-            @test length(unique([c1a, c2, c1a, c1b, c2])) == 2
+                # If hashing is not properly implemented, unique fails to detect all equal pairs
+                @test unique([c1a, c1b]) == [c1a]
+                @test unique([c1a, c1a]) == [c1a]
+                @test unique([c1a, c1a, c1b]) == [c1a]
+                @test length(unique([c1a, c2, c1a, c1b, c2])) == 2
+            end
+        end
+
+        @testset "Serialization" begin
+            cs = [sc"1s(0,α) 2p(1,β)", sc"[He]c 2p(1,β)", rsc"[He]c 2p(-1/2)", sc"1s₀α 2p₁β", rsc"[Xe]*",
+                  c"1s2 2p6", c"[He]c 2p6", c"[He]i 2p6", c"1s 3d4", c"[Xe]*",
+                  rc"1s2 2p6", rc"1s 2p- 2p3", rc"[He]c 2p6", rc"[He]i 2p6", rc"1s 3d4", rc"[Xe]*"]
+
+            ncs = let io = IOBuffer()
+                foreach(Base.Fix1(write, io), cs)
+
+                seekstart(io)
+                [read(io, Configuration)
+                 for i in eachindex(cs)]
+            end
+
+            @test cs == ncs
         end
     end
 
