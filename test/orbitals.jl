@@ -311,6 +311,26 @@ using Random
             @test parse(SpinOrbital{Orbital}, "1s(0,α)") == SpinOrbital(Orbital(1, 0), (0, up))
             @test parse(SpinOrbital{Orbital{Int}}, "1s(0,α)") == SpinOrbital(Orbital(1, 0), (0, up))
             @test parse(SpinOrbital{Orbital{Symbol}}, "ks(0,α)") == SpinOrbital(Orbital(:k, 0), (0, up))
+
+            @test so"1s₀β" == so"1s(0,β)"
+            @test so"2p₋₁α" == so"2p(-1,α)"
+            @test so"k[31]₋₁₃α" == so"k[31](-13,α)"
+
+            for o in [SpinOrbital(o"1s", (0,-1/2)),
+                      SpinOrbital(o"1s", (0,1/2)),
+                      SpinOrbital(o"2p", (1,-1/2)),
+                      SpinOrbital(ro"1s", (1/2)),
+                      SpinOrbital(ro"2p", (3/2)),
+                      SpinOrbital(ro"3d", (5/2)),
+                      SpinOrbital(ro"3d-", (-3/2)),
+                      SpinOrbital(ro"3p", (-1/2)),
+                      SpinOrbital(ro"3p", (-3/2)),
+                      SpinOrbital(ro"3p", (1/2)),
+                      SpinOrbital(ro"3p-", (-1/2)),
+                      SpinOrbital(ro"3p-", (1/2))]
+                O = typeof(o.orb)
+                @test parse(SpinOrbital{O}, string(o)) == o
+            end
         end
     end
 

@@ -132,9 +132,19 @@ end
 
 function Base.parse(::Type{O}, orb_str) where {OO<:AbstractOrbital,O<:SpinOrbital{OO}}
     m = match(r"^(.*)\((.*)\)$", orb_str)
-    m === nothing && throw(ArgumentError("Invalid spin-orbital string: $(orb_str)"))
-    o = parse(OO, m[1])
-    SpinOrbital(o, (split(m[2], ",")...,))
+    # For non-relativistic spin-orbitals, we also support specifying
+    # the m_ℓ quantum number using Unicode subscripts and the spin
+    # label using α/β
+    m2 = match(r"^(.*?)([₋]{0,1}[₁₂₃₄₅₆₇₈₉₀]+)([αβ])$", orb_str)
+    if !isnothing(m)
+        o = parse(OO, m[1])
+        SpinOrbital(o, (split(m[2], ",")...,))
+    elseif !isnothing(m2) && OO <: Orbital
+        o = parse(OO, m2[1])
+        SpinOrbital(o, from_subscript(m2[2]), m2[3])
+    else
+        throw(ArgumentError("Invalid spin-orbital string: $(orb_str)"))
+    end
 end
 
 """
