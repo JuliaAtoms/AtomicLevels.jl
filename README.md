@@ -25,7 +25,7 @@ julia> using Pkg; Pkg.add("DataFrames")
 julia> using AtomicLevels
 ```
 
-As an simple usage example, to constructing a configuration for an S-like state with an open `3p` shell looks like
+As a simple usage example, constructing a configuration for an S-like state with an open `3p` shell looks like
 
 ```julia-repl
 julia> configuration = c"[Ne]* 3s2 3p4"
@@ -33,8 +33,8 @@ julia> configuration = c"[Ne]* 3s2 3p4"
 ```
 
 which is of type `Configuration`. To access information about subshells, you can index into
-the configuration which returns a tuple (including a corresponding `Orbital` object, so you
-can, for example, access the `ℓ` and `s` angular momentum quantum numbers):
+the configuration which returns a tuple. Tuple contains an `Orbital` object, so you
+can, for example, ask for the `ℓ` and `s` angular momentum quantum numbers of the subshell
 
 ```
 julia> shell = configuration[end]
