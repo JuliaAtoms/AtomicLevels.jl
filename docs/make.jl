@@ -1,7 +1,6 @@
 using Documenter
 using AtomicLevels
 
-DocMeta.setdocmeta!(AtomicLevels, :DocTestSetup, :(using AtomicLevels); recursive=true)
 makedocs(
     modules = [AtomicLevels],
     sitename = "AtomicLevels",
@@ -47,6 +46,7 @@ makedocs(
         ))
     ),
     strict = true,
+    doctest = false
 )
 
 deploydocs(repo = "github.com/JuliaAtoms/AtomicLevels.jl.git")
