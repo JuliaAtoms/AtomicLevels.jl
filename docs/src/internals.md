@@ -13,7 +13,8 @@ end
 ```@autodocs
 Modules = [AtomicLevels]
 Public = false
-Filter = fn -> !in(fn, [Base.parse, Base.fill, Base.fill!])
+Filter = fn -> !in(fn, [Base.parse, Base.fill, Base.fill!]) &&
+    fn != AtomicLevels.xu_terms
 ```
 
 ## Internal implementation of term multiplicity calculation
@@ -36,6 +37,7 @@ In the following, ``S'=2S\in\mathbb{Z}`` and
 AtomicLevels.Xu.X
 AtomicLevels.Xu.A
 AtomicLevels.Xu.f
+AtomicLevels.xu_terms
 ```
 
 ```@meta
