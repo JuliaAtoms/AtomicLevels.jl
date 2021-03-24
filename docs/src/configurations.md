@@ -76,7 +76,6 @@ Base.fill
 Base.fill!
 Base.in
 Base.filter
-Base.count
 Base.replace
 core
 peel

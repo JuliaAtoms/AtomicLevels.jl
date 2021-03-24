@@ -132,10 +132,12 @@
     end
 
     @testset "Number of electrons" begin
+        @test num_electrons(c"1s") == 1
         @test num_electrons(c"[He]") == 2
         @test num_electrons(rc"[He]") == 2
         @test num_electrons(c"[Xe]") == 54
         @test num_electrons(rc"[Xe]") == 54
+        @test num_electrons(peel(c"[Kr]c 5s2 5p6")) == 8
 
         @test num_electrons(c"[Xe]", o"1s") == 2
         @test num_electrons(rc"[Xe]", ro"1s") == 2
@@ -144,6 +146,7 @@
         @test num_electrons(c"[Kr]", ro"5s") == 0
         @test num_electrons(rc"[Rn]", ro"As") == 0
     end
+
 
     @testset "Empty configurations" begin
         ec = empty(c"1s2")
@@ -204,12 +207,6 @@
         @test isodd(parity(c"[He]c 2s kp"))
     end
 
-    @testset "Number of electrons" begin
-        @test count(c"1s") == 1
-        @test count(c"[He]") == 2
-        @test count(c"[Xe]") == 54
-        @test count(peel(c"[Kr]c 5s2 5p6")) == 8
-    end
 
     @testset "Pretty printing" begin
         Xe⁺ = rc"[Kr]c 5s2 5p-2 5p3"

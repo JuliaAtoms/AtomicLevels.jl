@@ -720,18 +720,6 @@ See also: [`Parity`](@ref)
 parity(conf::Configuration) = mapreduce(o -> parity(o[1])^o[2], *, conf)
 
 """
-    count(::Configuration) -> Int
-
-Return the number of electrons in the configuration.
-
-```jldoctest
-julia> count(c"[Kr] 5s")
-37
-```
-"""
-Base.count(conf::Configuration) = mapreduce(o -> o[2], +, conf)
-
-"""
     replace(conf, a => b[; append=false])
 
 Substitute one electron in orbital `a` of `conf` by one electron in
