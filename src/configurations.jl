@@ -402,7 +402,7 @@ julia> c"[Kr] 4d10 5s2 4f2"s
 ```
 """
 macro c_str(conf_str, suffix="")
-    :(parse_conf_str(Orbital, $conf_str, $suffix))
+    parse_conf_str(Orbital, conf_str, suffix)
 end
 
 """
@@ -429,7 +429,7 @@ julia> rc"2p- 1s"s
 ```
 """
 macro rc_str(conf_str, suffix="")
-    :(parse_conf_str(RelativisticOrbital, $conf_str, $suffix))
+    parse_conf_str(RelativisticOrbital, conf_str, suffix)
 end
 
 """
@@ -461,7 +461,7 @@ julia> scs"1s2 2p2"
 ```
 """
 macro scs_str(conf_str, suffix="")
-    :(spin_configurations(parse_conf_str(Orbital, $conf_str, $suffix)))
+    spin_configurations(parse_conf_str(Orbital, conf_str, suffix))
 end
 
 Base.getindex(conf::Configuration{O}, i::Integer) where O =
@@ -1001,7 +1001,7 @@ julia> rcs"3p2"
 ```
 """
 macro rcs_str(s)
-    :(rconfigurations_from_nrstring($s))
+    rconfigurations_from_nrstring(s)
 end
 
 
