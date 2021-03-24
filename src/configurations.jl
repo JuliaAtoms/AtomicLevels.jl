@@ -388,6 +388,12 @@ configuration, out of a string. With the added string macro suffix
 julia> c"1s2 2s"
 1s² 2s
 
+julia> c"1s² 2s"
+1s² 2s
+
+julia> c"1s2.2s"
+1s² 2s
+
 julia> c"[Kr] 4d10 5s2 4f2"
 [Kr]ᶜ 4d¹⁰ 5s² 4f²
 
@@ -413,6 +419,9 @@ julia> rc"[Ne] 3s 3p- 3p"
 [Ne]ᶜ 3s 3p- 3p
 
 julia> rc"[Ne] 3s 3p-2 3p4"
+[Ne]ᶜ 3s 3p-² 3p⁴
+
+julia> rc"[Ne] 3s 3p-² 3p⁴"
 [Ne]ᶜ 3s 3p-² 3p⁴
 
 julia> rc"2p- 1s"s

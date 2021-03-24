@@ -58,6 +58,9 @@ Parses a string into a [`Term`](@ref) object.
 ```jldoctest
 julia> parse(Term, "4Po")
 ⁴Pᵒ
+
+julia> parse(Term, "⁴Pᵒ")
+⁴Pᵒ
 ```
 
 See also: [`@T_str`](@ref)
@@ -101,6 +104,9 @@ julia> T"1S"
 ¹S
 
 julia> T"4Po"
+⁴Pᵒ
+
+julia> T"⁴Pᵒ"
 ⁴Pᵒ
 
 julia> T"2[3/2]o" # jK coupling, common in noble gases
