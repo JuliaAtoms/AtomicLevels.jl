@@ -2,7 +2,6 @@
 
 AtomicLevels provides a collections of types and methods to facilitate working with atomic states (or, more generally, states with spherical symmetry), both in the relativistic (eigenstates of ``J = L + S``) and non-relativistic (eigenstates on ``L`` and ``S`` separately) frameworks.
 
-
 * [Orbitals and orbital subshells](@ref man-orbitals)
 * [Configurations](@ref man-configurations)
 * [Configuration state functions (CSFs)](@ref man-csfs)
