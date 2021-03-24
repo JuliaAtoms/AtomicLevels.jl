@@ -1,4 +1,4 @@
-# Term symbols
+# [Term symbols](@id man-terms)
 
 ```@meta
 DocTestSetup = :(using AtomicLevels)
@@ -65,7 +65,7 @@ julia> count_terms(o"4f", 5, T"2Do")
 
 To distinguish these subshells, extra quantum numbers must be specified. In AtomicLevels,
 that can be done with the [`IntermediateTerm`](@ref) type. This is primarily used when
-specifying the subshell couplings in [CSFs](@ref).
+specifying the subshell couplings in [CSFs](@ref man-csfs).
 
 ```@docs
 IntermediateTerm
@@ -120,7 +120,7 @@ by the vector model are valid physical states, see
 To generate the possible [`terms`](@ref) of a configuration, all the
 possible terms of the individual subshells, have to be coupled
 together to form the final terms; this is done from
-left-to-right. When generating all possible [`CSFs`](@ref CSFs) from a
+left-to-right. When generating all possible [`CSFs`](@ref  man-csfs) from a
 configuration, it is also necessary to find the intermediate couplings
 of the individual subshells. As an example, if we want to find the
 possible terms of `3p² 4s 5p²`, we first find the possible terms of the
@@ -212,7 +212,7 @@ julia> terms(c"3p2 4s 5p2")
 
 Note that for the generation of final terms, the intermediate terms
 need not be kept (and their seniority is not important). However, for
-the generation of [`CSFs`](@ref CSFs), we need to form all possible
+the generation of [`CSFs`](@ref man-csfs), we need to form all possible
 combinations of intermediate terms for each subshell, and couple them,
 again left-to-right, to form all possible coupling chains (each one
 corresponding to a unique physical state). E.g. for the last term of

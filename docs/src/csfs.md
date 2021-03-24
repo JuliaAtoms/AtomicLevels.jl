@@ -2,7 +2,7 @@
 DocTestSetup = :(using AtomicLevels)
 ```
 
-# [Atomic configuration state functions (CSFs)](@id CSFs)
+# [Atomic configuration state functions (CSFs)](@id man-csfs)
 
 AtomicLevels also provides types to represent symmetry-adapted atomic states, commonly referred to as [configuration state functions (CSFs)](https://en.wikipedia.org/wiki/Configuration_state_function). These are linear combinations of Slater determinants arising from a particular _configuration_, that are also eigenstates of angular momentum operators.
 
@@ -60,7 +60,7 @@ Forming a CSF is a multi-step process:
 
 2. The next step is to couple _each subshell_ into an angular momentum eigenstate (e.g. to form a single angular momentum eigenstate out of the 3 electrons on a ``3d_{5/2}`` orbital/subshell). As the single particle spaces for the subshells are disjoint, the space of many-particle determinants can be thought of as a product space of subshells determinant spaces.
 
-   Due to the fermionic nature of the electrons, even determining the valid ``J`` values for the subshells is non-trivial. Also, if you go to high enough angular momenta of the orbital and high enough particle number, the angular momentum eigenvalues are no longer sufficient to uniquely identify the subshell terms. So the [`CSF`](@ref) type stores them as instances of [`IntermediateTerm`](@ref), instead of simple numbers (see [Term symbols](@ref) for more information).
+   Due to the fermionic nature of the electrons, even determining the valid ``J`` values for the subshells is non-trivial. Also, if you go to high enough angular momenta of the orbital and high enough particle number, the angular momentum eigenvalues are no longer sufficient to uniquely identify the subshell terms. So the [`CSF`](@ref) type stores them as instances of [`IntermediateTerm`](@ref), instead of simple numbers (see [Term symbols](@ref man-terms) for more information).
 
 3. Once the electrons on individual subshells are coupled, we can couple the subshells themselves together. As the orbitals in a subshell are distinct from the ones in other subshells, this can easily be done with just Clebsch–Gordan coefficients.
 

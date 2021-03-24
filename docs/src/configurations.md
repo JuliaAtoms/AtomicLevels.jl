@@ -1,4 +1,4 @@
-# Atomic configurations
+# [Atomic configurations](@id man-configurations)
 
 ```@meta
 DocTestSetup = quote

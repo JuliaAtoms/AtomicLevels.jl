@@ -1,4 +1,4 @@
-# Atomic orbitals
+# [Atomic orbitals](@id man-orbitals)
 
 ```@meta
 DocTestSetup = quote
