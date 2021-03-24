@@ -64,8 +64,15 @@ See also: [`@T_str`](@ref)
 """
 function Base.parse(::Type{Term}, s::AbstractString)
     m = match(r"([0-9]+)([A-Z]|\[[0-9/]+\])([oe ]{0,1})", s)
-    isnothing(m) && throw(ArgumentError("Invalid term string $s"))
-    L = lowercase(m[2])
+    m2 = match(r"([¹²³⁴⁵⁶⁷⁸⁹⁰]+)([A-Z]|\[[0-9/]+\])([ᵒᵉ]{0,1})", s)
+    Sstr,Lstr,Pstr = if !isnothing(m)
+        m[1],m[2],m[3]
+    elseif !isnothing(m2)
+        from_superscript(m2[1]),m2[2],m2[3]
+    else
+        throw(ArgumentError("Invalid term string $s"))
+    end
+    L = lowercase(Lstr)
     L = if L[1] == '['
         L = strip(L, ['[',']'])
         if occursin("/", L)
@@ -80,8 +87,8 @@ function Base.parse(::Type{Term}, s::AbstractString)
         findfirst(L, spectroscopic)[1]-1
     end
     denominator(L) ∈ [1,2] || throw(ArgumentError("L must be integer or half-integer"))
-    S = (parse(Int, m[1]) - 1)//2
-    Term(L, S, m[3] == "o" ? p"odd" : p"even")
+    S = (parse(Int, Sstr) - 1)//2
+    Term(L, S, Pstr == "o" || Pstr == "ᵒ" ? p"odd" : p"even")
 end
 
 """
