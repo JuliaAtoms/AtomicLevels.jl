@@ -74,6 +74,8 @@ struct Orbital{N<:MQ} <: AbstractOrbital
     end
 end
 
+Orbital{N}(n::N, ℓ::Int) where {N<:MQ} = Orbital(n, ℓ)
+
 Base.:(==)(a::Orbital, b::Orbital) =
     a.n == b.n && a.ℓ == b.ℓ
 
@@ -209,6 +211,26 @@ julia> angular_momentum_ranges(o"4f")
 angular_momentum_ranges(orbital::AbstractOrbital) =
     map(j -> -j:j, angular_momenta(orbital))
 
+# ** Saving/loading
+
+Base.write(io::IO, o::Orbital{Int}) = write(io, 'i', o.n, o.ℓ)
+Base.write(io::IO, o::Orbital{Symbol}) = write(io, 's', sizeof(o.n), o.n, o.ℓ)
+
+function Base.read(io::IO, ::Type{Orbital})
+    kind = read(io, Char)
+    n = if kind == 'i'
+        read(io, Int)
+    elseif kind == 's'
+        b = Vector{UInt8}(undef, read(io, Int))
+        readbytes!(io, b)
+        Symbol(b)
+    else
+        error("Unknown Orbital type $(kind)")
+    end
+    ℓ = read(io, Int)
+    Orbital(n, ℓ)
+end
+
 # * Orbital construction from strings
 
 parse_orbital_n(m::RegexMatch,i=1) =
@@ -225,18 +247,12 @@ function parse_orbital_ℓ(m::RegexMatch,i=2)
     end
 end
 
-function orbital_from_string(::Type{O}, orb_str::AbstractString) where {O<:AbstractOrbital}
-    m = match(r"^([0-9]+|.)([a-z]|\[[0-9]+\])([-]{0,1})$", orb_str)
-    m === nothing && throw(ArgumentError("Invalid orbital string: $(orb_str)"))
+function Base.parse(::Type{<:Orbital}, orb_str)
+    m = match(r"^([0-9]+|.)([a-z]|\[[0-9]+\])$", orb_str)
+    isnothing(m) && throw(ArgumentError("Invalid orbital string: $(orb_str)"))
     n = parse_orbital_n(m)
     ℓ = parse_orbital_ℓ(m)
-    if O == RelativisticOrbital
-        j = ℓ + (m[3] == "-" ? -1 : 1)*1//2
-        O(n, ℓ, j)
-    else
-        m[3] == "" || throw(ArgumentError("Non-relativistic orbitals cannot have their spins explicitly specified"))
-        O(n, ℓ)
-    end
+    Orbital(n, ℓ)
 end
 
 """
@@ -253,7 +269,7 @@ Fd
 ```
 """
 macro o_str(orb_str)
-    :(orbital_from_string(Orbital, $orb_str))
+    :(parse(Orbital, $orb_str))
 end
 
 function orbitals_from_string(::Type{O}, orbs_str::AbstractString) where {O<:AbstractOrbital}

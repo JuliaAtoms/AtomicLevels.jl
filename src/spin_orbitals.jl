@@ -107,11 +107,44 @@ Base.promote_type(::Type{SpinOrbital}, ::Type{SpinOrbital{O}}) where O = SpinOrb
 Base.promote_type(::Type{SpinOrbital{A,M}}, ::Type{SpinOrbital{B,M}}) where {A,B,M} =
     SpinOrbital{<:promote_type(A,B),M}
 
-function spin_orbital_from_string(::Type{O}, orb_str) where {O<:AbstractOrbital}
+# ** Saving/loading
+
+Base.write(io::IO, o::SpinOrbital{<:Orbital}) = write(io, 'n', o.orb, o.m[1], o.m[2].twice)
+Base.write(io::IO, o::SpinOrbital{<:RelativisticOrbital}) = write(io, 'r', o.orb, o.m[1].twice)
+
+function Base.read(io::IO, ::Type{SpinOrbital})
+    kind = read(io, Char)
+    if kind == 'n'
+        orb = read(io, Orbital)
+        mℓ = read(io, Int)
+        ms = half(read(io, Int))
+        SpinOrbital(orb, (mℓ, ms))
+    elseif kind == 'r'
+        orb = read(io, RelativisticOrbital)
+        mj = half(read(io, Int))
+        SpinOrbital(orb, mj)
+    else
+        error("Unknown SpinOrbital type $(kind)")
+    end
+end
+
+# * Orbital construction from strings
+
+function Base.parse(::Type{O}, orb_str) where {OO<:AbstractOrbital,O<:SpinOrbital{OO}}
     m = match(r"^(.*)\((.*)\)$", orb_str)
-    m === nothing && throw(ArgumentError("Invalid spin-orbital string: $(orb_str)"))
-    o = orbital_from_string(O, m[1])
-    SpinOrbital(o, (split(m[2], ",")...,))
+    # For non-relativistic spin-orbitals, we also support specifying
+    # the m_ℓ quantum number using Unicode subscripts and the spin
+    # label using α/β
+    m2 = match(r"^(.*?)([₋]{0,1}[₁₂₃₄₅₆₇₈₉₀]+)([αβ])$", orb_str)
+    if !isnothing(m)
+        o = parse(OO, m[1])
+        SpinOrbital(o, (split(m[2], ",")...,))
+    elseif !isnothing(m2) && OO <: Orbital
+        o = parse(OO, m2[1])
+        SpinOrbital(o, from_subscript(m2[2]), m2[3])
+    else
+        throw(ArgumentError("Invalid spin-orbital string: $(orb_str)"))
+    end
 end
 
 """
@@ -138,7 +171,7 @@ julia> so"2p(1,-1/2)"
 ```
 """
 macro so_str(orb_str)
-    :(spin_orbital_from_string(Orbital, $orb_str))
+    :(parse(SpinOrbital{Orbital}, $orb_str))
 end
 
 """
@@ -162,7 +195,7 @@ julia> rso"3d(2.5)"
 ```
 """
 macro rso_str(orb_str)
-    :(spin_orbital_from_string(RelativisticOrbital, $orb_str))
+    :(parse(SpinOrbital{RelativisticOrbital}, $orb_str))
 end
 
 """

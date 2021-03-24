@@ -9,6 +9,7 @@ using HalfIntegers
 using Combinatorics
 
 include("common.jl")
+include("unicode.jl")
 include("parity.jl")
 include("orbitals.jl")
 include("relativistic_orbitals.jl")

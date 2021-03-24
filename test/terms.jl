@@ -20,6 +20,11 @@ using Test
         @test T"2[3/2]o" == Term(3//2, 1//2, p"odd")
         @test T"2Z" == Term(20, 1//2, p"even")
 
+        for T in [T"1S", T"1Se", T"1So", T"2So", T"4P", T"3D", T"3Do",
+                  T"1[54]", T"1[3/2]", T"2[3/2]o", T"2Z"]
+            @test parse(Term, string(T)) == T
+        end
+
         @test_throws DomainError Term(HalfInteger(-1//2), HalfInteger(1//2), p"even")
         @test_throws DomainError Term(3//2, -1//2, p"odd")
         @test_throws DomainError Term(-2, 1//2, 1)

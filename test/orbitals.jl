@@ -56,6 +56,10 @@ using Random
         @test o"2p"   == Orbital(2, 1)
         @test o"2[1]" == Orbital(2, 1)
 
+        @test parse(Orbital, "1s") == Orbital(1, 0)
+        @test parse(Orbital{Int}, "1s") == Orbital(1, 0)
+        @test parse(Orbital{Symbol}, "ks") == Orbital(:k, 0)
+
         @test ro"1s"   == RelativisticOrbital(1, -1) # κ=-1 => s orbital
         @test ro"2p-"  == RelativisticOrbital(2,  1, half(1))
         @test ro"2p-"  == RelativisticOrbital(2,  1, 1//2)
@@ -68,8 +72,8 @@ using Random
         @test ro"kp"  == RelativisticOrbital(:k, 1, 3//2)
         @test ro"ϵd-" == RelativisticOrbital(:ϵ, 2, 3//2)
 
-        @test_throws ArgumentError AtomicLevels.orbital_from_string(Orbital, "2p-")
-        @test_throws ArgumentError AtomicLevels.orbital_from_string(Orbital, "sdkfl")
+        @test_throws ArgumentError parse(Orbital, "2p-")
+        @test_throws ArgumentError parse(Orbital, "sdkfl")
 
         @test_throws ArgumentError Orbital(0, 0)
         @test_throws ArgumentError Orbital(1, 1)
@@ -303,6 +307,30 @@ using Random
             @test_throws ArgumentError rso"3d-(..)"
             @test rso"3d-(-3/2)" == SpinOrbital(ro"3d-", (-3/2))
             @test rso"3d(5/2)" == SpinOrbital(ro"3d", (5/2))
+
+            @test parse(SpinOrbital{Orbital}, "1s(0,α)") == SpinOrbital(Orbital(1, 0), (0, up))
+            @test parse(SpinOrbital{Orbital{Int}}, "1s(0,α)") == SpinOrbital(Orbital(1, 0), (0, up))
+            @test parse(SpinOrbital{Orbital{Symbol}}, "ks(0,α)") == SpinOrbital(Orbital(:k, 0), (0, up))
+
+            @test so"1s₀β" == so"1s(0,β)"
+            @test so"2p₋₁α" == so"2p(-1,α)"
+            @test so"k[31]₋₁₃α" == so"k[31](-13,α)"
+
+            for o in [SpinOrbital(o"1s", (0,-1/2)),
+                      SpinOrbital(o"1s", (0,1/2)),
+                      SpinOrbital(o"2p", (1,-1/2)),
+                      SpinOrbital(ro"1s", (1/2)),
+                      SpinOrbital(ro"2p", (3/2)),
+                      SpinOrbital(ro"3d", (5/2)),
+                      SpinOrbital(ro"3d-", (-3/2)),
+                      SpinOrbital(ro"3p", (-1/2)),
+                      SpinOrbital(ro"3p", (-3/2)),
+                      SpinOrbital(ro"3p", (1/2)),
+                      SpinOrbital(ro"3p-", (-1/2)),
+                      SpinOrbital(ro"3p-", (1/2))]
+                O = typeof(o.orb)
+                @test parse(SpinOrbital{O}, string(o)) == o
+            end
         end
     end
 
@@ -322,5 +350,71 @@ using Random
     @testset "Hashing" begin
         @test hash(o"3s") == hash(o"3s")
         @test hash(ro"3p-") == hash(ro"3p-")
+    end
+
+    @testset "Serialization" begin
+        @testset "Orbitals" begin
+            o = o"1s"
+            p = o"kg"
+            q = Orbital(:k̃, 14)
+            oo = SpinOrbital(o, (0, 1/2))
+            r = Orbital(Symbol("[$(oo)]"), 14)
+
+            no,np,nq,nr = let io = IOBuffer()
+                foreach(Base.Fix1(write, io), (o,p,q,r))
+
+                seekstart(io)
+                [read(io, Orbital)
+                 for i = 1:4]
+            end
+
+            @test no == o
+            @test np == p
+            @test nq == q
+            @test nr == r
+        end
+
+        @testset "Relativistic orbitals" begin
+            o = ro"1s"
+            p = ro"kg"
+            q = RelativisticOrbital(:k̃, 14)
+            oo = SpinOrbital(o, (1/2))
+            r = RelativisticOrbital(Symbol("[$(oo)]"), 14)
+
+            no,np,nq,nr = let io = IOBuffer()
+                foreach(Base.Fix1(write, io), (o,p,q,r))
+
+                seekstart(io)
+                [read(io, RelativisticOrbital)
+                 for i = 1:4]
+            end
+
+            @test no == o
+            @test np == p
+            @test nq == q
+            @test nr == r
+        end
+
+        @testset "Spin-orbitals" begin
+            a = so"1s(0,α)"
+            b = rso"2p-(1/2)"
+            c = rso"kd-(-1.5)"
+            d = so"3d(-2,-0.5)"
+            e = SpinOrbital(Orbital(Symbol("[$(d)]"), 14), (-13, -0.5))
+
+            na,nb,nc,nd,ne = let io = IOBuffer()
+                foreach(Base.Fix1(write, io), (a,b,c,d,e))
+
+                seekstart(io)
+                [read(io, SpinOrbital)
+                 for i = 1:5]
+            end
+
+            @test na == a
+            @test nb == b
+            @test nc == c
+            @test nd == d
+            @test ne == e
+        end
     end
 end

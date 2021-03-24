@@ -3,6 +3,11 @@ using WignerSymbols
 using HalfIntegers
 using Test
 
+@testset "Unicode super-/subscripts" begin
+    @test AtomicLevels.from_subscript("₋₊₁₂₃₄₅₆₇₈₉₀") == "-+1234567890"
+    @test AtomicLevels.from_superscript("⁻⁺¹²³⁴⁵⁶⁷⁸⁹⁰") == "-+1234567890"
+end
+
 include("parity.jl")
 include("orbitals.jl")
 include("configurations.jl")

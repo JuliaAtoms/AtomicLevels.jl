@@ -188,6 +188,37 @@ julia> angular_momenta(ro"3d")
 angular_momenta(orbital::RelativisticOrbital) = (orbital.j,)
 angular_momentum_labels(::RelativisticOrbital) = ("j",)
 
+# ** Saving/loading
+
+Base.write(io::IO, o::RelativisticOrbital{Int}) = write(io, 'i', o.n, o.κ)
+Base.write(io::IO, o::RelativisticOrbital{Symbol}) = write(io, 's', sizeof(o.n), o.n, o.κ)
+
+function Base.read(io::IO, ::Type{RelativisticOrbital})
+    kind = read(io, Char)
+    n = if kind == 'i'
+        read(io, Int)
+    elseif kind == 's'
+        b = Vector{UInt8}(undef, read(io, Int))
+        readbytes!(io, b)
+        Symbol(b)
+    else
+        error("Unknown RelativisticOrbital type $(kind)")
+    end
+    κ = read(io, Int)
+    RelativisticOrbital(n, κ)
+end
+
+# * Orbital construction from strings
+
+function Base.parse(::Type{<:RelativisticOrbital}, orb_str)
+    m = match(r"^([0-9]+|.)([a-z]|\[[0-9]+\])([-]{0,1})$", orb_str)
+    isnothing(m) && throw(ArgumentError("Invalid orbital string: $(orb_str)"))
+    n = parse_orbital_n(m)
+    ℓ = parse_orbital_ℓ(m)
+    j = ℓ + (m[3] == "-" ? -1 : 1)*1//2
+    RelativisticOrbital(n, ℓ, j)
+end
+
 """
     @ro_str -> RelativisticOrbital
 
@@ -206,7 +237,7 @@ Kf-
 ```
 """
 macro ro_str(orb_str)
-    :(orbital_from_string(RelativisticOrbital, $orb_str))
+    :(parse(RelativisticOrbital, $orb_str))
 end
 
 """

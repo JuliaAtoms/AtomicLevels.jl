@@ -1,4 +1,4 @@
-using AtomicLevels: CSF, orbital_from_string
+using AtomicLevels: CSF
 using HalfIntegers
 
 angularmomentum(o::RelativisticOrbital) = AtomicLevels.kappa_to_j(o.κ)
@@ -116,7 +116,7 @@ function parse_csflines(line1, line2, line3)
     for i = 1:norbitals
         orb = line1[9*(i-1)+1:9*i]
         @assert orb[6]=='(' && orb[9]==')'
-        orbital = orbital_from_string(RelativisticOrbital, strip(orb[1:5]))
+        orbital = parse(RelativisticOrbital, strip(orb[1:5]))
         # n = parse(Int, orb[1:3])
         # kappa = parse_j(orb[4:5])
         nelec = parse(Int, orb[7:8])
@@ -174,7 +174,7 @@ function parse_cores(line)
     orbstrings = split(line)
     orbs = RelativisticOrbital{Int}[]
     for os in orbstrings
-        push!(orbs, orbital_from_string(RelativisticOrbital, strip(os)))
+        push!(orbs, parse(RelativisticOrbital, strip(os)))
     end
     orbs
 end
