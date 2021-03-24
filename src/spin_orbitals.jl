@@ -171,7 +171,7 @@ julia> so"2p(1,-1/2)"
 ```
 """
 macro so_str(orb_str)
-    :(parse(SpinOrbital{Orbital}, $orb_str))
+    parse(SpinOrbital{Orbital}, orb_str)
 end
 
 """
@@ -195,7 +195,7 @@ julia> rso"3d(2.5)"
 ```
 """
 macro rso_str(orb_str)
-    :(parse(SpinOrbital{RelativisticOrbital}, $orb_str))
+    parse(SpinOrbital{RelativisticOrbital}, orb_str)
 end
 
 """
@@ -257,7 +257,7 @@ julia> sos"3[s-p]"
 ```
 """
 macro sos_str(orbs_str)
-    :(reduce(vcat, map(spin_orbitals, orbitals_from_string(Orbital, $orbs_str))))
+    reduce(vcat, map(spin_orbitals, orbitals_from_string(Orbital, orbs_str)))
 end
 
 """
@@ -281,7 +281,7 @@ julia> rsos"3[s-p]"
 ```
 """
 macro rsos_str(orbs_str)
-    :(reduce(vcat, map(spin_orbitals, orbitals_from_string(RelativisticOrbital, $orbs_str))))
+    reduce(vcat, map(spin_orbitals, orbitals_from_string(RelativisticOrbital, orbs_str)))
 end
 
 export SpinOrbital, spin_orbitals, @so_str, @rso_str, @sos_str, @rsos_str

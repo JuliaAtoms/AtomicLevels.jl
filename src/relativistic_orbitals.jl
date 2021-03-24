@@ -237,7 +237,7 @@ Kf-
 ```
 """
 macro ro_str(orb_str)
-    :(parse(RelativisticOrbital, $orb_str))
+    parse(RelativisticOrbital, orb_str)
 end
 
 """
@@ -263,7 +263,7 @@ julia> ros"2[s-p] 3[p] k[0-d]"
 ```
 """
 macro ros_str(orbs_str)
-    :(orbitals_from_string(RelativisticOrbital, $orbs_str))
+    orbitals_from_string(RelativisticOrbital, orbs_str)
 end
 
 function kappa_from_string(κ_str)
@@ -286,7 +286,7 @@ julia> κ"s", κ"p-", κ"p"
 ```
 """
 macro κ_str(κ_str)
-    :(kappa_from_string($κ_str))
+    kappa_from_string(κ_str)
 end
 
 """

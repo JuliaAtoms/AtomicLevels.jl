@@ -269,7 +269,7 @@ Fd
 ```
 """
 macro o_str(orb_str)
-    :(parse(Orbital, $orb_str))
+    parse(Orbital, orb_str)
 end
 
 function orbitals_from_string(::Type{O}, orbs_str::AbstractString) where {O<:AbstractOrbital}
@@ -310,7 +310,7 @@ julia> os"5[d] 6[s-p] k[7-10]"
 ```
 """
 macro os_str(orbs_str)
-    :(orbitals_from_string(Orbital, $orbs_str))
+    orbitals_from_string(Orbital, orbs_str)
 end
 
 export AbstractOrbital, Orbital,
