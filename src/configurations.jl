@@ -319,9 +319,9 @@ function get_noble_core_name(config::Configuration{O}) where O
 end
 
 function state_sym(state::AbstractString)
-    if state == "c"
+    if state == "c" || state == "ᶜ"
         :closed
-    elseif state == "i"
+    elseif state == "i" || state == "ⁱ"
         :inactive
     else
         :open
@@ -339,13 +339,21 @@ end
 
 function parse_orbital_occupation(::Type{O}, orb_str) where {O<:AbstractOrbital}
     m = match(r"^(([0-9]+|.)([a-z]|\[[0-9]+\])[-]{0,1})([0-9]*)([*ci]{0,1})$", orb_str)
-    parse(O, m[1]) , (m[4] == "") ? 1 : parse(Int, m[4]), state_sym(m[5])
+    m2 = match(r"^(([0-9]+|.)([a-z]|\[[0-9]+\])[-]{0,1})([¹²³⁴⁵⁶⁷⁸⁹⁰]*)([ᶜⁱ]{0,1})$", orb_str)
+    orb,occ,state = if !isnothing(m)
+        m[1], m[4], m[5]
+    elseif !isnothing(m2)
+        m2[1], from_superscript(m2[4]), m2[5]
+    else
+        throw(ArgumentError("Unknown subshell specification $(orb_str)"))
+    end
+    parse(O, orb) , (occ == "") ? 1 : parse(Int, occ), state_sym(state)
 end
 
 function Base.parse(::Type{Configuration{O}}, conf_str; sorted=false) where {O<:AbstractOrbital}
     isempty(conf_str) && return Configuration{O}(sorted=sorted)
     orbs = split(conf_str, r"[\. ]")
-    core_m = match(r"\[([a-zA-Z]+)\]([*ci]{0,1})", first(orbs))
+    core_m = match(r"\[([a-zA-Z]+)\]([*ciᶜⁱ]{0,1})", first(orbs))
     if !isnothing(core_m)
         core_config = core_configuration(O, core_m[1], core_m[2], sorted)
         if length(orbs) > 1

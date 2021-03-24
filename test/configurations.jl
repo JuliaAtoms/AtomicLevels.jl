@@ -42,6 +42,16 @@
         @test_throws ArgumentError parse(Configuration{RelativisticOrbital}, "1s3")
         @test_throws ArgumentError parse(Configuration{Orbital}, "1s2 2p-2")
 
+        @testset "Unicode occupations/states" begin
+            for c in [c"1s2 2p6", c"[He]c 2p6", c"[He]i 2p6", c"1s 3d4", c"[Xe]*"]
+                @test parse(Configuration{Orbital}, string(c)) == c
+            end
+
+            for c in [rc"1s2 2p6", rc"1s 2p- 2p3", rc"[He]c 2p6", rc"[He]i 2p6", rc"1s 3d4", rc"[Xe]*"]
+                @test parse(Configuration{RelativisticOrbital}, string(c)) == c
+            end
+        end
+
         @testset "Spin-configurations" begin
             a = sc""
             @test a isa SpinConfiguration{<:SpinOrbital{<:Orbital}}
