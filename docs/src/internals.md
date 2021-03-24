@@ -40,6 +40,12 @@ AtomicLevels.Xu.f
 AtomicLevels.xu_terms
 ```
 
+## Index
+
+```@index
+Pages = ["internals.md"]
+```
+
 ```@meta
 CurrentModule = nothing
 DocTestSetup = nothing

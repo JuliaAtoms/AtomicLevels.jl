@@ -65,6 +65,12 @@ spin_orbitals
 nonrelorbital
 ```
 
+## Index
+
+```@index
+Pages = ["orbitals.md"]
+```
+
 ```@meta
 DocTestSetup = nothing
 ```

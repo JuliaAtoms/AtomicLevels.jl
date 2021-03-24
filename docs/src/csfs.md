@@ -101,6 +101,12 @@ RelativisticCSF
 csfs
 ```
 
+## Index
+
+```@index
+Pages = ["csfs.md"]
+```
+
 ```@meta
 DocTestSetup = nothing
 ```

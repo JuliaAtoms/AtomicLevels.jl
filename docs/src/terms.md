@@ -254,6 +254,12 @@ AtomicLevels.final_terms
 intermediate_couplings
 ```
 
+## Index
+
+```@index
+Pages = ["terms.md"]
+```
+
 ```@meta
 DocTestSetup = nothing
 ```

@@ -43,6 +43,12 @@ parity
 jj2lsj
 ```
 
+## Index
+
+```@index
+Pages = ["utilities.md"]
+```
+
 ```@meta
 DocTestSetup = nothing
 ```

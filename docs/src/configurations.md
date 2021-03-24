@@ -226,6 +226,12 @@ julia> excited_configurations(first(scs"1s2"), sos"2[s-p]"...)
 excited_configurations
 ```
 
+## Index
+
+```@index
+Pages = ["configurations.md"]
+```
+
 ```@meta
 DocTestSetup = nothing
 ```
