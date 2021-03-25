@@ -33,7 +33,7 @@ julia> configuration = c"[Ne]* 3s2 3p4"
 ```
 
 which is of type `Configuration`. To access information about subshells, you can index into
-the configuration which returns a tuple. Tuple contains an `Orbital` object, so you
+the configuration which returns a tuple. The tuple contains an `Orbital` object, so you
 can, for example, ask for the `ℓ` and `s` angular momentum quantum numbers of the subshell
 
 ```
