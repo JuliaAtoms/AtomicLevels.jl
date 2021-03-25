@@ -29,6 +29,8 @@ using the [`HalfInteger`](https://github.com/sostock/HalfIntegers.jl) type.
 ```@docs
 terms
 count_terms
+multiplicity(t::Term)
+weight(t::Term)
 ```
 
 ## Term multiplicity and intermediate terms
