@@ -235,14 +235,13 @@ julia> excited_configurations((a,b) -> a.m == b.m ? a : nothing,
 ```
 """
 function excited_configurations(fun::Function,
-                                ref_set::Configuration{O₁},
-                                orbitals::O₂...;
+                                ref_set::Configuration{O},
+                                orbitals...;
                                 min_excitations::Int=zero(Int),
                                 max_excitations::Union{Int,Symbol}=:doubles,
                                 min_occupancy::Vector{Int}=zeros(Int, length(peel(ref_set))),
                                 max_occupancy::Vector{Int}=[degeneracy(first(o)) for o in peel(ref_set)],
-                                keep_parity::Bool=true) where {O<:AbstractOrbital,
-                                                               O₁<:O,O₂<:O}
+                                keep_parity::Bool=true) where {O<:AbstractOrbital}
     if max_excitations isa Symbol
         max_excitations = if max_excitations == :singles
             1
@@ -273,7 +272,7 @@ function excited_configurations(fun::Function,
 
     orbitals = substitution_orbitals(ref_set, orbitals...)
 
-    Cfg = Configuration{promote_type(O₁,O₂)}
+    Cfg = Configuration{promote_type(O,eltype(orbitals))}
     excitations = Cfg[ref_set_peel]
     substitutions!(fun, excitations, ref_set_peel, orbitals,
                    min_excitations, max_excitations,

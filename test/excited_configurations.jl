@@ -66,6 +66,9 @@ ispermutation(a, b; cmp=isequal) =
         @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", min_occupancy=[-1,0,0])
         @test_throws ArgumentError excited_configurations(rc"[Kr] 5s2 5p6", max_occupancy=[3,2,4])
 
+        @test sort(excited_configurations(c"1s 2p", keep_parity=false)) == [c"1s²", c"1s 2p", c"2p²"]
+        @test excited_configurations(rc"[Kr] 5s2 5p-2 5p3") == [rc"[Kr]ᶜ 5s² 5p-² 5p³", rc"[Kr]ᶜ 5s² 5p- 5p⁴"]
+
         @testset "Minimum excitations" begin
             @testset "Beryllium" begin
                 @test ispermutation(excited_configurations(c"1s2 2s2", o"2p", keep_parity=false,
