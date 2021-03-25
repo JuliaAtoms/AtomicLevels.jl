@@ -256,6 +256,97 @@ AtomicLevels.final_terms
 intermediate_couplings
 ```
 
+## Levels & States
+
+Coupling ``L`` and ``S`` to a total ``J``, as discussed under [Term
+couplings](@ref) above, yields a [`Level`](@ref); in ``jj`` coupling,
+final term of the [`CSF`](@ref) already has its final ``J`` given.  In
+both coupling schemes, the same values of final ``J`` will result, but
+via different intermediate couplings. As an example, we will consider
+the configuration ``1s\;2p``, which in the ``LS`` and ``jj` coupling
+schemes has the following [`CSF`](@ref)s:
+
+```jldoctest levels_and_states
+julia> csls = csfs(c"1s 2p")
+2-element Vector{NonRelativisticCSF{Orbital{Int64}, Seniority}}:
+ 1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-
+ 1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-
+
+julia> csjj = vcat(csfs(rc"1s 2p"), csfs(rc"1s 2p-"))
+4-element Vector{RelativisticCSF{RelativisticOrbital{Int64}, Seniority}}:
+ 1s(₁1/2|1/2) 2p(₁3/2|1)-
+ 1s(₁1/2|1/2) 2p(₁3/2|2)-
+ 1s(₁1/2|1/2) 2p-(₁1/2|0)-
+ 1s(₁1/2|1/2) 2p-(₁1/2|1)-
+```
+
+If we now generate the permissible [`Level`](@ref)s, we find the valid
+values of ``J``, i.e. ``0``, ``2\times 1``, and ``2``:
+
+```jldoctest levels_and_states
+julia> levels.(csls)
+2-element Vector{Vector{Level{Orbital{Int64}, Term, Seniority}}}:
+ [|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1⟩]
+ [|1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 0⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2⟩]
+
+julia> levels.(csjj)
+4-element Vector{Vector{Level{RelativisticOrbital{Int64}, Half{Int64}, Seniority}}}:
+ [|1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1⟩]
+ [|1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2⟩]
+ [|1s(₁1/2|1/2) 2p-(₁1/2|0)-, J = 0⟩]
+ [|1s(₁1/2|1/2) 2p-(₁1/2|1)-, J = 1⟩]
+```
+
+```@docs
+Level
+weight(l::Level)
+J_range
+levels
+```
+
+Similarly, by additionally specifying the projection quantum number
+``M_J``, we get a fully quantified [`State`](@ref). In the same way,
+the permissible values of ``M_J`` must agree between the coupling
+schemes, sorting by ``M_J`` for clarity:
+
+```jldoctest levels_and_states
+julia> sort(reduce(vcat, reduce(vcat, states.(csls))), by=s->s.M_J)
+12-element Vector{State{Orbital{Int64}, Term, Seniority}}:
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = -2⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = -1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1, M_J = -1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = -1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 0⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 0, M_J = 0⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1, M_J = 0⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = 0⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1, M_J = 1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = 1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = 2⟩
+
+julia> sort(reduce(vcat, reduce(vcat, states.(csjj))), by=s->s.M_J)
+12-element Vector{State{RelativisticOrbital{Int64}, Half{Int64}, Seniority}}:
+ |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = -2⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1, M_J = -1⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = -1⟩
+ |1s(₁1/2|1/2) 2p-(₁1/2|1)-, J = 1, M_J = -1⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1, M_J = 0⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = 0⟩
+ |1s(₁1/2|1/2) 2p-(₁1/2|0)-, J = 0, M_J = 0⟩
+ |1s(₁1/2|1/2) 2p-(₁1/2|1)-, J = 1, M_J = 0⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1, M_J = 1⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = 1⟩
+ |1s(₁1/2|1/2) 2p-(₁1/2|1)-, J = 1, M_J = 1⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = 2⟩
+```
+
+```@docs
+State
+states
+```
+
+
 ## Index
 
 ```@index
