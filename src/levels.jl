@@ -91,20 +91,20 @@ Generate all permissible [`Level`](@ref)s given `csf`.
 # Examples
 
 ```jldoctest
-julia> csfs(c"1s 2p")
-2-element Array{CSF{Orbital{Int64},Term,Seniority},1}:
- 1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-
- 1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-
+julia> levels.(csfs(c"1s 2p"))
+2-element Array{Array{Level{Orbital{Int64},Term,Seniority},1},1}:
+ [|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1⟩]
+ [|1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 0⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2⟩]
 
-julia> csfs(rc"1s 2p")
-2-element Array{CSF{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1}:
- 1s(₁1/2|1/2) 2p(₁3/2|1)-
- 1s(₁1/2|1/2) 2p(₁3/2|2)-
+julia> levels.(csfs(rc"1s 2p"))
+2-element Array{Array{Level{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1},1}:
+ [|1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1⟩]
+ [|1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2⟩]
 
-julia> csfs(rc"1s 2p-")
-2-element Array{CSF{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1}:
- 1s(₁1/2|1/2) 2p-(₁1/2|0)-
- 1s(₁1/2|1/2) 2p-(₁1/2|1)-
+julia> levels.(csfs(rc"1s 2p-"))
+2-element Array{Array{Level{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1},1}:
+ [|1s(₁1/2|1/2) 2p-(₁1/2|0)-, J = 0⟩]
+ [|1s(₁1/2|1/2) 2p-(₁1/2|1)-, J = 1⟩]
 ```
 """
 levels(csf::CSF) = sort([Level(csf,J) for J in J_range(last(csf.terms))])
