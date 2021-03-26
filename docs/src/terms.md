@@ -268,12 +268,12 @@ schemes has the following [`CSF`](@ref)s:
 
 ```jldoctest levels_and_states
 julia> csls = csfs(c"1s 2p")
-2-element Vector{NonRelativisticCSF{Orbital{Int64}, Seniority}}:
+2-element Array{CSF{Orbital{Int64},Term,Seniority},1}:
  1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-
  1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-
 
 julia> csjj = vcat(csfs(rc"1s 2p"), csfs(rc"1s 2p-"))
-4-element Vector{RelativisticCSF{RelativisticOrbital{Int64}, Seniority}}:
+4-element Array{CSF{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1}:
  1s(₁1/2|1/2) 2p(₁3/2|1)-
  1s(₁1/2|1/2) 2p(₁3/2|2)-
  1s(₁1/2|1/2) 2p-(₁1/2|0)-
@@ -285,12 +285,12 @@ values of ``J``, i.e. ``0``, ``2\times 1``, and ``2``:
 
 ```jldoctest levels_and_states
 julia> levels.(csls)
-2-element Vector{Vector{Level{Orbital{Int64}, Term, Seniority}}}:
+2-element Array{Array{Level{Orbital{Int64},Term,Seniority},1},1}:
  [|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1⟩]
  [|1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 0⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2⟩]
 
 julia> levels.(csjj)
-4-element Vector{Vector{Level{RelativisticOrbital{Int64}, Half{Int64}, Seniority}}}:
+4-element Array{Array{Level{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1},1}:
  [|1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1⟩]
  [|1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2⟩]
  [|1s(₁1/2|1/2) 2p-(₁1/2|0)-, J = 0⟩]
@@ -311,7 +311,7 @@ schemes, sorting by ``M_J`` for clarity:
 
 ```jldoctest levels_and_states
 julia> sort(reduce(vcat, reduce(vcat, states.(csls))), by=s->s.M_J)
-12-element Vector{State{Orbital{Int64}, Term, Seniority}}:
+12-element Array{State{Orbital{Int64},Term,Seniority},1}:
  |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = -2⟩
  |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = -1⟩
  |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1, M_J = -1⟩
@@ -326,7 +326,7 @@ julia> sort(reduce(vcat, reduce(vcat, states.(csls))), by=s->s.M_J)
  |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = 2⟩
 
 julia> sort(reduce(vcat, reduce(vcat, states.(csjj))), by=s->s.M_J)
-12-element Vector{State{RelativisticOrbital{Int64}, Half{Int64}, Seniority}}:
+12-element Array{State{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1}:
  |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = -2⟩
  |1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1, M_J = -1⟩
  |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = -1⟩
