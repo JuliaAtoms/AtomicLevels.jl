@@ -6,5 +6,6 @@
 .ipynb_checkpoints
 ltxpng
 
+/Manifest.toml
 docs/build/
 docs/Manifest.toml

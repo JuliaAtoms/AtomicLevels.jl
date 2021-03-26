@@ -1,4 +1,4 @@
-# Term symbols
+# [Term symbols](@id man-terms)
 
 ```@meta
 DocTestSetup = :(using AtomicLevels)
@@ -29,6 +29,8 @@ using the [`HalfInteger`](https://github.com/sostock/HalfIntegers.jl) type.
 ```@docs
 terms
 count_terms
+multiplicity(t::Term)
+weight(t::Term)
 ```
 
 ## Term multiplicity and intermediate terms
@@ -65,7 +67,7 @@ julia> count_terms(o"4f", 5, T"2Do")
 
 To distinguish these subshells, extra quantum numbers must be specified. In AtomicLevels,
 that can be done with the [`IntermediateTerm`](@ref) type. This is primarily used when
-specifying the subshell couplings in [CSFs](@ref).
+specifying the subshell couplings in [CSFs](@ref man-csfs).
 
 ```@docs
 IntermediateTerm
@@ -120,7 +122,7 @@ by the vector model are valid physical states, see
 To generate the possible [`terms`](@ref) of a configuration, all the
 possible terms of the individual subshells, have to be coupled
 together to form the final terms; this is done from
-left-to-right. When generating all possible [`CSFs`](@ref CSFs) from a
+left-to-right. When generating all possible [`CSFs`](@ref  man-csfs) from a
 configuration, it is also necessary to find the intermediate couplings
 of the individual subshells. As an example, if we want to find the
 possible terms of `3p² 4s 5p²`, we first find the possible terms of the
@@ -212,7 +214,7 @@ julia> terms(c"3p2 4s 5p2")
 
 Note that for the generation of final terms, the intermediate terms
 need not be kept (and their seniority is not important). However, for
-the generation of [`CSFs`](@ref CSFs), we need to form all possible
+the generation of [`CSFs`](@ref man-csfs), we need to form all possible
 combinations of intermediate terms for each subshell, and couple them,
 again left-to-right, to form all possible coupling chains (each one
 corresponding to a unique physical state). E.g. for the last term of
@@ -252,6 +254,103 @@ julia> intermediate_couplings(last.(its))
 couple_terms
 AtomicLevels.final_terms
 intermediate_couplings
+```
+
+## Levels & States
+
+Coupling ``L`` and ``S`` to a total ``J``, as discussed under [Term
+couplings](@ref) above, yields a [`Level`](@ref); in ``jj`` coupling,
+final term of the [`CSF`](@ref) already has its final ``J`` given.  In
+both coupling schemes, the same values of final ``J`` will result, but
+via different intermediate couplings. As an example, we will consider
+the configuration ``1s\;2p``, which in the ``LS`` and ``jj` coupling
+schemes has the following [`CSF`](@ref)s:
+
+```jldoctest levels_and_states
+julia> csls = csfs(c"1s 2p")
+2-element Array{CSF{Orbital{Int64},Term,Seniority},1}:
+ 1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-
+ 1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-
+
+julia> csjj = vcat(csfs(rc"1s 2p"), csfs(rc"1s 2p-"))
+4-element Array{CSF{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1}:
+ 1s(₁1/2|1/2) 2p(₁3/2|1)-
+ 1s(₁1/2|1/2) 2p(₁3/2|2)-
+ 1s(₁1/2|1/2) 2p-(₁1/2|0)-
+ 1s(₁1/2|1/2) 2p-(₁1/2|1)-
+```
+
+If we now generate the permissible [`Level`](@ref)s, we find the valid
+values of ``J``, i.e. ``0``, ``2\times 1``, and ``2``:
+
+```jldoctest levels_and_states
+julia> levels.(csls)
+2-element Array{Array{Level{Orbital{Int64},Term,Seniority},1},1}:
+ [|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1⟩]
+ [|1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 0⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2⟩]
+
+julia> levels.(csjj)
+4-element Array{Array{Level{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1},1}:
+ [|1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1⟩]
+ [|1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2⟩]
+ [|1s(₁1/2|1/2) 2p-(₁1/2|0)-, J = 0⟩]
+ [|1s(₁1/2|1/2) 2p-(₁1/2|1)-, J = 1⟩]
+```
+
+```@docs
+Level
+weight(l::Level)
+J_range
+levels
+```
+
+Similarly, by additionally specifying the projection quantum number
+``M_J``, we get a fully quantified [`State`](@ref). In the same way,
+the permissible values of ``M_J`` must agree between the coupling
+schemes, sorting by ``M_J`` for clarity:
+
+```jldoctest levels_and_states
+julia> sort(reduce(vcat, reduce(vcat, states.(csls))), by=s->s.M_J)
+12-element Array{State{Orbital{Int64},Term,Seniority},1}:
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = -2⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = -1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1, M_J = -1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = -1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 0⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 0, M_J = 0⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1, M_J = 0⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = 0⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1, M_J = 1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = 1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = 2⟩
+
+julia> sort(reduce(vcat, reduce(vcat, states.(csjj))), by=s->s.M_J)
+12-element Array{State{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1}:
+ |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = -2⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1, M_J = -1⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = -1⟩
+ |1s(₁1/2|1/2) 2p-(₁1/2|1)-, J = 1, M_J = -1⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1, M_J = 0⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = 0⟩
+ |1s(₁1/2|1/2) 2p-(₁1/2|0)-, J = 0, M_J = 0⟩
+ |1s(₁1/2|1/2) 2p-(₁1/2|1)-, J = 1, M_J = 0⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1, M_J = 1⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = 1⟩
+ |1s(₁1/2|1/2) 2p-(₁1/2|1)-, J = 1, M_J = 1⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = 2⟩
+```
+
+```@docs
+State
+states
+```
+
+
+## Index
+
+```@index
+Pages = ["terms.md"]
 ```
 
 ```@meta

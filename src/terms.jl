@@ -119,7 +119,46 @@ end
 
 Base.zero(::Type{Term}) = T"1S"
 
+"""
+    multiplicity(t::Term)
+
+Returns the spin multiplicity of the [`Term`](@ref) `t`, i.e. the
+number of possible values of ``J`` for a given value of ``L`` and
+``S``.
+
+# Examples
+
+```jldoctest
+julia> multiplicity(T"¹S")
+1
+
+julia> multiplicity(T"²S")
+2
+
+julia> multiplicity(T"³P")
+3
+```
+"""
 multiplicity(t::Term) = convert(Int, 2t.S + 1)
+"""
+    weight(t::Term)
+
+Returns the statistical weight of the [`Term`](@ref) `t`, i.e. the
+number of possible microstates: ``(2S+1)(2L+1)``.
+
+# Examples
+
+```jldoctest
+julia> weight(T"¹S")
+1
+
+julia> weight(T"²S")
+2
+
+julia> weight(T"³P")
+9
+```
+"""
 weight(t::Term) = (2t.L + 1) * multiplicity(t)
 
 import Base.==

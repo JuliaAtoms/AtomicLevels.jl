@@ -1,4 +1,4 @@
-# Atomic configurations
+# [Atomic configurations](@id man-configurations)
 
 ```@meta
 DocTestSetup = quote
@@ -224,6 +224,12 @@ julia> excited_configurations(first(scs"1s2"), sos"2[s-p]"...)
 
 ```@docs
 excited_configurations
+```
+
+## Index
+
+```@index
+Pages = ["configurations.md"]
 ```
 
 ```@meta

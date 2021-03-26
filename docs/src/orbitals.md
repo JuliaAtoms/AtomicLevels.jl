@@ -1,4 +1,4 @@
-# Atomic orbitals
+# [Atomic orbitals](@id man-orbitals)
 
 ```@meta
 DocTestSetup = quote
@@ -63,6 +63,12 @@ angular_momentum_ranges
 spin_orbitals
 @κ_str
 nonrelorbital
+```
+
+## Index
+
+```@index
+Pages = ["orbitals.md"]
 ```
 
 ```@meta
