@@ -1,7 +1,7 @@
 # AtomicLevels
 
-[![Documentation][docs-stable-img]][docs-stable-img]
-[![Documentation (dev)][docs-dev-img]][docs-dev-img]
+[![Documentation][docs-stable-img]][docs-stable-url]
+[![Documentation (dev)][docs-dev-img]][docs-dev-url]
 [![GitHub Actions CI][ci-gha-img]][ci-gha-url]
 [![CodeCov][codecov-img]][codecov-url]
 

@@ -263,7 +263,7 @@ couplings](@ref) above, yields a [`Level`](@ref); in ``jj`` coupling,
 final term of the [`CSF`](@ref) already has its final ``J`` given.  In
 both coupling schemes, the same values of final ``J`` will result, but
 via different intermediate couplings. As an example, we will consider
-the configuration ``1s\;2p``, which in the ``LS`` and ``jj` coupling
+the configuration ``1s\;2p``, which in the ``LS`` and ``jj`` coupling
 schemes has the following [`CSF`](@ref)s:
 
 ```jldoctest levels_and_states
