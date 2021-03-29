@@ -5,7 +5,7 @@
 [![GitHub Actions CI][ci-gha-img]][ci-gha-url]
 [![CodeCov][codecov-img]][codecov-url]
 
-AtomicLevels provides a collections of types and methods to facilitate working with atomic states (or, more generally, states with spherical symmetry), both in the relativistic (eigenstates of `J = L + S`) and non-relativistic (eigenstates on `L` and `S` separately) frameworks.
+AtomicLevels provides a collections of types and methods to facilitate working with atomic states (or, more generally, states with spherical symmetry), both in the relativistic (eigenstates of `J = L + S`) and non-relativistic (eigenstates of `L` and `S` separately) frameworks.
 
 
 * Orbitals and orbital subshells
@@ -63,7 +63,7 @@ julia> csfs(rconfigurations)
  1s²(₀0|0) 2s²(₀0|0) 2p-²(₀0|0) 2p⁴(₀0|0) 3s²(₀0|0) 3p⁴(₀0|0)+
 ```
 
-For more examples and information about how to work with the various types, please see that [documentation][docs-stable-url].
+For more examples and information about how to work with the various types, please see the [documentation][docs-stable-url].
 
 [ci-gha-url]: https://github.com/JuliaAtoms/AtomicLevels.jl/actions
 [ci-gha-img]: https://github.com/JuliaAtoms/AtomicLevels.jl/workflows/CI/badge.svg
