@@ -22,14 +22,14 @@ using Random
         @test κ2ℓ(-3) == 2
         @test κ2ℓ( 3) == 3
 
-        import AtomicLevels: kappa_to_j
-        @test_throws ArgumentError kappa_to_j(0)
-        @test kappa_to_j(-1) === half(1)
-        @test kappa_to_j( 1) === half(1)
-        @test kappa_to_j(-2) === half(3)
-        @test kappa_to_j( 2) === half(3)
-        @test kappa_to_j(-3) === half(5)
-        @test kappa_to_j( 3) === half(5)
+        import AtomicLevels: κ2j
+        @test_throws ArgumentError κ2j(0)
+        @test κ2j(-1) === half(1)
+        @test κ2j( 1) === half(1)
+        @test κ2j(-2) === half(3)
+        @test κ2j( 2) === half(3)
+        @test κ2j(-3) === half(5)
+        @test κ2j( 3) === half(5)
 
         import AtomicLevels: ℓj_to_kappa
         @test ℓj_to_kappa(0, half(1)) == -1

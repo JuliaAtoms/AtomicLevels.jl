@@ -1,7 +1,7 @@
 using AtomicLevels: CSF
 using HalfIntegers
 
-angularmomentum(o::RelativisticOrbital) = AtomicLevels.kappa_to_j(o.κ)
+angularmomentum(o::RelativisticOrbital) = AtomicLevels.κ2j(o.κ)
 angularmomentum(csf::CSF{O,<:HalfInteger}) where O = last(csf.terms)
 
 # Relativistic CSLs and parsing of GRASP CSL files

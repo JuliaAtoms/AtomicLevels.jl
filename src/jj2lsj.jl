@@ -60,7 +60,7 @@ function rotate!(blocks::Vector{M}, orbs::RelativisticOrbital...) where {T,M<:Ab
     # We sort by mⱼ and remove the first and last elements since they
     # are pure and trivially unity.
     ℓms = sort(vcat([[(ℓ,m,s) for m ∈ -ℓ:ℓ] for s = -half(1):half(1)]...)[2:end-1], by=((ℓms)) -> (ℓms[2],+(ℓms[2:3]...)))
-    jmⱼ = sort(vcat([[(j,mⱼ) for mⱼ ∈ -j:j] for j ∈ [kappa_to_j(o.κ) for o in orbs]]...), by=last)[2:end-1]
+    jmⱼ = sort(vcat([[(j,mⱼ) for mⱼ ∈ -j:j] for j ∈ [κ2j(o.κ) for o in orbs]]...), by=last)[2:end-1]
     for (a,(ℓ,m,s)) in enumerate(ℓms)
         bi = cld(a, 2)
         o = 2*(bi-1)
@@ -106,11 +106,11 @@ function jj2lsj(::Type{T}, orbs::RelativisticOrbital...) where T
         i = findall(isequal((n,ℓ)), nℓs)
         subspace = orbs[i]
         mⱼ = map(subspace) do orb
-            j = convert(Rational, kappa_to_j(orb.κ))
+            j = convert(Rational, κ2j(orb.κ))
             -j:j
         end
 
-        jₘₐₓ = maximum([kappa_to_j(o.κ) for o in subspace])
+        jₘₐₓ = maximum([κ2j(o.κ) for o in subspace])
         pure = [Matrix{T}(undef,1,1),Matrix{T}(undef,1,1)]
         pure[1][1] = convert(T, ClebschGordanℓs(ℓ,-ℓ,half(1),-half(1),jₘₐₓ,-jₘₐₓ))
         pure[2][1] = convert(T, ClebschGordanℓs(ℓ,ℓ,half(1),half(1),jₘₐₓ,jₘₐₓ))

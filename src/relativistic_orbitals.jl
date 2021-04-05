@@ -13,13 +13,13 @@ function κ2ℓ(κ::Integer)
 end
 
 """
-    kappa_to_j(κ::Integer) :: HalfInteger
+    κ2j(κ::Integer) -> HalfInteger
 
 Calculate the `j` quantum number corresponding to the `κ` quantum number.
 
-Note: `κ` is always an integer.
+Note: `κ` is always an integer, but `j` will be a half-integer value.
 """
-function kappa_to_j(kappa::Integer)
+function κ2j(kappa::Integer)
     kappa == zero(kappa) && throw(ArgumentError("κ can not be zero"))
     half(2*abs(kappa) - 1)
 end
@@ -140,7 +140,7 @@ mqtype(::RelativisticOrbital{MQ}) where MQ = MQ
 
 Base.propertynames(::RelativisticOrbital) = (fieldnames(RelativisticOrbital)..., :j, :ℓ)
 function Base.getproperty(o::RelativisticOrbital, s::Symbol)
-    s === :j ? kappa_to_j(o.κ) :
+    s === :j ? κ2j(o.κ) :
     s === :ℓ ? κ2ℓ(o.κ) :
     getfield(o, s)
 end
