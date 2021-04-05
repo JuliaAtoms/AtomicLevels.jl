@@ -40,7 +40,7 @@ parity
 ## JJ to LSJ
 
 ```@docs
-jj2lsj
+jj2ℓsj
 ```
 
 ## Index
