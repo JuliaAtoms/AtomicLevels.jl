@@ -307,4 +307,4 @@ julia> nonrelorbital(ro"2p-")
 nonrelorbital(o::Orbital) = o
 nonrelorbital(o::RelativisticOrbital) = Orbital(o.n, o.ℓ)
 
-export RelativisticOrbital, @ro_str, @ros_str, @κ_str, nonrelorbital
+export RelativisticOrbital, @ro_str, @ros_str, @κ_str, nonrelorbital, κ2ℓ, κ2j, ℓj2κ
