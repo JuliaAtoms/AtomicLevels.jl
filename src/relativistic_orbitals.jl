@@ -25,11 +25,11 @@ function κ2j(kappa::Integer)
 end
 
 """
-    ℓj2κ(ℓ::Integer, j::Real) :: Integer
+    ℓj2κ(ℓ::Integer, j::Real) -> Integer
 
 Converts a valid `(ℓ, j)` pair to the corresponding `κ` value.
 
-**Note:** there is a one-to-one correspondence between valid `(ℓ,j)` pairs and `κ` values
+Note: there is a one-to-one correspondence between valid `(ℓ,j)` pairs and `κ` values
 such that for `j = ℓ ± 1/2`, `κ = ∓(j + 1/2)`.
 """
 function ℓj2κ(ℓ::Integer, j::Real)
