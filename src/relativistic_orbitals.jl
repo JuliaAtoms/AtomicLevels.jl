@@ -25,14 +25,14 @@ function κ2j(kappa::Integer)
 end
 
 """
-    ℓj_to_kappa(ℓ::Integer, j::Real) :: Integer
+    ℓj2κ(ℓ::Integer, j::Real) :: Integer
 
 Converts a valid `(ℓ, j)` pair to the corresponding `κ` value.
 
 **Note:** there is a one-to-one correspondence between valid `(ℓ,j)` pairs and `κ` values
 such that for `j = ℓ ± 1/2`, `κ = ∓(j + 1/2)`.
 """
-function ℓj_to_kappa(ℓ::Integer, j::Real)
+function ℓj2κ(ℓ::Integer, j::Real)
     assert_orbital_ℓj(ℓ, j)
     (j < ℓ) ? ℓ : -(ℓ + 1)
 end
@@ -124,7 +124,7 @@ struct RelativisticOrbital{N<:MQ} <: AbstractOrbital
         new{Symbol}(n, κ)
     end
 end
-RelativisticOrbital(n::MQ, ℓ::Integer, j::Real) = RelativisticOrbital(n, ℓj_to_kappa(ℓ, j))
+RelativisticOrbital(n::MQ, ℓ::Integer, j::Real) = RelativisticOrbital(n, ℓj2κ(ℓ, j))
 
 Base.:(==)(a::RelativisticOrbital, b::RelativisticOrbital) =
     a.n == b.n && a.κ == b.κ
@@ -271,7 +271,7 @@ function kappa_from_string(κ_str)
     m === nothing && throw(ArgumentError("Invalid κ string: $(κ_str)"))
     ℓ = parse_orbital_ℓ(m, 1)
     j = ℓ + half(m[2] == "-" ? -1 : 1)
-    ℓj_to_kappa(ℓ, j)
+    ℓj2κ(ℓ, j)
 end
 
 """
