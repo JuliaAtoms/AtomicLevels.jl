@@ -56,11 +56,11 @@ We know [Eq. (3.8.58)] that
 function rotate!(blocks::Vector{M}, orbs::RelativisticOrbital...) where {T,M<:AbstractMatrix{T}}
     2length(blocks) == sum(degeneracy.(orbs))-2 ||
         throw(ArgumentError("Invalid block size for $(orbs...)"))
-    ℓ = kappa_to_ℓ(first(orbs).κ)
+    ℓ = κ2ℓ(first(orbs).κ)
     # We sort by mⱼ and remove the first and last elements since they
     # are pure and trivially unity.
     ℓms = sort(vcat([[(ℓ,m,s) for m ∈ -ℓ:ℓ] for s = -half(1):half(1)]...)[2:end-1], by=((ℓms)) -> (ℓms[2],+(ℓms[2:3]...)))
-    jmⱼ = sort(vcat([[(j,mⱼ) for mⱼ ∈ -j:j] for j ∈ [kappa_to_j(o.κ) for o in orbs]]...), by=last)[2:end-1]
+    jmⱼ = sort(vcat([[(j,mⱼ) for mⱼ ∈ -j:j] for j ∈ [κ2j(o.κ) for o in orbs]]...), by=last)[2:end-1]
     for (a,(ℓ,m,s)) in enumerate(ℓms)
         bi = cld(a, 2)
         o = 2*(bi-1)
@@ -73,7 +73,7 @@ function rotate!(blocks::Vector{M}, orbs::RelativisticOrbital...) where {T,M<:Ab
 end
 
 """
-    jj2lsj([T=Float64, ]orbs...)
+    jj2ℓsj([T=Float64, ]orbs...)
 
 Generates the block-diagonal matrix that transforms jj-coupled
 configurations to lsj-coupled ones.
@@ -100,17 +100,17 @@ E.g. the p-block will have the following structure:
 ```
 
 """
-function jj2lsj(::Type{T}, orbs::RelativisticOrbital...) where T
-    nℓs = map(o -> (o.n, kappa_to_ℓ(o.κ)), sort([orbs...]))
+function jj2ℓsj(::Type{T}, orbs::RelativisticOrbital...) where T
+    nℓs = map(o -> (o.n, κ2ℓ(o.κ)), sort([orbs...]))
     blocks = map(unique(nℓs)) do (n,ℓ)
         i = findall(isequal((n,ℓ)), nℓs)
         subspace = orbs[i]
         mⱼ = map(subspace) do orb
-            j = convert(Rational, kappa_to_j(orb.κ))
+            j = convert(Rational, κ2j(orb.κ))
             -j:j
         end
 
-        jₘₐₓ = maximum([kappa_to_j(o.κ) for o in subspace])
+        jₘₐₓ = maximum([κ2j(o.κ) for o in subspace])
         pure = [Matrix{T}(undef,1,1),Matrix{T}(undef,1,1)]
         pure[1][1] = convert(T, ClebschGordanℓs(ℓ,-ℓ,half(1),-half(1),jₘₐₓ,-jₘₐₓ))
         pure[2][1] = convert(T, ClebschGordanℓs(ℓ,ℓ,half(1),half(1),jₘₐₓ,jₘₐₓ))
@@ -133,7 +133,7 @@ function jj2lsj(::Type{T}, orbs::RelativisticOrbital...) where T
     end
     R
 end
-jj2lsj(orbs::RelativisticOrbital...) = jj2lsj(Float64, orbs...)
+jj2ℓsj(orbs::RelativisticOrbital...) = jj2ℓsj(Float64, orbs...)
 
 angular_integral(a::SpinOrbital{<:Orbital}, b::SpinOrbital{<:Orbital}) =
     a.orb.ℓ == b.orb.ℓ && a.m == b.m
@@ -147,7 +147,7 @@ angular_integral(a::SpinOrbital{<:Orbital}, b::SpinOrbital{<:RelativisticOrbital
 angular_integral(a::SpinOrbital{<:RelativisticOrbital}, b::SpinOrbital{<:Orbital}) =
     conj(angular_integral(b, a))
 
-function jj2lsj(sorb::SpinOrbital{<:Orbital})
+function jj2ℓsj(sorb::SpinOrbital{<:Orbital})
     orb,(mℓ,ms) = sorb.orb,sorb.m
     @unpack n,ℓ = orb
     mj = mℓ + ms
@@ -157,7 +157,7 @@ function jj2lsj(sorb::SpinOrbital{<:Orbital})
     end
 end
 
-function jj2lsj(sorb::SpinOrbital{<:RelativisticOrbital})
+function jj2ℓsj(sorb::SpinOrbital{<:RelativisticOrbital})
     orb,(mj,) = sorb.orb,sorb.m
     @unpack n,ℓ,j = orb
     map(max(-ℓ, mj-half(1)):min(ℓ, mj+half(1))) do mℓ
@@ -167,11 +167,11 @@ function jj2lsj(sorb::SpinOrbital{<:RelativisticOrbital})
     end
 end
 
-function jj2lsj(sorbs::AbstractVector{<:SpinOrbital{<:RelativisticOrbital}})
+function jj2ℓsj(sorbs::AbstractVector{<:SpinOrbital{<:RelativisticOrbital}})
     @assert issorted(sorbs)
     # For each jj spin-orbital, find all corresponding ls
     # spin-orbitals with their CG coeffs.
-    couplings = map(jj2lsj, sorbs)
+    couplings = map(jj2ℓsj, sorbs)
 
     CGT = typeof(couplings[1][1][2])
     LSOT = eltype(reduce(vcat, map(c -> map(first, c), couplings)))
@@ -210,4 +210,4 @@ function jj2lsj(sorbs::AbstractVector{<:SpinOrbital{<:RelativisticOrbital}})
     ls_orbitals, blocks
 end
 
-export jj2lsj, ClebschGordan, ClebschGordanℓs
+export jj2ℓsj, ClebschGordan, ClebschGordanℓs

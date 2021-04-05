@@ -29,4 +29,7 @@ module Utils
 include("utils/print_states.jl")
 end
 
+# Deprecations
+@deprecate jj2lsj(args...) jj2ℓsj(args...)
+
 end # module

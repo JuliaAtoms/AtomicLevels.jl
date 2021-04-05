@@ -1,9 +1,9 @@
 using LinearAlgebra
 import AtomicLevels: angular_integral
 
-@testset "jj2lsj" begin
+@testset "jj2ℓsj" begin
     @testset "Transform matrix" begin
-        R = jj2lsj(ros"1[s] 2[s-p] k[s-d]"...)
+        R = jj2ℓsj(ros"1[s] 2[s-p] k[s-d]"...)
         # Since it is a rotation matrix, its inverse is simply the
         # transpose.
         @test norm(inv(Matrix(R)) - R') < 10eps()
@@ -16,7 +16,7 @@ import AtomicLevels: angular_integral
                 mℓ,ms = so.m
                 mj = mℓ + ms
                 pure = abs(mj) == ℓ + half(1)
-                linear_combination = jj2lsj(so)
+                linear_combination = jj2ℓsj(so)
                 @test length(linear_combination) == (pure ? 1 : 2)
                 @test norm(last.(linear_combination)) ≈ 1
                 @test all(isequal(mj), map(o -> first(o.m), first.(linear_combination)))
@@ -38,7 +38,7 @@ import AtomicLevels: angular_integral
     end
 
     @testset "#orbitals = $(length(ros))" for (ros,nb) in ((rsos"l[p]", 4), (rsos"k[s-d] l[d]", 18), (filter(o -> o.m[1]==1//2, rsos"l[d]"), 1))
-        os, bs = jj2lsj(ros)
+        os, bs = jj2ℓsj(ros)
         @test length(os) == length(ros)
         for (ro,o) in zip(ros, os)
             @test sum(o.m) == ro.m[1]

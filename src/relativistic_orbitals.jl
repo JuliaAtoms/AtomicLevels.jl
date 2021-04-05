@@ -1,38 +1,38 @@
 # * Relativistic orbital
 
 """
-    kappa_to_ℓ(κ::Integer) :: Integer
+    κ2ℓ(κ::Integer) -> Integer
 
 Calculate the `ℓ` quantum number corresponding to the `κ` quantum number.
 
 Note: `κ` and `ℓ` values are always integers.
 """
-function kappa_to_ℓ(kappa::Integer)
-    kappa == zero(kappa) && throw(ArgumentError("κ can not be zero"))
-    (kappa < 0) ? -(kappa+1) : kappa
+function κ2ℓ(κ::Integer)
+    κ == zero(κ) && throw(ArgumentError("κ can not be zero"))
+    (κ < 0) ? -(κ + 1) : κ
 end
 
 """
-    kappa_to_j(κ::Integer) :: HalfInteger
+    κ2j(κ::Integer) -> HalfInteger
 
 Calculate the `j` quantum number corresponding to the `κ` quantum number.
 
-Note: `κ` is always an integer.
+Note: `κ` is always an integer, but `j` will be a half-integer value.
 """
-function kappa_to_j(kappa::Integer)
+function κ2j(kappa::Integer)
     kappa == zero(kappa) && throw(ArgumentError("κ can not be zero"))
     half(2*abs(kappa) - 1)
 end
 
 """
-    ℓj_to_kappa(ℓ::Integer, j::Real) :: Integer
+    ℓj2κ(ℓ::Integer, j::Real) -> Integer
 
 Converts a valid `(ℓ, j)` pair to the corresponding `κ` value.
 
-**Note:** there is a one-to-one correspondence between valid `(ℓ,j)` pairs and `κ` values
+Note: there is a one-to-one correspondence between valid `(ℓ,j)` pairs and `κ` values
 such that for `j = ℓ ± 1/2`, `κ = ∓(j + 1/2)`.
 """
-function ℓj_to_kappa(ℓ::Integer, j::Real)
+function ℓj2κ(ℓ::Integer, j::Real)
     assert_orbital_ℓj(ℓ, j)
     (j < ℓ) ? ℓ : -(ℓ + 1)
 end
@@ -115,7 +115,7 @@ struct RelativisticOrbital{N<:MQ} <: AbstractOrbital
     function RelativisticOrbital(n::Integer, κ::Integer)
         n ≥ 1 || throw(ArgumentError("Invalid principal quantum number $(n)"))
         κ == zero(κ) && throw(ArgumentError("κ can not be zero"))
-        ℓ = kappa_to_ℓ(κ)
+        ℓ = κ2ℓ(κ)
         0 ≤ ℓ && ℓ < n || throw(ArgumentError("Angular quantum number has to be ∈ [0,$(n-1)] when n = $(n)"))
         new{Int}(n, κ)
     end
@@ -124,7 +124,7 @@ struct RelativisticOrbital{N<:MQ} <: AbstractOrbital
         new{Symbol}(n, κ)
     end
 end
-RelativisticOrbital(n::MQ, ℓ::Integer, j::Real) = RelativisticOrbital(n, ℓj_to_kappa(ℓ, j))
+RelativisticOrbital(n::MQ, ℓ::Integer, j::Real) = RelativisticOrbital(n, ℓj2κ(ℓ, j))
 
 Base.:(==)(a::RelativisticOrbital, b::RelativisticOrbital) =
     a.n == b.n && a.κ == b.κ
@@ -140,13 +140,13 @@ mqtype(::RelativisticOrbital{MQ}) where MQ = MQ
 
 Base.propertynames(::RelativisticOrbital) = (fieldnames(RelativisticOrbital)..., :j, :ℓ)
 function Base.getproperty(o::RelativisticOrbital, s::Symbol)
-    s === :j ? kappa_to_j(o.κ) :
-    s === :ℓ ? kappa_to_ℓ(o.κ) :
+    s === :j ? κ2j(o.κ) :
+    s === :ℓ ? κ2ℓ(o.κ) :
     getfield(o, s)
 end
 
 function Base.show(io::IO, orb::RelativisticOrbital)
-    write(io, "$(orb.n)$(spectroscopic_label(kappa_to_ℓ(orb.κ)))")
+    write(io, "$(orb.n)$(spectroscopic_label(κ2ℓ(orb.κ)))")
     orb.κ > 0 && write(io, "-")
 end
 
@@ -159,13 +159,13 @@ degeneracy(orb::RelativisticOrbital{N}) where N = 2*abs(orb.κ) # 2j + 1 = 2|κ|
 
 function Base.isless(a::RelativisticOrbital, b::RelativisticOrbital)
     nisless(a.n, b.n) && return true
-    aℓ, bℓ = kappa_to_ℓ(a.κ), kappa_to_ℓ(b.κ)
+    aℓ, bℓ = κ2ℓ(a.κ), κ2ℓ(b.κ)
     a.n == b.n && aℓ < bℓ && return true
     a.n == b.n && aℓ == bℓ && abs(a.κ) < abs(b.κ) && return true
     false
 end
 
-parity(orb::RelativisticOrbital) = p"odd"^kappa_to_ℓ(orb.κ)
+parity(orb::RelativisticOrbital) = p"odd"^κ2ℓ(orb.κ)
 symmetry(orb::RelativisticOrbital) = orb.κ
 
 isbound(::RelativisticOrbital{Int}) = true
@@ -271,7 +271,7 @@ function kappa_from_string(κ_str)
     m === nothing && throw(ArgumentError("Invalid κ string: $(κ_str)"))
     ℓ = parse_orbital_ℓ(m, 1)
     j = ℓ + half(m[2] == "-" ? -1 : 1)
-    ℓj_to_kappa(ℓ, j)
+    ℓj2κ(ℓ, j)
 end
 
 """
@@ -307,4 +307,4 @@ julia> nonrelorbital(ro"2p-")
 nonrelorbital(o::Orbital) = o
 nonrelorbital(o::RelativisticOrbital) = Orbital(o.n, o.ℓ)
 
-export RelativisticOrbital, @ro_str, @ros_str, @κ_str, nonrelorbital
+export RelativisticOrbital, @ro_str, @ros_str, @κ_str, nonrelorbital, κ2ℓ, κ2j, ℓj2κ

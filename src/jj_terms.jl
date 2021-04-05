@@ -33,7 +33,7 @@ julia> terms(ro"4f", 4)
 ```
 """
 function terms(orb::RelativisticOrbital, w::Int=one(Int))
-    j = kappa_to_j(orb.κ)
+    j = κ2j(orb.κ)
     0 <= w <= 2*j+1 || throw(DomainError(w, "w must be 0 <= w <= 2j+1 (=$(2j+1)) for j=$j"))
     # We can equivalently calculate the JJ terms for holes, so we'll do that when we have
     # fewer holes than particles on this shell
@@ -89,7 +89,7 @@ function _terms_jw(j::HalfInteger, w::Integer)
 end
 
 function count_terms(orb::RelativisticOrbital, w::Integer, J::HalfInteger)
-    j = kappa_to_j(orb.κ)
+    j = κ2j(orb.κ)
     0 <= w <= 2*j+1 || throw(DomainError(w, "w must be 0 <= w <= 2j+1 (=$(2j+1)) for j=$j"))
     # We can equivalently calculate the JJ terms for holes, so we'll do that when we have
     # fewer holes than particles on this shell

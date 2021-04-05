@@ -40,7 +40,15 @@ parity
 ## JJ to LSJ
 
 ```@docs
-jj2lsj
+jj2ℓsj
+```
+
+## Conversion of angular momentum quantum numbers
+
+```@docs
+κ2ℓ
+κ2j
+ℓj2κ
 ```
 
 ## Index
