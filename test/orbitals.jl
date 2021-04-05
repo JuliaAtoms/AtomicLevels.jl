@@ -13,14 +13,14 @@ using Random
         @test_throws ArgumentError assert_orbital_ℓj(5, 1//2)
         @test_throws MethodError assert_orbital_ℓj(HalfInteger(1), HalfInteger(1//2))
 
-        import AtomicLevels: kappa_to_ℓ
-        @test_throws ArgumentError kappa_to_ℓ(0)
-        @test kappa_to_ℓ(-1) == 0
-        @test kappa_to_ℓ( 1) == 1
-        @test kappa_to_ℓ(-2) == 1
-        @test kappa_to_ℓ( 2) == 2
-        @test kappa_to_ℓ(-3) == 2
-        @test kappa_to_ℓ( 3) == 3
+        import AtomicLevels: κ2ℓ
+        @test_throws ArgumentError κ2ℓ(0)
+        @test κ2ℓ(-1) == 0
+        @test κ2ℓ( 1) == 1
+        @test κ2ℓ(-2) == 1
+        @test κ2ℓ( 2) == 2
+        @test κ2ℓ(-3) == 2
+        @test κ2ℓ( 3) == 3
 
         import AtomicLevels: kappa_to_j
         @test_throws ArgumentError kappa_to_j(0)

@@ -56,7 +56,7 @@ We know [Eq. (3.8.58)] that
 function rotate!(blocks::Vector{M}, orbs::RelativisticOrbital...) where {T,M<:AbstractMatrix{T}}
     2length(blocks) == sum(degeneracy.(orbs))-2 ||
         throw(ArgumentError("Invalid block size for $(orbs...)"))
-    ℓ = kappa_to_ℓ(first(orbs).κ)
+    ℓ = κ2ℓ(first(orbs).κ)
     # We sort by mⱼ and remove the first and last elements since they
     # are pure and trivially unity.
     ℓms = sort(vcat([[(ℓ,m,s) for m ∈ -ℓ:ℓ] for s = -half(1):half(1)]...)[2:end-1], by=((ℓms)) -> (ℓms[2],+(ℓms[2:3]...)))
@@ -101,7 +101,7 @@ E.g. the p-block will have the following structure:
 
 """
 function jj2lsj(::Type{T}, orbs::RelativisticOrbital...) where T
-    nℓs = map(o -> (o.n, kappa_to_ℓ(o.κ)), sort([orbs...]))
+    nℓs = map(o -> (o.n, κ2ℓ(o.κ)), sort([orbs...]))
     blocks = map(unique(nℓs)) do (n,ℓ)
         i = findall(isequal((n,ℓ)), nℓs)
         subspace = orbs[i]

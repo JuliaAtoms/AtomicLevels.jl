@@ -1,15 +1,15 @@
 # * Relativistic orbital
 
 """
-    kappa_to_ℓ(κ::Integer) :: Integer
+    κ2ℓ(κ::Integer) -> Integer
 
 Calculate the `ℓ` quantum number corresponding to the `κ` quantum number.
 
 Note: `κ` and `ℓ` values are always integers.
 """
-function kappa_to_ℓ(kappa::Integer)
-    kappa == zero(kappa) && throw(ArgumentError("κ can not be zero"))
-    (kappa < 0) ? -(kappa+1) : kappa
+function κ2ℓ(κ::Integer)
+    κ == zero(κ) && throw(ArgumentError("κ can not be zero"))
+    (κ < 0) ? -(κ + 1) : κ
 end
 
 """
@@ -115,7 +115,7 @@ struct RelativisticOrbital{N<:MQ} <: AbstractOrbital
     function RelativisticOrbital(n::Integer, κ::Integer)
         n ≥ 1 || throw(ArgumentError("Invalid principal quantum number $(n)"))
         κ == zero(κ) && throw(ArgumentError("κ can not be zero"))
-        ℓ = kappa_to_ℓ(κ)
+        ℓ = κ2ℓ(κ)
         0 ≤ ℓ && ℓ < n || throw(ArgumentError("Angular quantum number has to be ∈ [0,$(n-1)] when n = $(n)"))
         new{Int}(n, κ)
     end
@@ -141,12 +141,12 @@ mqtype(::RelativisticOrbital{MQ}) where MQ = MQ
 Base.propertynames(::RelativisticOrbital) = (fieldnames(RelativisticOrbital)..., :j, :ℓ)
 function Base.getproperty(o::RelativisticOrbital, s::Symbol)
     s === :j ? kappa_to_j(o.κ) :
-    s === :ℓ ? kappa_to_ℓ(o.κ) :
+    s === :ℓ ? κ2ℓ(o.κ) :
     getfield(o, s)
 end
 
 function Base.show(io::IO, orb::RelativisticOrbital)
-    write(io, "$(orb.n)$(spectroscopic_label(kappa_to_ℓ(orb.κ)))")
+    write(io, "$(orb.n)$(spectroscopic_label(κ2ℓ(orb.κ)))")
     orb.κ > 0 && write(io, "-")
 end
 
@@ -159,13 +159,13 @@ degeneracy(orb::RelativisticOrbital{N}) where N = 2*abs(orb.κ) # 2j + 1 = 2|κ|
 
 function Base.isless(a::RelativisticOrbital, b::RelativisticOrbital)
     nisless(a.n, b.n) && return true
-    aℓ, bℓ = kappa_to_ℓ(a.κ), kappa_to_ℓ(b.κ)
+    aℓ, bℓ = κ2ℓ(a.κ), κ2ℓ(b.κ)
     a.n == b.n && aℓ < bℓ && return true
     a.n == b.n && aℓ == bℓ && abs(a.κ) < abs(b.κ) && return true
     false
 end
 
-parity(orb::RelativisticOrbital) = p"odd"^kappa_to_ℓ(orb.κ)
+parity(orb::RelativisticOrbital) = p"odd"^κ2ℓ(orb.κ)
 symmetry(orb::RelativisticOrbital) = orb.κ
 
 isbound(::RelativisticOrbital{Int}) = true
