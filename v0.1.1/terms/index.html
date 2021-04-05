@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Term symbols · AtomicLevels</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">AtomicLevels</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../orbitals/">Orbitals</a></li><li><a class="tocitem" href="../configurations/">Configurations</a></li><li class="is-active"><a class="tocitem" href>Term symbols</a><ul class="internal"><li><a class="tocitem" href="#Term-multiplicity-and-intermediate-terms"><span>Term multiplicity and intermediate terms</span></a></li><li><a class="tocitem" href="#Term-couplings"><span>Term couplings</span></a></li><li><a class="tocitem" href="#Levels-and-States"><span>Levels &amp; States</span></a></li><li><a class="tocitem" href="#Index"><span>Index</span></a></li></ul></li><li><a class="tocitem" href="../csfs/">CSFs</a></li><li><a class="tocitem" href="../utilities/">Other utilities</a></li><li><a class="tocitem" href="../internals/">Internals</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Term symbols</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Term symbols</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/master/docs/src/terms.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="man-terms"><a class="docs-heading-anchor" href="#man-terms">Term symbols</a><a id="man-terms-1"></a><a class="docs-heading-anchor-permalink" href="#man-terms" title="Permalink"></a></h1><p>AtomicLevels provides types and methods to work and determine term symbols. The <a href="https://en.wikipedia.org/wiki/Term_symbol">&quot;Term symbol&quot;</a> and <a href="https://en.wikipedia.org/wiki/Angular_momentum_coupling">&quot;Angular momentum coupling&quot;</a> Wikipedia articles give a good basic overview of the terminology.</p><p>For term symbols in LS coupling, AtomicLevels provides the <a href="#AtomicLevels.Term"><code>Term</code></a> type.</p><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.Term" href="#AtomicLevels.Term"><code>AtomicLevels.Term</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">struct Term</code></pre><p>Represents a term symbol with specific parity in LS-coupling.</p><p>Only the <span>$L$</span>, <span>$S$</span> and parity values of the symbol <span>${}^{2S+1}L_{J}$</span> are specified. To specify a <em>level</em>, the <span>$J$</span> value would have to be specified separately. The valid <span>$J$</span> values corresponding to given <span>$L$</span> and <span>$S$</span> fall in the following range:</p><p class="math-container">\[|L - S| \leq J \leq L+S\]</p><p><strong>Constructors</strong></p><pre><code class="language-none">Term(L::Real, S::Real, parity::Union{Parity,Integer})</code></pre><p>Constructs a <code>Term</code> object with the given <span>$L$</span> and <span>$S$</span> quantum numbers and parity. <code>L</code> and <code>S</code> both have to be convertible to <code>HalfInteger</code>s and <code>parity</code> must be of type <a href="../utilities/#AtomicLevels.Parity"><code>Parity</code></a> or <code>±1</code>.</p><p>See also: <a href="#AtomicLevels.@T_str"><code>@T_str</code></a></p><p><strong>Properties</strong></p><p>To access the quantum number values, you can use the <code>.L</code>, <code>.S</code> and <code>.parity</code> properties to access the <span>$L$</span>, <span>$S$</span> and parity values (represented with <a href="../utilities/#AtomicLevels.Parity"><code>Parity</code></a>), respectively. E.g.:</p><pre><code class="language-julia-repl">julia&gt; t = Term(2, 1//2, p&quot;odd&quot;)
+²Dᵒ
+
+julia&gt; t.L, t.S, t.parity
+(2, 1/2, odd)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/terms.jl#L3-L39">source</a></section></article><p>The <a href="#AtomicLevels.Term"><code>Term</code></a> objects can also be constructed with the <a href="#AtomicLevels.@T_str"><code>@T_str</code></a> string macro.</p><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.@T_str" href="#AtomicLevels.@T_str"><code>AtomicLevels.@T_str</code></a> — <span class="docstring-category">Macro</span></header><section><div><pre><code class="language-julia">@T_str -&gt; Term</code></pre><p>Constructs a <a href="#AtomicLevels.Term"><code>Term</code></a> object out of its canonical string representation.</p><pre><code class="language-julia-repl">julia&gt; T&quot;1S&quot;
+¹S
+
+julia&gt; T&quot;4Po&quot;
+⁴Pᵒ
+
+julia&gt; T&quot;⁴Pᵒ&quot;
+⁴Pᵒ
+
+julia&gt; T&quot;2[3/2]o&quot; # jK coupling, common in noble gases
+²[3/2]ᵒ</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/terms.jl#L97-L115">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Base.parse-Tuple{Type{Term},AbstractString}" href="#Base.parse-Tuple{Type{Term},AbstractString}"><code>Base.parse</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">parse(::Type{Term}, ::AbstractString) -&gt; Term</code></pre><p>Parses a string into a <a href="#AtomicLevels.Term"><code>Term</code></a> object.</p><pre><code class="language-julia-repl">julia&gt; parse(Term, &quot;4Po&quot;)
+⁴Pᵒ
+
+julia&gt; parse(Term, &quot;⁴Pᵒ&quot;)
+⁴Pᵒ</code></pre><p>See also: <a href="#AtomicLevels.@T_str"><code>@T_str</code></a></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/terms.jl#L53-L67">source</a></section></article><p>The <a href="#AtomicLevels.terms"><code>terms</code></a> function can be used to generate all possible term symbols. In the case of relativistic orbitals, the term symbols are simply the valid <span>$J$</span> values, represented using the <a href="https://github.com/sostock/HalfIntegers.jl"><code>HalfInteger</code></a> type.</p><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.terms" href="#AtomicLevels.terms"><code>AtomicLevels.terms</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">terms(orb::Orbital, w::Int=one(Int))</code></pre><p>Returns a list of valid LS term symbols for the orbital <code>orb</code> with <code>w</code> occupancy.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; terms(o&quot;3d&quot;, 3)
+8-element Array{Term,1}:
+ ²P
+ ²D
+ ²D
+ ²F
+ ²G
+ ²H
+ ⁴P
+ ⁴F</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/terms.jl#L215-L235">source</a></section><section><div><pre><code class="language-none">terms(config)</code></pre><p>Generate all final <span>$LS$</span> terms for <code>config</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; terms(c&quot;1s&quot;)
+1-element Array{Term,1}:
+ ²S
+
+julia&gt; terms(c&quot;1s 2p&quot;)
+2-element Array{Term,1}:
+ ¹Pᵒ
+ ³Pᵒ
+
+julia&gt; terms(c&quot;[Ne] 3d3&quot;)
+7-element Array{Term,1}:
+ ²P
+ ²D
+ ²F
+ ²G
+ ²H
+ ⁴P
+ ⁴F</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/terms.jl#L254-L281">source</a></section><section><div><pre><code class="language-none">terms(o::RelativisticOrbital, w = 1) -&gt; Vector{HalfInt}</code></pre><p>Returns a sorted list of valid <span>$J$</span> values of <code>w</code> equivalent <span>$jj$</span>-coupled particles on orbital <code>o</code> (i.e. <code>oʷ</code>).</p><p>When there are degeneracies (i.e. multiple states with the same <span>$J$</span> and <span>$M$</span> quantum numbers), the corresponding <span>$J$</span> value is repeated in the output array.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; terms(ro&quot;3d&quot;, 3)
+3-element Array{HalfIntegers.Half{Int64},1}:
+ 3/2
+ 5/2
+ 9/2
+
+julia&gt; terms(ro&quot;3d-&quot;, 3)
+1-element Array{HalfIntegers.Half{Int64},1}:
+ 3/2
+
+julia&gt; terms(ro&quot;4f&quot;, 4)
+8-element Array{HalfIntegers.Half{Int64},1}:
+ 0
+ 2
+ 2
+ 4
+ 4
+ 5
+ 6
+ 8</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/jj_terms.jl#L1-L34">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.count_terms" href="#AtomicLevels.count_terms"><code>AtomicLevels.count_terms</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">count_terms(orbital, occupation, term)</code></pre><p>Count how many times <code>term</code> occurs among the valid terms of <code>orbital^occupation</code>.</p><pre><code class="language-julia-repl">julia&gt; count_terms(o&quot;1s&quot;, 2, T&quot;1S&quot;)
+1
+
+julia&gt; count_terms(ro&quot;6h&quot;, 4, 8)
+4</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/terms.jl#L290-L302">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.multiplicity-Tuple{Term}" href="#AtomicLevels.multiplicity-Tuple{Term}"><code>AtomicLevels.multiplicity</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">multiplicity(t::Term)</code></pre><p>Returns the spin multiplicity of the <a href="#AtomicLevels.Term"><code>Term</code></a> <code>t</code>, i.e. the number of possible values of <span>$J$</span> for a given value of <span>$L$</span> and <span>$S$</span>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; multiplicity(T&quot;¹S&quot;)
+1
+
+julia&gt; multiplicity(T&quot;²S&quot;)
+2
+
+julia&gt; multiplicity(T&quot;³P&quot;)
+3</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/terms.jl#L122-L141">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.weight-Tuple{Term}" href="#AtomicLevels.weight-Tuple{Term}"><code>AtomicLevels.weight</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">weight(t::Term)</code></pre><p>Returns the statistical weight of the <a href="#AtomicLevels.Term"><code>Term</code></a> <code>t</code>, i.e. the number of possible microstates: <span>$(2S+1)(2L+1)$</span>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; weight(T&quot;¹S&quot;)
+1
+
+julia&gt; weight(T&quot;²S&quot;)
+2
+
+julia&gt; weight(T&quot;³P&quot;)
+9</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/terms.jl#L143-L161">source</a></section></article><h2 id="Term-multiplicity-and-intermediate-terms"><a class="docs-heading-anchor" href="#Term-multiplicity-and-intermediate-terms">Term multiplicity and intermediate terms</a><a id="Term-multiplicity-and-intermediate-terms-1"></a><a class="docs-heading-anchor-permalink" href="#Term-multiplicity-and-intermediate-terms" title="Permalink"></a></h2><p>For subshells starting with <code>d³</code>, a term symbol can occur multiple times, each occurrence corresponding to a different physical state (multiplicity higher than one). This happens when there are distinct ways of coupling the electrons, but they yield the same total angular momentum. E.g. a <code>d³</code> subshell can be coupled in 8 different ways, two of which are both described by the <code>²D</code> term symbol:</p><pre><code class="language-julia-repl">julia&gt; terms(o&quot;3d&quot;, 3)
+8-element Array{Term,1}:
+ ²P
+ ²D
+ ²D
+ ²F
+ ²G
+ ²H
+ ⁴P
+ ⁴F
+
+julia&gt; count_terms(o&quot;3d&quot;, 3, T&quot;2D&quot;)
+2</code></pre><p>The multiplicity can be even higher if more electrons and higher angular momenta are involved:</p><pre><code class="language-julia-repl">julia&gt; count_terms(o&quot;4f&quot;, 5, T&quot;2Do&quot;)
+5</code></pre><p>To distinguish these subshells, extra quantum numbers must be specified. In AtomicLevels, that can be done with the <a href="#AtomicLevels.IntermediateTerm"><code>IntermediateTerm</code></a> type. This is primarily used when specifying the subshell couplings in <a href="../csfs/#man-csfs">CSFs</a>.</p><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.IntermediateTerm" href="#AtomicLevels.IntermediateTerm"><code>AtomicLevels.IntermediateTerm</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">struct IntermediateTerm{T,S}</code></pre><p>Represents a term together with its extra disambiguating quantum number(s), labelled by <code>ν</code>.</p><p>The term symbol (<code>::T</code>) can either be a <a href="#AtomicLevels.Term"><code>Term</code></a> (for <span>$LS$</span>-coupling) or a <code>HalfInteger</code> (for <span>$jj$</span>-coupling).</p><p>The disambiguating quantum number(s) (<code>::S</code>) can be anything as long as they are sortable (i.e. implementing <code>isless</code>). It is up to the user to pick a scheme that is suitable for their application. See &quot;<a href="#Disambiguating-quantum-numbers">Disambiguating quantum numbers</a>&quot; in the manual for discussion on how it is used in AtomicLevels.</p><p>See also: <a href="#AtomicLevels.Term"><code>Term</code></a>, <a href="#AtomicLevels.Seniority"><code>Seniority</code></a></p><p><strong>Constructors</strong></p><pre><code class="language-none">IntermediateTerm(term, ν)</code></pre><p>Constructs an intermediate term with the term symbol <code>term</code> and disambiguating quantum number(s) <code>ν</code>.</p><p><strong>Properties</strong></p><p>To access the term symbol and the disambiguating quantum number(s), you can use the <code>.term :: T</code> and <code>.ν :: S</code> (or <code>.nu :: S</code>) properties, respectively. E.g.:</p><pre><code class="language-julia-repl">julia&gt; it = IntermediateTerm(T&quot;2D&quot;, 2)
+₍₂₎²D
+
+julia&gt; it.term, it.ν
+(²D, 2)
+
+julia&gt; it = IntermediateTerm(5//2, Seniority(2))
+₂5/2
+
+julia&gt; it.term, it.nu
+(5/2, ₂)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/intermediate_terms.jl#L63-L103">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.intermediate_terms" href="#AtomicLevels.intermediate_terms"><code>AtomicLevels.intermediate_terms</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">intermediate_terms(orb::Orbital, w::Int=one(Int))</code></pre><p>Generates all <a href="#AtomicLevels.IntermediateTerm"><code>IntermediateTerm</code></a> for a given non-relativstic orbital <code>orb</code> and occupation <code>w</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; intermediate_terms(o&quot;2p&quot;, 2)
+3-element Array{IntermediateTerm{Term,Seniority},1}:
+ ₀¹S
+ ₂¹D
+ ₂³P</code></pre><p>The preceding subscript is the seniority number, which indicates at which occupancy a certain term is first seen, cf.</p><pre><code class="language-julia-repl">julia&gt; intermediate_terms(o&quot;3d&quot;, 1)
+1-element Array{IntermediateTerm{Term,Seniority},1}:
+ ₁²D
+
+julia&gt; intermediate_terms(o&quot;3d&quot;, 3)
+8-element Array{IntermediateTerm{Term,Seniority},1}:
+ ₁²D
+ ₃²P
+ ₃²D
+ ₃²F
+ ₃²G
+ ₃²H
+ ₃⁴P
+ ₃⁴F</code></pre><p>In the second case, we see both <code>₁²D</code> and <code>₃²D</code>, since there are two ways of coupling 3 <code>d</code> electrons to a <code>²D</code> symmetry.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/intermediate_terms.jl#L132-L170">source</a></section><section><div><pre><code class="language-none">intermediate_terms(config)</code></pre><p>Generate the intermediate terms for each subshell of <code>config</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; intermediate_terms(c&quot;1s 2p3&quot;)
+2-element Array{Array{IntermediateTerm{Term,Seniority},1},1}:
+ [₁²S]
+ [₁²Pᵒ, ₃²Dᵒ, ₃⁴Sᵒ]
+
+julia&gt; intermediate_terms(rc&quot;3d2 5g3&quot;)
+2-element Array{Array{IntermediateTerm{HalfIntegers.Half{Int64},Seniority},1},1}:
+ [₀0, ₂2, ₂4]
+ [₁9/2, ₃3/2, ₃5/2, ₃7/2, ₃9/2, ₃11/2, ₃13/2, ₃15/2, ₃17/2, ₃21/2]</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/intermediate_terms.jl#L191-L209">source</a></section></article><h3 id="Disambiguating-quantum-numbers"><a class="docs-heading-anchor" href="#Disambiguating-quantum-numbers">Disambiguating quantum numbers</a><a id="Disambiguating-quantum-numbers-1"></a><a class="docs-heading-anchor-permalink" href="#Disambiguating-quantum-numbers" title="Permalink"></a></h3><p>The <a href="#AtomicLevels.IntermediateTerm"><code>IntermediateTerm</code></a> type does not specify how to interpret the disambiguating quantum number(s) <span>$ν$</span>, or even what the type of it should be. In AtomicLevels, we use two different types, depending on the situation:</p><ul><li><p><strong>A simple <code>Integer</code>.</strong> In this case, the quantum number <span>$\nu$</span> must be in the range <span>$1 \leq \nu \leq N_{\rm{terms}}$</span>, where <span>$N_{\rm{terms}}$</span> is the multiplicity of the term symbol (i.e. the number of times this term symbol appears for this subshell <span>$\ell^w$</span> or <span>$\ell_j^w$</span>).</p><p>AtomicLevels does not prescribe any further interpretation for the quantum number. It can be used as a simple counter to distinguish the different terms, or the user can define their own mapping from the set of integers to physical states.</p></li><li><p><strong><code>Seniority</code>.</strong> In this case the number is interpreted to be <em>Racah&#39;s seniority number</em>. This gives the intermediate term a specific physical interpretation, but only works for certain subshells. See the <a href="#AtomicLevels.Seniority"><code>Seniority</code></a> type for more information.</p></li></ul><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.Seniority" href="#AtomicLevels.Seniority"><code>AtomicLevels.Seniority</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Seniority(ν)</code></pre><p>Seniority is an extra quantum number introduced by Giulio Racah (1943) to disambiguate between terms belonging to a subshell with a specific occupancy, that are assigned the same term symbols. For partially filled f-shells (in <span>$LS$</span> coupling) or partially filled <span>$9/2$</span> shells (in <span>$jj$</span> coupling), seniority alone is not enough to disambiguate all the arising terms.</p><p>The seniority number is defined as the minimum occupancy number <code>ν ∈ n:-2:0</code> for which the term first appears, e.g. the ²D term first occurs in the d¹ configuration, then twice in the d³ configuration (which will then have the terms ₁²D and ₃²D).</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/intermediate_terms.jl#L3-L17">source</a></section></article><h2 id="Term-couplings"><a class="docs-heading-anchor" href="#Term-couplings">Term couplings</a><a id="Term-couplings-1"></a><a class="docs-heading-anchor-permalink" href="#Term-couplings" title="Permalink"></a></h2><p>The angular momentum coupling method is based on the <a href="https://en.wikipedia.org/wiki/Vector_model_of_the_atom">vector model</a>, where two angular momenta can be combined via vector addition to form a total angular momentum:</p><p class="math-container">\[\vec{J} = \vec{L} + \vec{S},\]</p><p>where the length of the resultant momentum <span>$\vec{J}$</span> obeys</p><p class="math-container">\[|L-S| \leq J \leq L+S.\]</p><p>Relations such as these are used to couple the term symbols in both <span>$LS$</span> and <span>$jj$</span> coupling; however, not all values of <span>$J$</span> predicted by the vector model are valid physical states, see <a href="#AtomicLevels.couple_terms"><code>couple_terms</code></a>.</p><p>To generate the possible <a href="#AtomicLevels.terms"><code>terms</code></a> of a configuration, all the possible terms of the individual subshells, have to be coupled together to form the final terms; this is done from left-to-right. When generating all possible <a href="../configurations/#Base.:-"><code>CSFs</code></a> from a configuration, it is also necessary to find the intermediate couplings of the individual subshells. As an example, if we want to find the possible terms of <code>3p² 4s 5p²</code>, we first find the possible terms of the individual subshells:</p><pre><code class="language-julia-repl">julia&gt; its = intermediate_terms(c&quot;3p2 4s 5p2&quot;)
+3-element Array{Array{IntermediateTerm{Term,Seniority},1},1}:
+ [₀¹S, ₂¹D, ₂³P]
+ [₁²S]
+ [₀¹S, ₂¹D, ₂³P]</code></pre><p>where the seniority numbers are indicated as preceding subscripts. We then need to couple each intermediate term of the first subshell with each of the second subshell, and couple each of the resulting terms with each of the third subshell, and so on. E.g. coupling the <code>₂³P</code> intermediate term with <code>₁²S</code> produces two terms:</p><pre><code class="language-julia-repl">julia&gt; couple_terms(T&quot;3P&quot;, T&quot;2S&quot;)
+2-element Array{Term,1}:
+ ²P
+ ⁴P</code></pre><p>each of which need to be coupled with e.g. <code>₂¹D</code>:</p><pre><code class="language-julia-repl">julia&gt; couple_terms(T&quot;2P&quot;, T&quot;1D&quot;)
+3-element Array{Term,1}:
+ ²P
+ ²D
+ ²F
+
+julia&gt; couple_terms(T&quot;4P&quot;, T&quot;1D&quot;)
+3-element Array{Term,1}:
+ ⁴P
+ ⁴D
+ ⁴F</code></pre><p><a href="#AtomicLevels.terms"><code>terms</code></a> uses <a href="#AtomicLevels.couple_terms"><code>couple_terms</code></a> (through <a href="#AtomicLevels.final_terms"><code>AtomicLevels.final_terms</code></a>) to produce all possible terms coupling trees, folding from left-to-right:</p><pre><code class="language-julia-repl">julia&gt; a = couple_terms([T&quot;1S&quot;, T&quot;1D&quot;, T&quot;3P&quot;], [T&quot;2S&quot;])
+4-element Array{Term,1}:
+ ²S
+ ²P
+ ²D
+ ⁴P
+
+julia&gt; couple_terms(a, [T&quot;1S&quot;, T&quot;1D&quot;, T&quot;3P&quot;])
+12-element Array{Term,1}:
+ ²S
+ ²P
+ ²D
+ ²F
+ ²G
+ ⁴S
+ ⁴P
+ ⁴D
+ ⁴F
+ ⁶S
+ ⁶P
+ ⁶D</code></pre><p>which gives the same result as</p><pre><code class="language-julia-repl">julia&gt; terms(c&quot;3p2 4s 5p2&quot;)
+12-element Array{Term,1}:
+ ²S
+ ²P
+ ²D
+ ²F
+ ²G
+ ⁴S
+ ⁴P
+ ⁴D
+ ⁴F
+ ⁶S
+ ⁶P
+ ⁶D</code></pre><p>Note that for the generation of final terms, the intermediate terms need not be kept (and their seniority is not important). However, for the generation of <a href="../csfs/#man-csfs"><code>CSFs</code></a>, we need to form all possible combinations of intermediate terms for each subshell, and couple them, again left-to-right, to form all possible coupling chains (each one corresponding to a unique physical state). E.g. for the last term of each subshell of <code>3p² 4s 5p²</code></p><pre><code class="language-julia-repl">julia&gt; last.(its)
+3-element Array{IntermediateTerm{Term,Seniority},1}:
+ ₂³P
+ ₁²S
+ ₂³P</code></pre><p>we find the following chains:</p><pre><code class="language-julia-repl">julia&gt; intermediate_couplings(last.(its))
+15-element Array{Array{Term,1},1}:
+ [¹S, ³P, ²P, ²S]
+ [¹S, ³P, ²P, ²P]
+ [¹S, ³P, ²P, ²D]
+ [¹S, ³P, ²P, ⁴S]
+ [¹S, ³P, ²P, ⁴P]
+ [¹S, ³P, ²P, ⁴D]
+ [¹S, ³P, ⁴P, ²S]
+ [¹S, ³P, ⁴P, ²P]
+ [¹S, ³P, ⁴P, ²D]
+ [¹S, ³P, ⁴P, ⁴S]
+ [¹S, ³P, ⁴P, ⁴P]
+ [¹S, ³P, ⁴P, ⁴D]
+ [¹S, ³P, ⁴P, ⁶S]
+ [¹S, ³P, ⁴P, ⁶P]
+ [¹S, ³P, ⁴P, ⁶D]</code></pre><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.couple_terms" href="#AtomicLevels.couple_terms"><code>AtomicLevels.couple_terms</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">couple_terms(t1, t2)</code></pre><p>Generate all possible coupling terms between <code>t1</code> and <code>t2</code>.  It is assumed that <code>t1</code> and <code>t2</code> originate from non-equivalent electrons (i.e. from <em>different</em> subshells), since the vector model does not predict correct term couplings for equivalent electrons; some of the generated terms would violate the Pauli principle; cf. Cowan p. 108–109.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; couple_terms(T&quot;1Po&quot;, T&quot;2Se&quot;)
+1-element Array{Term,1}:
+ ²Pᵒ
+
+julia&gt; couple_terms(T&quot;3Po&quot;, T&quot;2Se&quot;)
+2-element Array{Term,1}:
+ ²Pᵒ
+ ⁴Pᵒ
+
+julia&gt; couple_terms(T&quot;3Po&quot;, T&quot;2De&quot;)
+6-element Array{Term,1}:
+ ²Pᵒ
+ ²Dᵒ
+ ²Fᵒ
+ ⁴Pᵒ
+ ⁴Dᵒ
+ ⁴Fᵒ</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/couple_terms.jl#L1-L32">source</a></section><section><div><pre><code class="language-none">couple_terms(t1s, t2s)</code></pre><p>Generate all coupling between all terms in <code>t1s</code> and all terms in <code>t2s</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/couple_terms.jl#L43-L48">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.final_terms" href="#AtomicLevels.final_terms"><code>AtomicLevels.final_terms</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">final_terms(ts::Vector{&lt;:Vector{&lt;:Union{Term,Real}}})</code></pre><p>Generate all possible final terms from the vector of vectors of individual subshell terms by coupling from left to right.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; ts = [[T&quot;1S&quot;, T&quot;3S&quot;], [T&quot;2P&quot;, T&quot;2D&quot;]]
+2-element Array{Array{Term,1},1}:
+ [¹S, ³S]
+ [²P, ²D]
+
+julia&gt; AtomicLevels.final_terms(ts)
+4-element Array{Term,1}:
+ ²P
+ ²D
+ ⁴P
+ ⁴D</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/couple_terms.jl#L58-L79">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.intermediate_couplings" href="#AtomicLevels.intermediate_couplings"><code>AtomicLevels.intermediate_couplings</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">intermediate_couplings(its::Vector{IntermediateTerm,Integer,HalfInteger}, t₀ = T&quot;1S&quot;)</code></pre><p>Generate all intermediate coupling trees from the vector of intermediate terms <code>its</code>, starting from the initial term <code>t₀</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; intermediate_couplings([IntermediateTerm(T&quot;2S&quot;, 1), IntermediateTerm(T&quot;2D&quot;, 1)])
+2-element Array{Array{Term,1},1}:
+ [¹S, ²S, ¹D]
+ [¹S, ²S, ³D]</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/couple_terms.jl#L103-L117">source</a></section><section><div><pre><code class="language-none">intermediate_couplings(J::Vector{&lt;:Real}, j₀ = 0)</code></pre><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; intermediate_couplings([1//2, 3//2])
+2-element Array{Array{HalfIntegers.Half{Int64},1},1}:
+ [0, 1/2, 1]
+ [0, 1/2, 2]</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/couple_terms.jl#L121-L132">source</a></section></article><h2 id="Levels-and-States"><a class="docs-heading-anchor" href="#Levels-and-States">Levels &amp; States</a><a id="Levels-and-States-1"></a><a class="docs-heading-anchor-permalink" href="#Levels-and-States" title="Permalink"></a></h2><p>Coupling <span>$L$</span> and <span>$S$</span> to a total <span>$J$</span>, as discussed under <a href="#Term-couplings">Term couplings</a> above, yields a <a href="#AtomicLevels.Level"><code>Level</code></a>; in <span>$jj$</span> coupling, final term of the <a href="../csfs/#AtomicLevels.CSF"><code>CSF</code></a> already has its final <span>$J$</span> given.  In both coupling schemes, the same values of final <span>$J$</span> will result, but via different intermediate couplings. As an example, we will consider the configuration <span>$1s\;2p$</span>, which in the <span>$LS$</span> and <span>$jj$</span> coupling schemes has the following <a href="../csfs/#AtomicLevels.CSF"><code>CSF</code></a>s:</p><pre><code class="language-julia-repl">julia&gt; csls = csfs(c&quot;1s 2p&quot;)
+2-element Array{CSF{Orbital{Int64},Term,Seniority},1}:
+ 1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-
+ 1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-
+
+julia&gt; csjj = vcat(csfs(rc&quot;1s 2p&quot;), csfs(rc&quot;1s 2p-&quot;))
+4-element Array{CSF{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1}:
+ 1s(₁1/2|1/2) 2p(₁3/2|1)-
+ 1s(₁1/2|1/2) 2p(₁3/2|2)-
+ 1s(₁1/2|1/2) 2p-(₁1/2|0)-
+ 1s(₁1/2|1/2) 2p-(₁1/2|1)-</code></pre><p>If we now generate the permissible <a href="#AtomicLevels.Level"><code>Level</code></a>s, we find the valid values of <span>$J$</span>, i.e. <span>$0$</span>, <span>$2\times 1$</span>, and <span>$2$</span>:</p><pre><code class="language-julia-repl">julia&gt; levels.(csls)
+2-element Array{Array{Level{Orbital{Int64},Term,Seniority},1},1}:
+ [|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1⟩]
+ [|1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 0⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2⟩]
+
+julia&gt; levels.(csjj)
+4-element Array{Array{Level{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1},1}:
+ [|1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1⟩]
+ [|1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2⟩]
+ [|1s(₁1/2|1/2) 2p-(₁1/2|0)-, J = 0⟩]
+ [|1s(₁1/2|1/2) 2p-(₁1/2|1)-, J = 1⟩]</code></pre><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.Level" href="#AtomicLevels.Level"><code>AtomicLevels.Level</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Level(csf, J)</code></pre><p>Given a <a href="../csfs/#AtomicLevels.CSF"><code>CSF</code></a> with a final <a href="#AtomicLevels.Term"><code>Term</code></a>, a <code>Level</code> additionally specifies a total angular momentum <span>$J$</span>. By further specifying a projection quantum number <span>$M_J$</span>, we get a <a href="#AtomicLevels.State"><code>State</code></a>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/levels.jl#L3-L10">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.weight-Tuple{Level}" href="#AtomicLevels.weight-Tuple{Level}"><code>AtomicLevels.weight</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">weight(l::Level)</code></pre><p>Returns the statistical weight of the <a href="#AtomicLevels.Level"><code>Level</code></a> <code>l</code>, i.e. the number of possible microstates: <span>$2J+1$</span>.</p><p><strong>Example</strong></p><pre><code class="language-julia-repl">julia&gt; l = Level(first(csfs(c&quot;1s 2p&quot;)), 1)
+|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1⟩
+
+julia&gt; weight(l)
+3</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/levels.jl#L29-L44">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.J_range" href="#AtomicLevels.J_range"><code>AtomicLevels.J_range</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">J_range(term::Term)</code></pre><p>List the permissible values of the total angular momentum <span>$J$</span> for <code>term</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; J_range(T&quot;¹S&quot;)
+0:0
+
+julia&gt; J_range(T&quot;²S&quot;)
+1/2:1/2
+
+julia&gt; J_range(T&quot;³P&quot;)
+0:2
+
+julia&gt; J_range(T&quot;²D&quot;)
+3/2:5/2</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/levels.jl#L53-L74">source</a></section><section><div><pre><code class="language-none">J_range(J)</code></pre><p>The permissible range of the total angular momentum <span>$J$</span> in <span>$jj$</span> coupling is simply the value of <span>$J$</span> for the final term.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/levels.jl#L77-L82">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.levels" href="#AtomicLevels.levels"><code>AtomicLevels.levels</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">levels(csf)</code></pre><p>Generate all permissible <a href="#AtomicLevels.Level"><code>Level</code></a>s given <code>csf</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; levels.(csfs(c&quot;1s 2p&quot;))
+2-element Array{Array{Level{Orbital{Int64},Term,Seniority},1},1}:
+ [|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1⟩]
+ [|1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 0⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2⟩]
+
+julia&gt; levels.(csfs(rc&quot;1s 2p&quot;))
+2-element Array{Array{Level{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1},1}:
+ [|1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1⟩]
+ [|1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2⟩]
+
+julia&gt; levels.(csfs(rc&quot;1s 2p-&quot;))
+2-element Array{Array{Level{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1},1}:
+ [|1s(₁1/2|1/2) 2p-(₁1/2|0)-, J = 0⟩]
+ [|1s(₁1/2|1/2) 2p-(₁1/2|1)-, J = 1⟩]</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/levels.jl#L86-L109">source</a></section></article><p>Similarly, by additionally specifying the projection quantum number <span>$M_J$</span>, we get a fully quantified <a href="#AtomicLevels.State"><code>State</code></a>. In the same way, the permissible values of <span>$M_J$</span> must agree between the coupling schemes, sorting by <span>$M_J$</span> for clarity:</p><pre><code class="language-julia-repl">julia&gt; sort(reduce(vcat, reduce(vcat, states.(csls))), by=s-&gt;s.M_J)
+12-element Array{State{Orbital{Int64},Term,Seniority},1}:
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = -2⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = -1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1, M_J = -1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = -1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 0⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 0, M_J = 0⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1, M_J = 0⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = 0⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1, M_J = 1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = 1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = 2⟩
+
+julia&gt; sort(reduce(vcat, reduce(vcat, states.(csjj))), by=s-&gt;s.M_J)
+12-element Array{State{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1}:
+ |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = -2⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1, M_J = -1⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = -1⟩
+ |1s(₁1/2|1/2) 2p-(₁1/2|1)-, J = 1, M_J = -1⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1, M_J = 0⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = 0⟩
+ |1s(₁1/2|1/2) 2p-(₁1/2|0)-, J = 0, M_J = 0⟩
+ |1s(₁1/2|1/2) 2p-(₁1/2|1)-, J = 1, M_J = 0⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1, M_J = 1⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = 1⟩
+ |1s(₁1/2|1/2) 2p-(₁1/2|1)-, J = 1, M_J = 1⟩
+ |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = 2⟩</code></pre><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.State" href="#AtomicLevels.State"><code>AtomicLevels.State</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">State(level, M_J)</code></pre><p>A states defines, in addition to the total angular momentum <span>$J$</span> of <code>level</code>, its projection <span>$M_J\in -J..J$</span>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/levels.jl#L114-L119">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="AtomicLevels.states" href="#AtomicLevels.states"><code>AtomicLevels.states</code></a> — <span class="docstring-category">Function</span></header><section><div><p>states(level)</p><p>Generate all permissible <a href="#AtomicLevels.State"><code>State</code></a> given <code>level</code>.</p><p><strong>Example</strong></p><pre><code class="language-julia-repl">julia&gt; l = Level(first(csfs(c&quot;1s 2p&quot;)), 1)
+|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1⟩
+
+julia&gt; states(l)
+3-element Array{State{Orbital{Int64},Term,Seniority},1}:
+ |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = -1⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 0⟩
+ |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 1⟩</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/levels.jl#L140-L157">source</a></section><section><div><pre><code class="language-none">states(csf)</code></pre><p>Directly generate all permissible <a href="#AtomicLevels.State"><code>State</code></a>s for <code>csf</code>.</p><p><strong>Example</strong></p><pre><code class="language-julia-repl">julia&gt; c = first(csfs(c&quot;1s 2p&quot;))
+1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-
+
+julia&gt; states(c)
+1-element Array{Array{State{Orbital{Int64},Term,Seniority},1},1}:
+ [|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = -1⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 0⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 1⟩]</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaAtoms/AtomicLevels.jl/blob/e28768d57dda7b4c68856537710c4321658e279f/src/levels.jl#L163-L178">source</a></section></article><h2 id="Index"><a class="docs-heading-anchor" href="#Index">Index</a><a id="Index-1"></a><a class="docs-heading-anchor-permalink" href="#Index" title="Permalink"></a></h2><ul><li><a href="#AtomicLevels.IntermediateTerm"><code>AtomicLevels.IntermediateTerm</code></a></li><li><a href="#AtomicLevels.Level"><code>AtomicLevels.Level</code></a></li><li><a href="#AtomicLevels.Seniority"><code>AtomicLevels.Seniority</code></a></li><li><a href="#AtomicLevels.State"><code>AtomicLevels.State</code></a></li><li><a href="#AtomicLevels.Term"><code>AtomicLevels.Term</code></a></li><li><a href="#AtomicLevels.J_range"><code>AtomicLevels.J_range</code></a></li><li><a href="#AtomicLevels.count_terms"><code>AtomicLevels.count_terms</code></a></li><li><a href="#AtomicLevels.couple_terms"><code>AtomicLevels.couple_terms</code></a></li><li><a href="#AtomicLevels.final_terms"><code>AtomicLevels.final_terms</code></a></li><li><a href="#AtomicLevels.intermediate_couplings"><code>AtomicLevels.intermediate_couplings</code></a></li><li><a href="#AtomicLevels.intermediate_terms"><code>AtomicLevels.intermediate_terms</code></a></li><li><a href="#AtomicLevels.levels"><code>AtomicLevels.levels</code></a></li><li><a href="#AtomicLevels.multiplicity-Tuple{Term}"><code>AtomicLevels.multiplicity</code></a></li><li><a href="#AtomicLevels.states"><code>AtomicLevels.states</code></a></li><li><a href="#AtomicLevels.terms"><code>AtomicLevels.terms</code></a></li><li><a href="#AtomicLevels.weight-Tuple{Term}"><code>AtomicLevels.weight</code></a></li><li><a href="#AtomicLevels.weight-Tuple{Level}"><code>AtomicLevels.weight</code></a></li><li><a href="#Base.parse-Tuple{Type{Term},AbstractString}"><code>Base.parse</code></a></li><li><a href="#AtomicLevels.@T_str"><code>AtomicLevels.@T_str</code></a></li></ul></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../configurations/">« Configurations</a><a class="docs-footer-nextpage" href="../csfs/">CSFs »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 5 April 2021 13:44">Monday 5 April 2021</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
