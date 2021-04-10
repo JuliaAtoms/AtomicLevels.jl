@@ -1065,7 +1065,7 @@ Base.promote_type(::Type{Cfg}, ::Type{Union{}}) where {SO<:SpinOrbital,Cfg<:Conf
 For each configuration in `configurations`, generate all possible configurations of
 spin-orbitals.
 """
-function spin_configurations(cs::Vector{Configuration{O}}) where O
+function spin_configurations(cs::Vector{<:Configuration})
     scs = map(spin_configurations, cs)
     sort(reduce(vcat, scs))
 end

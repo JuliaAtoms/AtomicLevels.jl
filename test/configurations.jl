@@ -453,6 +453,9 @@
         @test substitutions(spin_configurations(c"1s2")[1],
                             spin_configurations(c"1s ks")[2]) ==
                                 [SpinOrbital(o"1s",0,up)=>SpinOrbital(o"ks",0,up)]
+
+        @test spin_configurations([c"1s2", c"2p6"]) == [sc"1s₀α 1s₀β", sc"2p₋₁α 2p₋₁β 2p₀α 2p₀β 2p₁α 2p₁β"]
+        @test spin_configurations([rc"1s2", rc"2p6"]) == [rsc"1s(-1/2) 1s(1/2)", rsc"2p(-3/2) 2p(-1/2) 2p(1/2) 2p(3/2) 2p-(-1/2) 2p-(1/2)"]
     end
 
     @testset "Configuration transformations" begin
