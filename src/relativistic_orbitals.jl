@@ -274,7 +274,7 @@ A function to convert the canonical string representation of a ``\\ell_j`` angul
 
 ```jldoctest
 julia> str2κ.(["s", "p-", "p"])
-3-element Vector{Int64}:
+3-element Array{Int64,1}:
  -1
   1
  -2
