@@ -266,7 +266,21 @@ macro ros_str(orbs_str)
     orbitals_from_string(RelativisticOrbital, orbs_str)
 end
 
-function kappa_from_string(κ_str)
+"""
+    str2κ(s) -> Int
+
+A function to convert the canonical string representation of a ``\\ell_j`` angular label
+(i.e. `ℓ-` or `ℓ`) into the corresponding ``\\kappa`` quantum number.
+
+```jldoctest
+julia> str2κ.(["s", "p-", "p"])
+3-element Vector{Int64}:
+ -1
+  1
+ -2
+```
+"""
+function str2κ(κ_str)
     m = match(r"^([a-z]|\[[0-9]+\])([-]{0,1})$", κ_str)
     m === nothing && throw(ArgumentError("Invalid κ string: $(κ_str)"))
     ℓ = parse_orbital_ℓ(m, 1)
@@ -286,7 +300,7 @@ julia> κ"s", κ"p-", κ"p"
 ```
 """
 macro κ_str(κ_str)
-    kappa_from_string(κ_str)
+    str2κ(κ_str)
 end
 
 """
@@ -307,4 +321,4 @@ julia> nonrelorbital(ro"2p-")
 nonrelorbital(o::Orbital) = o
 nonrelorbital(o::RelativisticOrbital) = Orbital(o.n, o.ℓ)
 
-export RelativisticOrbital, @ro_str, @ros_str, @κ_str, nonrelorbital, κ2ℓ, κ2j, ℓj2κ
+export RelativisticOrbital, @ro_str, @ros_str, @κ_str, nonrelorbital, str2κ, κ2ℓ, κ2j, ℓj2κ

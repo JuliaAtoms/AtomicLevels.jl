@@ -43,9 +43,11 @@ parity
 jj2ℓsj
 ```
 
-## Conversion of angular momentum quantum numbers
+## Angular momentum quantum numbers
 
 ```@docs
+str2κ
+@κ_str
 κ2ℓ
 κ2j
 ℓj2κ
