@@ -61,7 +61,6 @@ isbound
 angular_momenta
 angular_momentum_ranges
 spin_orbitals
-@κ_str
 nonrelorbital
 ```
 
