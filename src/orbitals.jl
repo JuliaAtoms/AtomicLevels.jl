@@ -2,8 +2,13 @@
     abstract type AbstractOrbital
 
 Abstract supertype of all orbital types.
+
+!!! note "Broadcasting"
+
+    When broadcasting, orbital objects behave like scalars.
 """
 abstract type AbstractOrbital end
+Base.Broadcast.broadcastable(x::AbstractOrbital) = Ref(x)
 
 """
     const MQ = Union{Int,Symbol}
