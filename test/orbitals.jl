@@ -417,4 +417,11 @@ using Random
             @test ne == e
         end
     end
+
+    @testset "Broadcasting" begin
+        @test ([o"1s", o"2p"] .== o"1s") == [true, false]
+        @test ([ro"1s", ro"2p-"] .== ro"1s") == [true, false]
+        @test ([so"1s(0,α)", so"2p(0,α)"] .== so"1s(0,α)") == [true, false]
+        @test ([rso"1s(1/2)", rso"2p-(1/2)"] .== rso"1s(1/2)") == [true, false]
+    end
 end
