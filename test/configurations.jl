@@ -340,6 +340,16 @@
              Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"2p",1,down)], [1, 1]),
              Configuration([SpinOrbital(o"1s",0,down), SpinOrbital(o"2p",1,down)], [1, 1])]
 
+        @test rscs"1s 2p" == spin_configurations(rc"1s 2p") ==
+            [Configuration([rso"1s(-1/2)", rso"2p(-3/2)"], [1, 1])
+             Configuration([rso"1s(1/2)", rso"2p(-3/2)"], [1, 1])
+             Configuration([rso"1s(-1/2)", rso"2p(-1/2)"], [1, 1])
+             Configuration([rso"1s(1/2)", rso"2p(-1/2)"], [1, 1])
+             Configuration([rso"1s(-1/2)", rso"2p(1/2)"], [1, 1])
+             Configuration([rso"1s(1/2)", rso"2p(1/2)"], [1, 1])
+             Configuration([rso"1s(-1/2)", rso"2p(3/2)"], [1, 1])
+             Configuration([rso"1s(1/2)", rso"2p(3/2)"], [1, 1])]
+
         @testset "Excited spin configurations" begin
             function excited_spin_configurations(cfg, orbitals)
                 ec = excited_configurations(cfg, orbitals...,

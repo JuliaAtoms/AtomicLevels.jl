@@ -433,7 +433,7 @@ macro rc_str(conf_str, suffix="")
 end
 
 """
-    @scs_str -> Vector{<:SpinConfiguration}
+    @scs_str -> Vector{<:SpinConfiguration{<:Orbital}}
 
 Generate all possible spin-configurations out of a string. With the
 added string macro suffix `s`, the configuration is sorted.
@@ -462,6 +462,30 @@ julia> scs"1s2 2p2"
 """
 macro scs_str(conf_str, suffix="")
     spin_configurations(parse_conf_str(Orbital, conf_str, suffix))
+end
+
+"""
+    @rscs_str -> Vector{<:SpinConfiguration{<:RelativisticOrbital}}
+
+Generate all possible relativistic spin-configurations out of a
+string. With the added string macro suffix `s`, the configuration is
+sorted.
+
+# Examples
+
+```jldoctest
+julia> rscs"1s2 2p2"
+6-element Array{Configuration{SpinOrbital{RelativisticOrbital{Int64},Tuple{HalfIntegers.Half{Int64}}}},1}:
+ 1s(-1/2) 1s(1/2) 2p(-3/2) 2p(-1/2)
+ 1s(-1/2) 1s(1/2) 2p(-3/2) 2p(1/2)
+ 1s(-1/2) 1s(1/2) 2p(-3/2) 2p(3/2)
+ 1s(-1/2) 1s(1/2) 2p(-1/2) 2p(1/2)
+ 1s(-1/2) 1s(1/2) 2p(-1/2) 2p(3/2)
+ 1s(-1/2) 1s(1/2) 2p(1/2) 2p(3/2)
+```
+"""
+macro rscs_str(conf_str, suffix="")
+    spin_configurations(parse_conf_str(RelativisticOrbital, conf_str, suffix))
 end
 
 Base.getindex(conf::Configuration{O}, i::Integer) where O =
@@ -1276,7 +1300,7 @@ Calculates the number of Slater determinants corresponding to the configuration.
 """
 multiplicity(c::Configuration) = prod(binomial.(degeneracy.(c.orbitals), c.occupancy))
 
-export Configuration, @c_str, @rc_str, @sc_str, @rsc_str, @scs_str, issimilar,
+export Configuration, @c_str, @rc_str, @sc_str, @rsc_str, @scs_str, @rscs_str, issimilar,
     num_electrons, core, peel, active, inactive, bound, continuum, parity, ⊗, @rcs_str,
     SpinConfiguration, spin_configurations, substitutions, close!,
     nonrelconfiguration, relconfigurations
