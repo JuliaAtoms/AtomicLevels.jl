@@ -128,6 +128,7 @@ substitutions
 @sc_str
 @rsc_str
 @scs_str
+@rscs_str
 ```
 
 ## Excited configurations
