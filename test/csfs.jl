@@ -36,7 +36,7 @@ using .ATSPParser
         # Test for a potential stackoverflow in CSF constructors (see #100).
         @test CSF(
             rc"1s 2s 2p2",
-            [IntermediateTerm(HalfUInt(j), Seniority(0)) for j in [1//2, 1//2, 0]],
+            [IntermediateTerm(HalfUInt(j), Seniority(2j)) for j in [1//2, 1//2, 0]],
             HalfUInt[1//2, 0, 0]
         ) isa CSF
     end
