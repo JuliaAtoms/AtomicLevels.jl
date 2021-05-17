@@ -33,7 +33,7 @@ using .ATSPParser
 
         @test CSF(c"1s2 2p", [IntermediateTerm(T"1S",Seniority(0)), IntermediateTerm(T"2Po", Seniority(1))], [T"1S", T"2Po"]) isa NonRelativisticCSF
 
-        # Test for a potential stackoverflow in CSF constructors
+        # Test for a potential stackoverflow in CSF constructors (see #100).
         @test CSF(
             rc"1s 2s 2p2",
             [IntermediateTerm(HalfUInt(j), Seniority(0)) for j in [1//2, 1//2, 0]],
