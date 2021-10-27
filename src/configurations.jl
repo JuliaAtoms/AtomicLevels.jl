@@ -1102,6 +1102,8 @@ consisting of [`SpinOrbital`](@ref)s.
 """
 const SpinConfiguration{O<:SpinOrbital} = Configuration{O}
 
+spin_configurations(c::SpinConfiguration) = [c]
+
 function Base.parse(::Type{SpinConfiguration{SO}}, conf_str; sorted=false) where {O<:AbstractOrbital,SO<:SpinOrbital{O}}
     isempty(conf_str) && return SpinConfiguration{SO}(sorted=sorted)
     orbs = split(conf_str, r"[ ]")
