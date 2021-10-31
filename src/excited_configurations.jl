@@ -184,21 +184,21 @@ substitution will be rejected.
 
 # Examples
 
-```jldoctest
+```jldoctest; filter = r"#s[0-9]+"
 julia> excited_configurations(c"1s2", o"2s", o"2p")
-4-element Array{Configuration{Orbital{Int64}},1}:
+4-element Vector{Configuration{Orbital{Int64}}}:
  1s²
  1s 2s
  2s²
  2p²
 
 julia> excited_configurations(c"1s2 2p", o"2p")
-2-element Array{Configuration{Orbital{Int64}},1}:
+2-element Vector{Configuration{Orbital{Int64}}}:
  1s² 2p
  2p³
 
 julia> excited_configurations(c"1s2 2p", o"2p", max_occupancy=[2,2])
-1-element Array{Configuration{Orbital{Int64}},1}:
+1-element Vector{Configuration{Orbital{Int64}}}:
  1s² 2p
 
 julia> excited_configurations(first(scs"1s2"), sos"k[s]"...) do dst,src
@@ -210,7 +210,7 @@ julia> excited_configurations(first(scs"1s2"), sos"k[s]"...) do dst,src
                dst
            end
        end
-9-element Array{Configuration{SpinOrbital{#s16,Tuple{Int64,HalfIntegers.Half{Int64}}} where #s16<:Orbital},1}:
+9-element Vector{SpinConfiguration{SpinOrbital{var"#s00", Tuple{Int64, HalfIntegers.Half{Int64}}} where var"#s00"<:Orbital}}:
  1s₀α 1s₀β
  [1s₀α]s₀α 1s₀β
  [1s₀α]s₀β 1s₀β
@@ -223,7 +223,7 @@ julia> excited_configurations(first(scs"1s2"), sos"k[s]"...) do dst,src
 
 julia> excited_configurations((a,b) -> a.m == b.m ? a : nothing,
                               spin_configurations(c"1s"), sos"k[s-d]"..., keep_parity=false)
-8-element Array{Configuration{SpinOrbital{#s16,Tuple{Int64,HalfIntegers.Half{Int64}}} where #s16<:Orbital},1}:
+8-element Vector{SpinConfiguration{SpinOrbital{var"#s00", Tuple{Int64, HalfIntegers.Half{Int64}}} where var"#s00"<:Orbital}}:
  1s₀α
  ks₀α
  kp₀α
