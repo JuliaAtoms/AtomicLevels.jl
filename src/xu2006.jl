@@ -106,16 +106,10 @@ only possible term trivially is `¹S`.
 
 ```jldoctest
 julia> AtomicLevels.Xu.X(1, 0, 1, 0) # Multiplicity of ²S term for s¹
-ERROR: UndefVarError: AtomicLevels not defined
-Stacktrace:
- [1] top-level scope
-   @ none:1
+1
 
 julia> AtomicLevels.Xu.X(3, 3, 1, 3) # Multiplicity of ²D term for d³
-ERROR: UndefVarError: AtomicLevels not defined
-Stacktrace:
- [1] top-level scope
-   @ none:1
+2
 ```
 
 """

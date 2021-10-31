@@ -89,26 +89,16 @@ To access the term symbol and the disambiguating quantum number(s), you can use 
 
 ```jldoctest
 julia> it = IntermediateTerm(T"2D", 2)
-ERROR: LoadError: UndefVarError: @T_str not defined
-in expression starting at none:1
+₍₂₎²D
 
 julia> it.term, it.ν
-ERROR: UndefVarError: it not defined
-Stacktrace:
- [1] top-level scope
-   @ none:1
+(²D, 2)
 
 julia> it = IntermediateTerm(5//2, Seniority(2))
-ERROR: UndefVarError: Seniority not defined
-Stacktrace:
- [1] top-level scope
-   @ none:1
+₂5/2
 
 julia> it.term, it.nu
-ERROR: UndefVarError: it not defined
-Stacktrace:
- [1] top-level scope
-   @ none:1
+(5/2, ₂)
 ```
 """
 struct IntermediateTerm{T,S}
@@ -149,8 +139,10 @@ orbital `orb` and occupation `w`.
 
 ```jldoctest
 julia> intermediate_terms(o"2p", 2)
-ERROR: LoadError: UndefVarError: @o_str not defined
-in expression starting at none:1
+3-element Vector{IntermediateTerm{Term, Seniority}}:
+ ₀¹S
+ ₂¹D
+ ₂³P
 ```
 
 The preceding subscript is the seniority number, which indicates at
@@ -158,12 +150,19 @@ which occupancy a certain term is first seen, cf.
 
 ```jldoctest
 julia> intermediate_terms(o"3d", 1)
-ERROR: LoadError: UndefVarError: @o_str not defined
-in expression starting at none:1
+1-element Vector{IntermediateTerm{Term, Seniority}}:
+ ₁²D
 
 julia> intermediate_terms(o"3d", 3)
-ERROR: LoadError: UndefVarError: @o_str not defined
-in expression starting at none:1
+8-element Vector{IntermediateTerm{Term, Seniority}}:
+ ₁²D
+ ₃²P
+ ₃²D
+ ₃²F
+ ₃²G
+ ₃²H
+ ₃⁴P
+ ₃⁴F
 ```
 
 In the second case, we see both `₁²D` and `₃²D`, since there are two
@@ -198,12 +197,14 @@ Generate the intermediate terms for each subshell of `config`.
 
 ```jldoctest
 julia> intermediate_terms(c"1s 2p3")
-ERROR: LoadError: UndefVarError: @c_str not defined
-in expression starting at none:1
+2-element Vector{Vector{IntermediateTerm{Term, Seniority}}}:
+ [₁²S]
+ [₁²Pᵒ, ₃²Dᵒ, ₃⁴Sᵒ]
 
 julia> intermediate_terms(rc"3d2 5g3")
-ERROR: LoadError: UndefVarError: @rc_str not defined
-in expression starting at none:1
+2-element Vector{Vector{IntermediateTerm{HalfIntegers.Half{Int64}, Seniority}}}:
+ [₀0, ₂2, ₂4]
+ [₁9/2, ₃3/2, ₃5/2, ₃7/2, ₃9/2, ₃11/2, ₃13/2, ₃15/2, ₃17/2, ₃21/2]
 ```
 """
 function intermediate_terms(config::Configuration)

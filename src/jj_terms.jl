@@ -11,16 +11,25 @@ numbers), the corresponding ``J`` value is repeated in the output array.
 
 ```jldoctest
 julia> terms(ro"3d", 3)
-ERROR: LoadError: UndefVarError: @ro_str not defined
-in expression starting at none:1
+3-element Vector{HalfIntegers.Half{Int64}}:
+ 3/2
+ 5/2
+ 9/2
 
 julia> terms(ro"3d-", 3)
-ERROR: LoadError: UndefVarError: @ro_str not defined
-in expression starting at none:1
+1-element Vector{HalfIntegers.Half{Int64}}:
+ 3/2
 
 julia> terms(ro"4f", 4)
-ERROR: LoadError: UndefVarError: @ro_str not defined
-in expression starting at none:1
+8-element Vector{HalfIntegers.Half{Int64}}:
+ 0
+ 2
+ 2
+ 4
+ 4
+ 5
+ 6
+ 8
 ```
 """
 function terms(orb::RelativisticOrbital, w::Int=one(Int))

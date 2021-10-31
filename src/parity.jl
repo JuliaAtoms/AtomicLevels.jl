@@ -8,16 +8,10 @@ The integer values that correspond to `even` and `odd` parity are `+1` and `-1`,
 
 ```jldoctest
 julia> convert(Parity, 1)
-ERROR: UndefVarError: Parity not defined
-Stacktrace:
- [1] top-level scope
-   @ none:1
+even
 
 julia> convert(Parity, -1)
-ERROR: UndefVarError: Parity not defined
-Stacktrace:
- [1] top-level scope
-   @ none:1
+odd
 ```
 """
 struct Parity
@@ -31,12 +25,10 @@ A string macro to easily construct [`Parity`](@ref) values.
 
 ```jldoctest
 julia> p"even"
-ERROR: LoadError: UndefVarError: @p_str not defined
-in expression starting at none:1
+even
 
 julia> p"odd"
-ERROR: LoadError: UndefVarError: @p_str not defined
-in expression starting at none:1
+odd
 ```
 """
 macro p_str(ps)

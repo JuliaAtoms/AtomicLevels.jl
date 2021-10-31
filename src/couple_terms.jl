@@ -12,16 +12,22 @@ p. 108–109.
 
 ```jldoctest
 julia> couple_terms(T"1Po", T"2Se")
-ERROR: LoadError: UndefVarError: @T_str not defined
-in expression starting at none:1
+1-element Vector{Term}:
+ ²Pᵒ
 
 julia> couple_terms(T"3Po", T"2Se")
-ERROR: LoadError: UndefVarError: @T_str not defined
-in expression starting at none:1
+2-element Vector{Term}:
+ ²Pᵒ
+ ⁴Pᵒ
 
 julia> couple_terms(T"3Po", T"2De")
-ERROR: LoadError: UndefVarError: @T_str not defined
-in expression starting at none:1
+6-element Vector{Term}:
+ ²Pᵒ
+ ²Dᵒ
+ ²Fᵒ
+ ⁴Pᵒ
+ ⁴Dᵒ
+ ⁴Fᵒ
 ```
 """
 function couple_terms(t1::Term, t2::Term)
@@ -59,14 +65,16 @@ individual subshell terms by coupling from left to right.
 
 ```jldoctest
 julia> ts = [[T"1S", T"3S"], [T"2P", T"2D"]]
-ERROR: LoadError: UndefVarError: @T_str not defined
-in expression starting at none:1
+2-element Vector{Vector{Term}}:
+ [¹S, ³S]
+ [²P, ²D]
 
 julia> AtomicLevels.final_terms(ts)
-ERROR: UndefVarError: AtomicLevels not defined
-Stacktrace:
- [1] top-level scope
-   @ none:1
+4-element Vector{Term}:
+ ²P
+ ²D
+ ⁴P
+ ⁴D
 ```
 """
 final_terms(ts::Vector{<:Vector{<:T}}) where {T<:Union{Term,Real}} =
@@ -102,8 +110,9 @@ intermediate terms `its`, starting from the initial term `t₀`.
 
 ```jldoctest
 julia> intermediate_couplings([IntermediateTerm(T"2S", 1), IntermediateTerm(T"2D", 1)])
-ERROR: LoadError: UndefVarError: @T_str not defined
-in expression starting at none:1
+2-element Vector{Vector{Term}}:
+ [¹S, ²S, ¹D]
+ [¹S, ²S, ³D]
 ```
 """
 intermediate_couplings(its::Vector{<:IntermediateTerm{T}}, t₀::T=zero(T)) where T =
@@ -116,10 +125,9 @@ intermediate_couplings(its::Vector{<:IntermediateTerm{T}}, t₀::T=zero(T)) wher
 
 ```jldoctest
 julia> intermediate_couplings([1//2, 3//2])
-ERROR: UndefVarError: intermediate_couplings not defined
-Stacktrace:
- [1] top-level scope
-   @ none:1
+2-element Vector{Vector{HalfIntegers.Half{Int64}}}:
+ [0, 1/2, 1]
+ [0, 1/2, 2]
 ```
 """
 intermediate_couplings(J::Vector{IT}, j₀::T=zero(IT)) where {IT <: Real, T <: Real} =

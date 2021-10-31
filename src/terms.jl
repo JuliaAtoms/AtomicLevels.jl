@@ -31,14 +31,10 @@ E.g.:
 
 ```jldoctest
 julia> t = Term(2, 1//2, p"odd")
-ERROR: LoadError: UndefVarError: @p_str not defined
-in expression starting at none:1
+²Dᵒ
 
 julia> t.L, t.S, t.parity
-ERROR: UndefVarError: t not defined
-Stacktrace:
- [1] top-level scope
-   @ none:1
+(2, 1/2, odd)
 ```
 """
 struct Term
@@ -61,16 +57,10 @@ Parses a string into a [`Term`](@ref) object.
 
 ```jldoctest
 julia> parse(Term, "4Po")
-ERROR: UndefVarError: Term not defined
-Stacktrace:
- [1] top-level scope
-   @ none:1
+⁴Pᵒ
 
 julia> parse(Term, "⁴Pᵒ")
-ERROR: UndefVarError: Term not defined
-Stacktrace:
- [1] top-level scope
-   @ none:1
+⁴Pᵒ
 ```
 
 See also: [`@T_str`](@ref)
@@ -111,20 +101,16 @@ Constructs a [`Term`](@ref) object out of its canonical string representation.
 
 ```jldoctest
 julia> T"1S"
-ERROR: LoadError: UndefVarError: @T_str not defined
-in expression starting at none:1
+¹S
 
 julia> T"4Po"
-ERROR: LoadError: UndefVarError: @T_str not defined
-in expression starting at none:1
+⁴Pᵒ
 
 julia> T"⁴Pᵒ"
-ERROR: LoadError: UndefVarError: @T_str not defined
-in expression starting at none:1
+⁴Pᵒ
 
 julia> T"2[3/2]o" # jK coupling, common in noble gases
-ERROR: LoadError: UndefVarError: @T_str not defined
-in expression starting at none:1
+²[3/2]ᵒ
 ```
 """
 macro T_str(s::AbstractString)
@@ -144,16 +130,13 @@ number of possible values of ``J`` for a given value of ``L`` and
 
 ```jldoctest
 julia> multiplicity(T"¹S")
-ERROR: LoadError: UndefVarError: @T_str not defined
-in expression starting at none:1
+1
 
 julia> multiplicity(T"²S")
-ERROR: LoadError: UndefVarError: @T_str not defined
-in expression starting at none:1
+2
 
 julia> multiplicity(T"³P")
-ERROR: LoadError: UndefVarError: @T_str not defined
-in expression starting at none:1
+3
 ```
 """
 multiplicity(t::Term) = convert(Int, 2t.S + 1)
@@ -167,16 +150,13 @@ number of possible microstates: ``(2S+1)(2L+1)``.
 
 ```jldoctest
 julia> weight(T"¹S")
-ERROR: LoadError: UndefVarError: @T_str not defined
-in expression starting at none:1
+1
 
 julia> weight(T"²S")
-ERROR: LoadError: UndefVarError: @T_str not defined
-in expression starting at none:1
+2
 
 julia> weight(T"³P")
-ERROR: LoadError: UndefVarError: @T_str not defined
-in expression starting at none:1
+9
 ```
 """
 weight(t::Term) = (2t.L + 1) * multiplicity(t)
@@ -204,8 +184,24 @@ multiplicity is computed using [`AtomicLevels.Xu.X`](@ref).
 
 ```jldoctest
 julia> AtomicLevels.xu_terms(3, 3, parity(c"3d3"))
-ERROR: LoadError: UndefVarError: @c_str not defined
-in expression starting at none:1
+17-element Vector{Term}:
+ ²P
+ ²D
+ ²D
+ ²F
+ ²F
+ ²G
+ ²G
+ ²H
+ ²H
+ ²I
+ ²K
+ ²L
+ ⁴S
+ ⁴D
+ ⁴F
+ ⁴G
+ ⁴I
 ```
 """
 function xu_terms(ℓ::Int, w::Int, p::Parity)
@@ -226,8 +222,15 @@ occupancy.
 
 ```jldoctest
 julia> terms(o"3d", 3)
-ERROR: LoadError: UndefVarError: @o_str not defined
-in expression starting at none:1
+8-element Vector{Term}:
+ ²P
+ ²D
+ ²D
+ ²F
+ ²G
+ ²H
+ ⁴P
+ ⁴F
 ```
 """
 function terms(orb::Orbital, w::Int=one(Int))
@@ -257,16 +260,23 @@ Generate all final ``LS`` terms for `config`.
 
 ```jldoctest
 julia> terms(c"1s")
-ERROR: LoadError: UndefVarError: @c_str not defined
-in expression starting at none:1
+1-element Vector{Term}:
+ ²S
 
 julia> terms(c"1s 2p")
-ERROR: LoadError: UndefVarError: @c_str not defined
-in expression starting at none:1
+2-element Vector{Term}:
+ ¹Pᵒ
+ ³Pᵒ
 
 julia> terms(c"[Ne] 3d3")
-ERROR: LoadError: UndefVarError: @c_str not defined
-in expression starting at none:1
+7-element Vector{Term}:
+ ²P
+ ²D
+ ²F
+ ²G
+ ²H
+ ⁴P
+ ⁴F
 ```
 """
 function terms(config::Configuration{O}) where {O<:AbstractOrbital}
@@ -284,12 +294,10 @@ Count how many times `term` occurs among the valid terms of `orbital^occupation`
 
 ```jldoctest
 julia> count_terms(o"1s", 2, T"1S")
-ERROR: LoadError: UndefVarError: @o_str not defined
-in expression starting at none:1
+1
 
 julia> count_terms(ro"6h", 4, 8)
-ERROR: LoadError: UndefVarError: @ro_str not defined
-in expression starting at none:1
+4
 ```
 """
 function count_terms end
