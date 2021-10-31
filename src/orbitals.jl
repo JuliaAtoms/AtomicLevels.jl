@@ -60,10 +60,16 @@ must satisfy `0 <= ℓ < n`.
 
 ```jldoctest
 julia> Orbital(1, 0)
-1s
+ERROR: UndefVarError: Orbital not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 
 julia> Orbital(:K, 2)
-Kd
+ERROR: UndefVarError: Orbital not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 ```
 """
 struct Orbital{N<:MQ} <: AbstractOrbital
@@ -105,10 +111,12 @@ Returns the degeneracy of `orbital` which is `2(2ℓ+1)`
 
 ```jldoctest
 julia> degeneracy(o"1s")
-2
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 
 julia> degeneracy(o"2p")
-6
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 ```
 """
 degeneracy(orb::Orbital) = 2*(2orb.ℓ + 1)
@@ -123,13 +131,16 @@ other in a configuration.
 
 ```jldoctest
 julia> o"1s" < o"2s"
-true
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 
 julia> o"1s" < o"2p"
-true
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 
 julia> o"ks" < o"2p"
-false
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 ```
 """
 function Base.isless(a::Orbital, b::Orbital)
@@ -147,10 +158,12 @@ Returns the parity of `orbital`, defined as `(-1)^ℓ`.
 
 ```jldoctest
 julia> parity(o"1s")
-even
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 
 julia> parity(o"2p")
-odd
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 ```
 
 """
@@ -171,10 +184,12 @@ otherwise.
 
 ```jldoctest
 julia> isbound(o"1s")
-true
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 
 julia> isbound(o"ks")
-false
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 ```
 """
 function isbound end
@@ -189,10 +204,12 @@ Returns the angular momentum quantum numbers of `orbital`.
 # Examples
 ```jldoctest
 julia> angular_momenta(o"2s")
-(0, 1/2)
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 
 julia> angular_momenta(o"3d")
-(2, 1/2)
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 ```
 """
 angular_momenta(orbital::Orbital) = (orbital.ℓ,half(1))
@@ -207,10 +224,12 @@ angular momentum quantum numbers of `orbital` must fall.
 # Examples
 ```jldoctest
 julia> angular_momentum_ranges(o"2s")
-(0:0, -1/2:1/2)
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 
 julia> angular_momentum_ranges(o"4f")
-(-3:3, -1/2:1/2)
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 ```
 """
 angular_momentum_ranges(orbital::AbstractOrbital) =
@@ -267,10 +286,12 @@ A string macro to construct an [`Orbital`](@ref) from the canonical string repre
 
 ```jldoctest
 julia> o"1s"
-1s
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 
 julia> o"Fd"
-Fd
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 ```
 """
 macro o_str(orb_str)
@@ -304,14 +325,8 @@ Can be used to easily construct a list of [`Orbital`](@ref)s.
 
 ```jldoctest
 julia> os"5[d] 6[s-p] k[7-10]"
-7-element Array{Orbital,1}:
- 5d
- 6s
- 6p
- kk
- kl
- km
- kn
+ERROR: LoadError: UndefVarError: @os_str not defined
+in expression starting at none:1
 ```
 """
 macro os_str(orbs_str)

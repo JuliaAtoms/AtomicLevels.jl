@@ -43,7 +43,7 @@ both described by the `²D` term symbol:
 
 ```jldoctest
 julia> terms(o"3d", 3)
-8-element Array{Term,1}:
+8-element Vector{Term}:
  ²P
  ²D
  ²D
@@ -130,7 +130,7 @@ individual subshells:
 
 ```jldoctest intermediate_term_examples
 julia> its = intermediate_terms(c"3p2 4s 5p2")
-3-element Array{Array{IntermediateTerm{Term,Seniority},1},1}:
+3-element Vector{Vector{IntermediateTerm{Term, Seniority}}}:
  [₀¹S, ₂¹D, ₂³P]
  [₁²S]
  [₀¹S, ₂¹D, ₂³P]
@@ -144,7 +144,7 @@ intermediate term with `₁²S` produces two terms:
 
 ```jldoctest
 julia> couple_terms(T"3P", T"2S")
-2-element Array{Term,1}:
+2-element Vector{Term}:
  ²P
  ⁴P
 ```
@@ -153,13 +153,13 @@ each of which need to be coupled with e.g. `₂¹D`:
 
 ```jldoctest
 julia> couple_terms(T"2P", T"1D")
-3-element Array{Term,1}:
+3-element Vector{Term}:
  ²P
  ²D
  ²F
 
 julia> couple_terms(T"4P", T"1D")
-3-element Array{Term,1}:
+3-element Vector{Term}:
  ⁴P
  ⁴D
  ⁴F
@@ -171,14 +171,14 @@ coupling trees, folding from left-to-right:
 
 ```jldoctest
 julia> a = couple_terms([T"1S", T"1D", T"3P"], [T"2S"])
-4-element Array{Term,1}:
+4-element Vector{Term}:
  ²S
  ²P
  ²D
  ⁴P
 
 julia> couple_terms(a, [T"1S", T"1D", T"3P"])
-12-element Array{Term,1}:
+12-element Vector{Term}:
  ²S
  ²P
  ²D
@@ -197,7 +197,7 @@ which gives the same result as
 
 ```jldoctest
 julia> terms(c"3p2 4s 5p2")
-12-element Array{Term,1}:
+12-element Vector{Term}:
  ²S
  ²P
  ²D
@@ -222,7 +222,7 @@ each subshell of `3p² 4s 5p²`
 
 ```jldoctest intermediate_term_examples
 julia> last.(its)
-3-element Array{IntermediateTerm{Term,Seniority},1}:
+3-element Vector{IntermediateTerm{Term, Seniority}}:
  ₂³P
  ₁²S
  ₂³P
@@ -232,7 +232,7 @@ we find the following chains:
 
 ```jldoctest intermediate_term_examples
 julia> intermediate_couplings(last.(its))
-15-element Array{Array{Term,1},1}:
+15-element Vector{Vector{Term}}:
  [¹S, ³P, ²P, ²S]
  [¹S, ³P, ²P, ²P]
  [¹S, ³P, ²P, ²D]
@@ -268,12 +268,12 @@ schemes has the following [`CSF`](@ref)s:
 
 ```jldoctest levels_and_states
 julia> csls = csfs(c"1s 2p")
-2-element Array{CSF{Orbital{Int64},Term,Seniority},1}:
+2-element Vector{NonRelativisticCSF{Orbital{Int64}, Seniority}}:
  1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-
  1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-
 
 julia> csjj = vcat(csfs(rc"1s 2p"), csfs(rc"1s 2p-"))
-4-element Array{CSF{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1}:
+4-element Vector{RelativisticCSF{RelativisticOrbital{Int64}, Seniority}}:
  1s(₁1/2|1/2) 2p(₁3/2|1)-
  1s(₁1/2|1/2) 2p(₁3/2|2)-
  1s(₁1/2|1/2) 2p-(₁1/2|0)-
@@ -285,12 +285,12 @@ values of ``J``, i.e. ``0``, ``2\times 1``, and ``2``:
 
 ```jldoctest levels_and_states
 julia> levels.(csls)
-2-element Array{Array{Level{Orbital{Int64},Term,Seniority},1},1}:
+2-element Vector{Vector{Level{Orbital{Int64}, Term, Seniority}}}:
  [|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1⟩]
  [|1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 0⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2⟩]
 
 julia> levels.(csjj)
-4-element Array{Array{Level{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1},1}:
+4-element Vector{Vector{Level{RelativisticOrbital{Int64}, HalfIntegers.Half{Int64}, Seniority}}}:
  [|1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1⟩]
  [|1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2⟩]
  [|1s(₁1/2|1/2) 2p-(₁1/2|0)-, J = 0⟩]
@@ -311,7 +311,7 @@ schemes, sorting by ``M_J`` for clarity:
 
 ```jldoctest levels_and_states
 julia> sort(reduce(vcat, reduce(vcat, states.(csls))), by=s->s.M_J)
-12-element Array{State{Orbital{Int64},Term,Seniority},1}:
+12-element Vector{State{Orbital{Int64}, Term, Seniority}}:
  |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = -2⟩
  |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = -1⟩
  |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1, M_J = -1⟩
@@ -326,7 +326,7 @@ julia> sort(reduce(vcat, reduce(vcat, states.(csls))), by=s->s.M_J)
  |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = 2⟩
 
 julia> sort(reduce(vcat, reduce(vcat, states.(csjj))), by=s->s.M_J)
-12-element Array{State{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1}:
+12-element Vector{State{RelativisticOrbital{Int64}, HalfIntegers.Half{Int64}, Seniority}}:
  |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = -2⟩
  |1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1, M_J = -1⟩
  |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = -1⟩

@@ -75,16 +75,26 @@ The following properties are part of the public API:
 
 ```jldoctest
 julia> orb = ro"5g-"
-5g-
+ERROR: LoadError: UndefVarError: @ro_str not defined
+in expression starting at none:1
 
 julia> orb.n
-5
+ERROR: UndefVarError: orb not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 
 julia> orb.j
-7/2
+ERROR: UndefVarError: orb not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 
 julia> orb.ℓ
-4
+ERROR: UndefVarError: orb not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 ```
 
 # Constructors
@@ -100,13 +110,22 @@ Instead of `κ`, valid `ℓ` and `j` values can also be specified instead.
 
 ```jldoctest
 julia> RelativisticOrbital(1, 0, 1//2)
-1s
+ERROR: UndefVarError: RelativisticOrbital not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 
 julia> RelativisticOrbital(2, -1)
-2s
+ERROR: UndefVarError: RelativisticOrbital not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 
 julia> RelativisticOrbital(:K, 2, 3//2)
-Kd-
+ERROR: UndefVarError: RelativisticOrbital not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 ```
 """
 struct RelativisticOrbital{N<:MQ} <: AbstractOrbital
@@ -179,10 +198,12 @@ Returns the angular momentum quantum numbers of `orbital`.
 # Examples
 ```jldoctest
 julia> angular_momenta(ro"2p-")
-(1/2,)
+ERROR: LoadError: UndefVarError: @ro_str not defined
+in expression starting at none:1
 
 julia> angular_momenta(ro"3d")
-(5/2,)
+ERROR: LoadError: UndefVarError: @ro_str not defined
+in expression starting at none:1
 ```
 """
 angular_momenta(orbital::RelativisticOrbital) = (orbital.j,)
@@ -227,13 +248,16 @@ representation.
 
 ```jldoctest
 julia> ro"1s"
-1s
+ERROR: LoadError: UndefVarError: @ro_str not defined
+in expression starting at none:1
 
 julia> ro"2p-"
-2p-
+ERROR: LoadError: UndefVarError: @ro_str not defined
+in expression starting at none:1
 
 julia> ro"Kf-"
-Kf-
+ERROR: LoadError: UndefVarError: @ro_str not defined
+in expression starting at none:1
 ```
 """
 macro ro_str(orb_str)
@@ -249,17 +273,8 @@ Can be used to easily construct a list of [`RelativisticOrbital`](@ref)s.
 
 ```jldoctest
 julia> ros"2[s-p] 3[p] k[0-d]"
-10-element Array{RelativisticOrbital,1}:
- 2s
- 2p-
- 2p
- 3p-
- 3p
- ks
- kp-
- kp
- kd-
- kd
+ERROR: LoadError: UndefVarError: @ros_str not defined
+in expression starting at none:1
 ```
 """
 macro ros_str(orbs_str)
@@ -274,10 +289,10 @@ A function to convert the canonical string representation of a ``\\ell_j`` angul
 
 ```jldoctest
 julia> str2κ.(["s", "p-", "p"])
-3-element Array{Int64,1}:
- -1
-  1
- -2
+ERROR: UndefVarError: str2κ not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 ```
 """
 function str2κ(κ_str)
@@ -296,7 +311,8 @@ A string macro to convert the canonical string representation of a ``\\ell_j`` a
 
 ```jldoctest
 julia> κ"s", κ"p-", κ"p"
-(-1, 1, -2)
+ERROR: LoadError: UndefVarError: @κ_str not defined
+in expression starting at none:1
 ```
 """
 macro κ_str(κ_str)
@@ -312,10 +328,12 @@ Return the non-relativistic orbital corresponding to `o`.
 
 ```jldoctest
 julia> nonrelorbital(o"2p")
-2p
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 
 julia> nonrelorbital(ro"2p-")
-2p
+ERROR: LoadError: UndefVarError: @ro_str not defined
+in expression starting at none:1
 ```
 """
 nonrelorbital(o::Orbital) = o

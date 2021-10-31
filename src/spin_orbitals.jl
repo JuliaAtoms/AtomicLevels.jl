@@ -158,16 +158,20 @@ the magnetic quantum numbers ``m_ℓ`` and ``m_s``.
 
 ```jldoctest
 julia> so"1s(0,α)"
-1s₀α
+ERROR: LoadError: UndefVarError: @so_str not defined
+in expression starting at none:1
 
 julia> so"kd(2,β)"
-kd₂β
+ERROR: LoadError: UndefVarError: @so_str not defined
+in expression starting at none:1
 
 julia> so"2p(1,0.5)"
-2p₁α
+ERROR: LoadError: UndefVarError: @so_str not defined
+in expression starting at none:1
 
 julia> so"2p(1,-1/2)"
-2p₁β
+ERROR: LoadError: UndefVarError: @so_str not defined
+in expression starting at none:1
 ```
 """
 macro so_str(orb_str)
@@ -185,13 +189,16 @@ the magnetic quantum number ``m_j``.
 
 ```jldoctest
 julia> rso"2p-(1/2)"
-2p-(1/2)
+ERROR: LoadError: UndefVarError: @rso_str not defined
+in expression starting at none:1
 
 julia> rso"2p(-3/2)"
-2p(-3/2)
+ERROR: LoadError: UndefVarError: @rso_str not defined
+in expression starting at none:1
 
 julia> rso"3d(2.5)"
-3d(5/2)
+ERROR: LoadError: UndefVarError: @rso_str not defined
+in expression starting at none:1
 ```
 """
 macro rso_str(orb_str)
@@ -208,25 +215,16 @@ Generate all permissible spin-orbitals for a given `orbital`, e.g. 2p
 
 ```jldoctest
 julia> spin_orbitals(o"2p")
-6-element Array{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}},1}:
- 2p₋₁α
- 2p₋₁β
- 2p₀α
- 2p₀β
- 2p₁α
- 2p₁β
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 
 julia> spin_orbitals(ro"2p-")
-2-element Array{SpinOrbital{RelativisticOrbital{Int64},Tuple{HalfIntegers.Half{Int64}}},1}:
- 2p-(-1/2)
- 2p-(1/2)
+ERROR: LoadError: UndefVarError: @ro_str not defined
+in expression starting at none:1
 
 julia> spin_orbitals(ro"2p")
-4-element Array{SpinOrbital{RelativisticOrbital{Int64},Tuple{HalfIntegers.Half{Int64}}},1}:
- 2p(-3/2)
- 2p(-1/2)
- 2p(1/2)
- 2p(3/2)
+ERROR: LoadError: UndefVarError: @ro_str not defined
+in expression starting at none:1
 ```
 
 """
@@ -245,15 +243,8 @@ Can be used to easily construct a list of [`SpinOrbital`](@ref)s.
 
 ```jldoctest
 julia> sos"3[s-p]"
-8-element Array{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}},1}:
- 3s₀α
- 3s₀β
- 3p₋₁α
- 3p₋₁β
- 3p₀α
- 3p₀β
- 3p₁α
- 3p₁β
+ERROR: LoadError: UndefVarError: @sos_str not defined
+in expression starting at none:1
 ```
 """
 macro sos_str(orbs_str)
@@ -269,15 +260,8 @@ Can be used to easily construct a list of [`SpinOrbital`](@ref)s.
 
 ```jldoctest
 julia> rsos"3[s-p]"
-8-element Array{SpinOrbital{RelativisticOrbital{Int64},Tuple{HalfIntegers.Half{Int64}}},1}:
- 3s(-1/2)
- 3s(1/2)
- 3p-(-1/2)
- 3p-(1/2)
- 3p(-3/2)
- 3p(-1/2)
- 3p(1/2)
- 3p(3/2)
+ERROR: LoadError: UndefVarError: @rsos_str not defined
+in expression starting at none:1
 ```
 """
 macro rsos_str(orbs_str)

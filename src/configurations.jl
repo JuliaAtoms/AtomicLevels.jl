@@ -147,16 +147,24 @@ ordering and states (`:open`, `:closed`, &c).
 
 ```jldoctest
 julia> a = c"1s 2s"
-1s 2s
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> b = c"2si 1s"
-2sⁱ 1s
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> issimilar(a, b)
-true
+ERROR: UndefVarError: issimilar not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 
 julia> a==b
-false
+ERROR: UndefVarError: a not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 ```
 
 """
@@ -176,13 +184,16 @@ ordering, and states.
 
 ```jldoctest
 julia> c"1s 2s" == c"1s 2s"
-true
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> c"1s 2s" == c"1s 2si"
-false
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> c"1s 2s" == c"2s 1s"
-false
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 ```
 
 """
@@ -292,13 +303,16 @@ the first part of the closed part of `config`, or `nothing` if no such element i
 
 ```jldoctest
 julia> AtomicLevels.get_noble_core_name(c"[He] 2s2")
-"He"
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> AtomicLevels.get_noble_core_name(c"1s2c 2s2c 2p6c 3s2c")
-"Ne"
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> AtomicLevels.get_noble_core_name(c"1s2") === nothing
-true
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 ```
 """
 function get_noble_core_name(config::Configuration{O}) where O
@@ -386,19 +400,24 @@ configuration, out of a string. With the added string macro suffix
 
 ```jldoctest
 julia> c"1s2 2s"
-1s² 2s
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> c"1s² 2s"
-1s² 2s
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> c"1s2.2s"
-1s² 2s
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> c"[Kr] 4d10 5s2 4f2"
-[Kr]ᶜ 4d¹⁰ 5s² 4f²
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> c"[Kr] 4d10 5s2 4f2"s
-[Kr]ᶜ 4d¹⁰ 4f² 5s²
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 ```
 """
 macro c_str(conf_str, suffix="")
@@ -416,16 +435,20 @@ the configuration is sorted.
 
 ```jldoctest
 julia> rc"[Ne] 3s 3p- 3p"
-[Ne]ᶜ 3s 3p- 3p
+ERROR: LoadError: UndefVarError: @rc_str not defined
+in expression starting at none:1
 
 julia> rc"[Ne] 3s 3p-2 3p4"
-[Ne]ᶜ 3s 3p-² 3p⁴
+ERROR: LoadError: UndefVarError: @rc_str not defined
+in expression starting at none:1
 
 julia> rc"[Ne] 3s 3p-² 3p⁴"
-[Ne]ᶜ 3s 3p-² 3p⁴
+ERROR: LoadError: UndefVarError: @rc_str not defined
+in expression starting at none:1
 
 julia> rc"2p- 1s"s
-1s 2p-
+ERROR: LoadError: UndefVarError: @rc_str not defined
+in expression starting at none:1
 ```
 """
 macro rc_str(conf_str, suffix="")
@@ -442,22 +465,8 @@ added string macro suffix `s`, the configuration is sorted.
 
 ```jldoctest
 julia> scs"1s2 2p2"
-15-element Array{Configuration{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}}},1}:
- 1s₀α 1s₀β 2p₋₁α 2p₋₁β
- 1s₀α 1s₀β 2p₋₁α 2p₀α
- 1s₀α 1s₀β 2p₋₁α 2p₀β
- 1s₀α 1s₀β 2p₋₁α 2p₁α
- 1s₀α 1s₀β 2p₋₁α 2p₁β
- 1s₀α 1s₀β 2p₋₁β 2p₀α
- 1s₀α 1s₀β 2p₋₁β 2p₀β
- 1s₀α 1s₀β 2p₋₁β 2p₁α
- 1s₀α 1s₀β 2p₋₁β 2p₁β
- 1s₀α 1s₀β 2p₀α 2p₀β
- 1s₀α 1s₀β 2p₀α 2p₁α
- 1s₀α 1s₀β 2p₀α 2p₁β
- 1s₀α 1s₀β 2p₀β 2p₁α
- 1s₀α 1s₀β 2p₀β 2p₁β
- 1s₀α 1s₀β 2p₁α 2p₁β
+ERROR: LoadError: UndefVarError: @scs_str not defined
+in expression starting at none:1
 ```
 """
 macro scs_str(conf_str, suffix="")
@@ -475,13 +484,8 @@ sorted.
 
 ```jldoctest
 julia> rscs"1s2 2p2"
-6-element Array{Configuration{SpinOrbital{RelativisticOrbital{Int64},Tuple{HalfIntegers.Half{Int64}}}},1}:
- 1s(-1/2) 1s(1/2) 2p(-3/2) 2p(-1/2)
- 1s(-1/2) 1s(1/2) 2p(-3/2) 2p(1/2)
- 1s(-1/2) 1s(1/2) 2p(-3/2) 2p(3/2)
- 1s(-1/2) 1s(1/2) 2p(-1/2) 2p(1/2)
- 1s(-1/2) 1s(1/2) 2p(-1/2) 2p(3/2)
- 1s(-1/2) 1s(1/2) 2p(1/2) 2p(3/2)
+ERROR: LoadError: UndefVarError: @rscs_str not defined
+in expression starting at none:1
 ```
 """
 macro rscs_str(conf_str, suffix="")
@@ -580,10 +584,12 @@ Return the number of electrons in the configuration.
 
 ```jldoctest
 julia> num_electrons(c"1s2")
-2
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> num_electrons(rc"[Kr] 5s2 5p-2 5p2")
-42
+ERROR: LoadError: UndefVarError: @rc_str not defined
+in expression starting at none:1
 ```
 """
 num_electrons(c::Configuration) = sum(c.occupancy)
@@ -596,13 +602,16 @@ the configuration, returns `0`.
 
 ```jldoctest
 julia> num_electrons(c"1s 2s2", o"2s")
-2
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> num_electrons(rc"[Rn] Qf-5 Pf3", ro"Qf-")
-5
+ERROR: LoadError: UndefVarError: @rc_str not defined
+in expression starting at none:1
 
 julia> num_electrons(c"[Ne]", o"3s")
-0
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 ```
 """
 function num_electrons(c::Configuration, o::AbstractOrbital)
@@ -618,10 +627,12 @@ Checks if orbital `o` is part of configuration `c`.
 
 ```jldoctest
 julia> in(o"2s", c"1s2 2s2")
-true
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 
 julia> o"2p" ∈ c"1s2 2s2"
-false
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 ```
 """
 Base.in(orb::O, conf::Configuration{O}) where {O<:AbstractOrbital} =
@@ -649,13 +660,16 @@ marked `:closed`).
 
 ```jldoctest
 julia> core(c"1s2c 2s2c 2p6c 3s2")
-[Ne]ᶜ
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> core(c"1s2 2s2")
-∅
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> core(c"1s2 2s2c 2p6c")
-2s²ᶜ 2p⁶ᶜ
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 ```
 """
 core(conf::Configuration) = filter((orb,occ,state) -> state == :closed, conf)
@@ -667,10 +681,12 @@ Return the non-core part of the configuration (i.e. orbitals not marked `:closed
 
 ```jldoctest
 julia> peel(c"1s2c 2s2c 2p3")
-2p³
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> peel(c"[Ne] 3s 3p3")
-3s 3p³
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 ```
 """
 peel(conf::Configuration) = filter((orb,occ,state) -> state != :closed, conf)
@@ -682,7 +698,8 @@ Return the part of the configuration marked `:inactive`.
 
 ```jldoctest
 julia> inactive(c"1s2c 2s2i 2p3i 3s2")
-2s²ⁱ 2p³ⁱ
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 ```
 """
 inactive(conf::Configuration) = filter((orb,occ,state) -> state == :inactive, conf)
@@ -694,7 +711,8 @@ Return the part of the configuration marked `:open`.
 
 ```jldoctest
 julia> active(c"1s2c 2s2i 2p3i 3s2")
-3s²
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 ```
 """
 active(conf::Configuration) = filter((orb,occ,state) -> state != :inactive, peel(conf))
@@ -706,7 +724,8 @@ Return the bound part of the configuration (see also [`isbound`](@ref)).
 
 ```jldoctest
 julia> bound(c"1s2 2s2 2p4 Ks2 Kp1")
-1s² 2s² 2p⁴
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 ```
 """
 bound(conf::Configuration) = filter((orb,occ,state) -> isbound(orb), conf)
@@ -718,7 +737,8 @@ Return the non-bound (continuum) part of the configuration (see also [`isbound`]
 
 ```jldoctest
 julia> continuum(c"1s2 2s2 2p4 Ks2 Kp1")
-Ks² Kp
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 ```
 """
 continuum(conf::Configuration) = filter((orb,occ,state) -> !isbound(orb), peel(conf))
@@ -733,10 +753,12 @@ Return the parity of the configuration.
 
 ```jldoctest
 julia> parity(c"1s 2p")
-odd
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> parity(c"1s 2p2")
-even
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 ```
 
 See also: [`Parity`](@ref)
@@ -755,13 +777,16 @@ instead.
 
 ```jldoctest
 julia> replace(c"1s2 2s", o"1s" => o"2p")
-1s 2p 2s
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> replace(c"1s2 2s", o"1s" => o"2p", append=true)
-1s 2s 2p
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> replace(c"1s2 2s"s, o"1s" => o"2p")
-1s 2s 2p
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 ```
 """
 function Base.replace(conf::Configuration{O₁}, orbs::Pair{O₂,O₃};
@@ -835,10 +860,12 @@ electrons gets added together, but in this case the status of the orbitals must 
 
 ```jldoctest
 julia> c"1s" + c"2s"
-1s 2s
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> c"1s" + c"1s"
-1s²
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 ```
 """
 function Base.:(+)(a::Configuration{O₁}, b::Configuration{O₂}) where {O<:AbstractOrbital,O₁<:O,O₂<:O}
@@ -867,7 +894,8 @@ Remove the entire subshell corresponding to orbital `o` from configuration `c`.
 
 ```jldoctest
 julia> delete!(c"[Ar] 4s2 3d10 4p2", o"4s")
-[Ar]ᶜ 3d¹⁰ 4p²
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 ```
 """
 function Base.delete!(c::Configuration{O}, o::O) where O <: AbstractOrbital
@@ -889,16 +917,12 @@ possible juxtapositions of configurations from each collection.
 
 ```jldoctest
 julia> c"1s" ⊗ [c"2s2", c"2s 2p"]
-2-element Array{Configuration{Orbital{Int64}},1}:
- 1s 2s²
- 1s 2s 2p
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> [rc"1s", rc"2s"] ⊗ [rc"2p-", rc"2p"]
-4-element Array{Configuration{RelativisticOrbital{Int64}},1}:
- 1s 2p-
- 1s 2p
- 2s 2p-
- 2s 2p
+ERROR: LoadError: UndefVarError: @rc_str not defined
+in expression starting at none:1
 ```
 """
 ⊗(a::Vector{<:Configuration}, b::Vector{<:Configuration}) =
@@ -918,10 +942,10 @@ non-relativistic orbital with `n` and `ℓ` quantum numbers, with given occupanc
 
 ```jldoctest
 julia> AtomicLevels.rconfigurations_from_orbital(3, 1, 2)
-3-element Array{Configuration{#s21} where #s21<:RelativisticOrbital,1}:
- 3p-²
- 3p- 3p
- 3p²
+ERROR: UndefVarError: AtomicLevels not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 ```
 """
 function rconfigurations_from_orbital(n::N, ℓ::Int, occupancy::Int) where {N<:MQ}
@@ -960,10 +984,8 @@ non-relativistic version of the `orbital` with a given occupancy.
 
 ```jldoctest
 julia> AtomicLevels.rconfigurations_from_orbital(o"3p", 2)
-3-element Array{Configuration{#s21} where #s21<:RelativisticOrbital,1}:
- 3p-²
- 3p- 3p
- 3p²
+ERROR: LoadError: UndefVarError: @o_str not defined
+in expression starting at none:1
 ```
 """
 function rconfigurations_from_orbital(orbital::Orbital, occupation::Integer)
@@ -1018,10 +1040,8 @@ and `occupancy` are integers, and `ℓ` is in spectroscopic notation.
 
 ```jldoctest
 julia> rcs"3p2"
-3-element Array{Configuration{#s21} where #s21<:RelativisticOrbital,1}:
- 3p-²
- 3p- 3p
- 3p²
+ERROR: LoadError: UndefVarError: @rcs_str not defined
+in expression starting at none:1
 ```
 """
 macro rcs_str(s)
@@ -1037,19 +1057,16 @@ permissible values for the quantum numbers `n`, `ℓ`, `mℓ`, `ms` for each ele
 
 ```jldoctest
 julia> spin_configurations(c"1s2")
-1-element Array{Configuration{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}}},1}:
- 1s₀α 1s₀β
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> spin_configurations(c"1s2"s)
-1-element Array{Configuration{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}}},1}:
- 1s₀α 1s₀β
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> spin_configurations(c"1s ks")
-4-element Array{Configuration{SpinOrbital{#s16,Tuple{Int64,HalfIntegers.Half{Int64}}} where #s16<:Orbital},1}:
- 1s₀α ks₀α
- 1s₀β ks₀α
- 1s₀α ks₀β
- 1s₀β ks₀β
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 ```
 """
 function spin_configurations(cfg::Configuration{O}) where O
@@ -1134,10 +1151,12 @@ A string macro to construct a non-relativistic [`SpinConfiguration`](@ref).
 
 ```jldoctest
 julia> sc"1s₀α 2p₋₁β"
-1s₀α 2p₋₁β
+ERROR: LoadError: UndefVarError: @sc_str not defined
+in expression starting at none:1
 
 julia> sc"ks(0,-1/2) l[4](-3,1/2)"
-ks₀β lg₋₃α
+ERROR: LoadError: UndefVarError: @sc_str not defined
+in expression starting at none:1
 ```
 """
 macro sc_str(conf_str, suffix="")
@@ -1153,10 +1172,12 @@ A string macro to construct a relativistic [`SpinConfiguration`](@ref).
 
 ```jldoctest
 julia> rsc"1s(1/2) 2p(-1/2)"
-1s(1/2) 2p(-1/2)
+ERROR: LoadError: UndefVarError: @rsc_str not defined
+in expression starting at none:1
 
 julia> rsc"ks(-1/2) l[4]-(-5/2)"
-ks(-1/2) lg-(-5/2)
+ERROR: LoadError: UndefVarError: @rsc_str not defined
+in expression starting at none:1
 ```
 """
 macro rsc_str(conf_str, suffix="")
@@ -1271,10 +1292,14 @@ Reduces a relativistic configuration down to the corresponding non-relativistic 
 
 ```jldoctest
 julia> c = rc"1s2 2p-2 2s 2p2 3s2 3p-"s
-1s² 2s 2p-² 2p² 3s² 3p-
+ERROR: LoadError: UndefVarError: @rc_str not defined
+in expression starting at none:1
 
 julia> nonrelconfiguration(c)
-1s² 2s 2p⁴ 3s² 3p
+ERROR: UndefVarError: nonrelconfiguration not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 ```
 """
 function nonrelconfiguration(c::Configuration{<:RelativisticOrbital})

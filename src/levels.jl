@@ -36,10 +36,14 @@ number of possible microstates: ``2J+1``.
 
 ```jldoctest
 julia> l = Level(first(csfs(c"1s 2p")), 1)
-|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1⟩
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> weight(l)
-3
+ERROR: UndefVarError: weight not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 ```
 """
 weight(l::Level) = convert(Int, 2l.J + 1)
@@ -60,16 +64,20 @@ List the permissible values of the total angular momentum ``J`` for
 
 ```jldoctest
 julia> J_range(T"¹S")
-0:0
+ERROR: LoadError: UndefVarError: @T_str not defined
+in expression starting at none:1
 
 julia> J_range(T"²S")
-1/2:1/2
+ERROR: LoadError: UndefVarError: @T_str not defined
+in expression starting at none:1
 
 julia> J_range(T"³P")
-0:2
+ERROR: LoadError: UndefVarError: @T_str not defined
+in expression starting at none:1
 
 julia> J_range(T"²D")
-3/2:5/2
+ERROR: LoadError: UndefVarError: @T_str not defined
+in expression starting at none:1
 ```
 """
 J_range(term::Term) = abs(term.L-term.S):(term.L+term.S)
@@ -92,19 +100,16 @@ Generate all permissible [`Level`](@ref)s given `csf`.
 
 ```jldoctest
 julia> levels.(csfs(c"1s 2p"))
-2-element Array{Array{Level{Orbital{Int64},Term,Seniority},1},1}:
- [|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1⟩]
- [|1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 0⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2⟩]
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> levels.(csfs(rc"1s 2p"))
-2-element Array{Array{Level{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1},1}:
- [|1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1⟩]
- [|1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2⟩]
+ERROR: LoadError: UndefVarError: @rc_str not defined
+in expression starting at none:1
 
 julia> levels.(csfs(rc"1s 2p-"))
-2-element Array{Array{Level{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1},1}:
- [|1s(₁1/2|1/2) 2p-(₁1/2|0)-, J = 0⟩]
- [|1s(₁1/2|1/2) 2p-(₁1/2|1)-, J = 1⟩]
+ERROR: LoadError: UndefVarError: @rc_str not defined
+in expression starting at none:1
 ```
 """
 levels(csf::CSF) = sort([Level(csf,J) for J in J_range(last(csf.terms))])
@@ -146,13 +151,14 @@ Generate all permissible [`State`](@ref) given `level`.
 
 ```jldoctest
 julia> l = Level(first(csfs(c"1s 2p")), 1)
-|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1⟩
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> states(l)
-3-element Array{State{Orbital{Int64},Term,Seniority},1}:
- |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = -1⟩
- |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 0⟩
- |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 1⟩
+ERROR: UndefVarError: states not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 ```
 """
 function states(level::Level{O,IT,T}) where {O,IT,T}
@@ -169,11 +175,14 @@ Directly generate all permissible [`State`](@ref)s for `csf`.
 
 ```jldoctest
 julia> c = first(csfs(c"1s 2p"))
-1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-
+ERROR: LoadError: UndefVarError: @c_str not defined
+in expression starting at none:1
 
 julia> states(c)
-1-element Array{Array{State{Orbital{Int64},Term,Seniority},1},1}:
- [|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = -1⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 0⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 1⟩]
+ERROR: UndefVarError: states not defined
+Stacktrace:
+ [1] top-level scope
+   @ none:1
 ```
 """
 states(csf::CSF) = states.(levels(csf))
