@@ -325,6 +325,7 @@
         @test spin_configurations(c"1s2") isa Vector{Configuration{SpinOrbital{Orbital{Int},Tuple{Int,HalfInt}}}}
         @test spin_configurations(c"ks2") isa Vector{Configuration{SpinOrbital{Orbital{Symbol},Tuple{Int,HalfInt}}}}
         @test spin_configurations(c"1s ks") isa Vector{Configuration{SpinOrbital{<:Orbital,Tuple{Int,HalfInt}}}}
+        @test spin_configurations(sc"1s₀α") == [sc"1s₀α"]
 
         @test scs"1s 2p" == spin_configurations(c"1s 2p") ==
             [Configuration([SpinOrbital(o"1s",0,up), SpinOrbital(o"2p",-1,up)], [1, 1]),
