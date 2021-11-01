@@ -208,7 +208,7 @@ Generate all permissible spin-orbitals for a given `orbital`, e.g. 2p
 
 ```jldoctest
 julia> spin_orbitals(o"2p")
-6-element Array{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}},1}:
+6-element Vector{SpinOrbital{Orbital{Int64}, Tuple{Int64, HalfIntegers.Half{Int64}}}}:
  2p₋₁α
  2p₋₁β
  2p₀α
@@ -217,12 +217,12 @@ julia> spin_orbitals(o"2p")
  2p₁β
 
 julia> spin_orbitals(ro"2p-")
-2-element Array{SpinOrbital{RelativisticOrbital{Int64},Tuple{HalfIntegers.Half{Int64}}},1}:
+2-element Vector{SpinOrbital{RelativisticOrbital{Int64}, Tuple{HalfIntegers.Half{Int64}}}}:
  2p-(-1/2)
  2p-(1/2)
 
 julia> spin_orbitals(ro"2p")
-4-element Array{SpinOrbital{RelativisticOrbital{Int64},Tuple{HalfIntegers.Half{Int64}}},1}:
+4-element Vector{SpinOrbital{RelativisticOrbital{Int64}, Tuple{HalfIntegers.Half{Int64}}}}:
  2p(-3/2)
  2p(-1/2)
  2p(1/2)
@@ -245,7 +245,7 @@ Can be used to easily construct a list of [`SpinOrbital`](@ref)s.
 
 ```jldoctest
 julia> sos"3[s-p]"
-8-element Array{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}},1}:
+8-element Vector{SpinOrbital{Orbital{Int64}, Tuple{Int64, HalfIntegers.Half{Int64}}}}:
  3s₀α
  3s₀β
  3p₋₁α
@@ -269,7 +269,7 @@ Can be used to easily construct a list of [`SpinOrbital`](@ref)s.
 
 ```jldoctest
 julia> rsos"3[s-p]"
-8-element Array{SpinOrbital{RelativisticOrbital{Int64},Tuple{HalfIntegers.Half{Int64}}},1}:
+8-element Vector{SpinOrbital{RelativisticOrbital{Int64}, Tuple{HalfIntegers.Half{Int64}}}}:
  3s(-1/2)
  3s(1/2)
  3p-(-1/2)

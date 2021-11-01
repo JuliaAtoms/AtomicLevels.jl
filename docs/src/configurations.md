@@ -97,7 +97,7 @@ need to write
 
 ```jldoctest
 julia> c"[Ne]" ⊗ [c"3s2", c"3s 3p", c"3p2"]
-3-element Array{Configuration{Orbital{Int64}},1}:
+3-element Vector{Configuration{Orbital{Int64}}}:
  [Ne]ᶜ 3s²
  [Ne]ᶜ 3s 3p
  [Ne]ᶜ 3p²
@@ -108,7 +108,7 @@ relativistic configurations from a non-relativistic definition:
 
 ```jldoctest
 julia> rc"[Ne] 3s2" ⊗ rcs"3p2"
-3-element Array{Configuration{RelativisticOrbital{Int64}},1}:
+3-element Vector{Configuration{RelativisticOrbital{Int64}}}:
  [Ne]ᶜ 3s² 3p-²
  [Ne]ᶜ 3s² 3p- 3p
  [Ne]ᶜ 3s² 3p²
@@ -142,7 +142,7 @@ simple example could be
 
 ```jldoctest
 julia> excited_configurations(c"1s2", os"2[s-p]"...)
-4-element Array{Configuration{Orbital{Int64}},1}:
+4-element Vector{Configuration{Orbital{Int64}}}:
  1s²
  1s 2s
  2s²
@@ -156,7 +156,7 @@ these restrictions, more configurations can be generated:
 ```jldoctest
 julia> excited_configurations(c"1s2 2s", os"3[s-p]"...,
                               keep_parity=false, max_excitations=2)
-14-element Array{Configuration{Orbital{Int64}},1}:
+14-element Vector{Configuration{Orbital{Int64}}}:
  1s² 2s
  1s 2s²
  1s 2s 3s
@@ -174,7 +174,7 @@ julia> excited_configurations(c"1s2 2s", os"3[s-p]"...,
 
 julia> excited_configurations(c"1s2 2s", os"3[s-p]"...,
                               keep_parity=false, max_excitations=3)
-17-element Array{Configuration{Orbital{Int64}},1}:
+17-element Vector{Configuration{Orbital{Int64}}}:
  1s² 2s
  1s 2s²
  1s 2s 3s
@@ -200,7 +200,7 @@ in-place:
 
 ```jldoctest
 julia> excited_configurations(first(scs"1s2"), sos"2[s-p]"...)
-21-element Array{Configuration{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}}},1}:
+21-element Vector{SpinConfiguration{SpinOrbital{Orbital{Int64}, Tuple{Int64, HalfIntegers.Half{Int64}}}}}:
  1s₀α 1s₀β
  2s₀α 1s₀β
  2s₀β 1s₀β

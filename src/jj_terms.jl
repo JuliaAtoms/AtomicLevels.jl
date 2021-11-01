@@ -11,17 +11,17 @@ numbers), the corresponding ``J`` value is repeated in the output array.
 
 ```jldoctest
 julia> terms(ro"3d", 3)
-3-element Array{HalfIntegers.Half{Int64},1}:
+3-element Vector{HalfIntegers.Half{Int64}}:
  3/2
  5/2
  9/2
 
 julia> terms(ro"3d-", 3)
-1-element Array{HalfIntegers.Half{Int64},1}:
+1-element Vector{HalfIntegers.Half{Int64}}:
  3/2
 
 julia> terms(ro"4f", 4)
-8-element Array{HalfIntegers.Half{Int64},1}:
+8-element Vector{HalfIntegers.Half{Int64}}:
  0
  2
  2

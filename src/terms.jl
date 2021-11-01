@@ -184,7 +184,7 @@ multiplicity is computed using [`AtomicLevels.Xu.X`](@ref).
 
 ```jldoctest
 julia> AtomicLevels.xu_terms(3, 3, parity(c"3d3"))
-17-element Array{Term,1}:
+17-element Vector{Term}:
  ²P
  ²D
  ²D
@@ -222,7 +222,7 @@ occupancy.
 
 ```jldoctest
 julia> terms(o"3d", 3)
-8-element Array{Term,1}:
+8-element Vector{Term}:
  ²P
  ²D
  ²D
@@ -260,16 +260,16 @@ Generate all final ``LS`` terms for `config`.
 
 ```jldoctest
 julia> terms(c"1s")
-1-element Array{Term,1}:
+1-element Vector{Term}:
  ²S
 
 julia> terms(c"1s 2p")
-2-element Array{Term,1}:
+2-element Vector{Term}:
  ¹Pᵒ
  ³Pᵒ
 
 julia> terms(c"[Ne] 3d3")
-7-element Array{Term,1}:
+7-element Vector{Term}:
  ²P
  ²D
  ²F

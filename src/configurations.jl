@@ -442,7 +442,7 @@ added string macro suffix `s`, the configuration is sorted.
 
 ```jldoctest
 julia> scs"1s2 2p2"
-15-element Array{Configuration{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}}},1}:
+15-element Vector{SpinConfiguration{SpinOrbital{Orbital{Int64}, Tuple{Int64, HalfIntegers.Half{Int64}}}}}:
  1s₀α 1s₀β 2p₋₁α 2p₋₁β
  1s₀α 1s₀β 2p₋₁α 2p₀α
  1s₀α 1s₀β 2p₋₁α 2p₀β
@@ -475,7 +475,7 @@ sorted.
 
 ```jldoctest
 julia> rscs"1s2 2p2"
-6-element Array{Configuration{SpinOrbital{RelativisticOrbital{Int64},Tuple{HalfIntegers.Half{Int64}}}},1}:
+6-element Vector{SpinConfiguration{SpinOrbital{RelativisticOrbital{Int64}, Tuple{HalfIntegers.Half{Int64}}}}}:
  1s(-1/2) 1s(1/2) 2p(-3/2) 2p(-1/2)
  1s(-1/2) 1s(1/2) 2p(-3/2) 2p(1/2)
  1s(-1/2) 1s(1/2) 2p(-3/2) 2p(3/2)
@@ -889,12 +889,12 @@ possible juxtapositions of configurations from each collection.
 
 ```jldoctest
 julia> c"1s" ⊗ [c"2s2", c"2s 2p"]
-2-element Array{Configuration{Orbital{Int64}},1}:
+2-element Vector{Configuration{Orbital{Int64}}}:
  1s 2s²
  1s 2s 2p
 
 julia> [rc"1s", rc"2s"] ⊗ [rc"2p-", rc"2p"]
-4-element Array{Configuration{RelativisticOrbital{Int64}},1}:
+4-element Vector{Configuration{RelativisticOrbital{Int64}}}:
  1s 2p-
  1s 2p
  2s 2p-
@@ -916,9 +916,9 @@ non-relativistic orbital with `n` and `ℓ` quantum numbers, with given occupanc
 
 # Examples
 
-```jldoctest
+```jldoctest; filter = r"#s[0-9]+"
 julia> AtomicLevels.rconfigurations_from_orbital(3, 1, 2)
-3-element Array{Configuration{#s21} where #s21<:RelativisticOrbital,1}:
+3-element Vector{Configuration{var"#s00"} where var"#s00"<:RelativisticOrbital}:
  3p-²
  3p- 3p
  3p²
@@ -958,9 +958,9 @@ non-relativistic version of the `orbital` with a given occupancy.
 
 # Examples
 
-```jldoctest
+```jldoctest; filter = r"#s[0-9]+"
 julia> AtomicLevels.rconfigurations_from_orbital(o"3p", 2)
-3-element Array{Configuration{#s21} where #s21<:RelativisticOrbital,1}:
+3-element Vector{Configuration{var"#s00"} where var"#s00"<:RelativisticOrbital}:
  3p-²
  3p- 3p
  3p²
@@ -1016,9 +1016,9 @@ and `occupancy` are integers, and `ℓ` is in spectroscopic notation.
 
 # Examples
 
-```jldoctest
+```jldoctest; filter = r"#s[0-9]+"
 julia> rcs"3p2"
-3-element Array{Configuration{#s21} where #s21<:RelativisticOrbital,1}:
+3-element Vector{Configuration{var"#s00"} where var"#s00"<:RelativisticOrbital}:
  3p-²
  3p- 3p
  3p²
@@ -1035,17 +1035,17 @@ end
 Generate all possible configurations of spin-orbitals from `configuration`, i.e. all
 permissible values for the quantum numbers `n`, `ℓ`, `mℓ`, `ms` for each electron. Example:
 
-```jldoctest
+```jldoctest; filter = r"#s[0-9]+"
 julia> spin_configurations(c"1s2")
-1-element Array{Configuration{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}}},1}:
+1-element Vector{SpinConfiguration{SpinOrbital{Orbital{Int64}, Tuple{Int64, HalfIntegers.Half{Int64}}}}}:
  1s₀α 1s₀β
 
 julia> spin_configurations(c"1s2"s)
-1-element Array{Configuration{SpinOrbital{Orbital{Int64},Tuple{Int64,HalfIntegers.Half{Int64}}}},1}:
+1-element Vector{SpinConfiguration{SpinOrbital{Orbital{Int64}, Tuple{Int64, HalfIntegers.Half{Int64}}}}}:
  1s₀α 1s₀β
 
 julia> spin_configurations(c"1s ks")
-4-element Array{Configuration{SpinOrbital{#s16,Tuple{Int64,HalfIntegers.Half{Int64}}} where #s16<:Orbital},1}:
+4-element Vector{SpinConfiguration{SpinOrbital{var"#s00", Tuple{Int64, HalfIntegers.Half{Int64}}} where var"#s00"<:Orbital}}:
  1s₀α ks₀α
  1s₀β ks₀α
  1s₀α ks₀β

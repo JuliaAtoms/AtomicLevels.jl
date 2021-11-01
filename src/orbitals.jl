@@ -304,7 +304,7 @@ Can be used to easily construct a list of [`Orbital`](@ref)s.
 
 ```jldoctest
 julia> os"5[d] 6[s-p] k[7-10]"
-7-element Array{Orbital,1}:
+7-element Vector{Orbital}:
  5d
  6s
  6p

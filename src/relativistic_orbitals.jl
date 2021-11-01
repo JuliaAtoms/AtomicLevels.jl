@@ -249,7 +249,7 @@ Can be used to easily construct a list of [`RelativisticOrbital`](@ref)s.
 
 ```jldoctest
 julia> ros"2[s-p] 3[p] k[0-d]"
-10-element Array{RelativisticOrbital,1}:
+10-element Vector{RelativisticOrbital}:
  2s
  2p-
  2p
@@ -274,7 +274,7 @@ A function to convert the canonical string representation of a ``\\ell_j`` angul
 
 ```jldoctest
 julia> str2κ.(["s", "p-", "p"])
-3-element Array{Int64,1}:
+3-element Vector{Int64}:
  -1
   1
  -2

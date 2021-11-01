@@ -12,16 +12,16 @@ p. 108–109.
 
 ```jldoctest
 julia> couple_terms(T"1Po", T"2Se")
-1-element Array{Term,1}:
+1-element Vector{Term}:
  ²Pᵒ
 
 julia> couple_terms(T"3Po", T"2Se")
-2-element Array{Term,1}:
+2-element Vector{Term}:
  ²Pᵒ
  ⁴Pᵒ
 
 julia> couple_terms(T"3Po", T"2De")
-6-element Array{Term,1}:
+6-element Vector{Term}:
  ²Pᵒ
  ²Dᵒ
  ²Fᵒ
@@ -65,12 +65,12 @@ individual subshell terms by coupling from left to right.
 
 ```jldoctest
 julia> ts = [[T"1S", T"3S"], [T"2P", T"2D"]]
-2-element Array{Array{Term,1},1}:
+2-element Vector{Vector{Term}}:
  [¹S, ³S]
  [²P, ²D]
 
 julia> AtomicLevels.final_terms(ts)
-4-element Array{Term,1}:
+4-element Vector{Term}:
  ²P
  ²D
  ⁴P
@@ -110,7 +110,7 @@ intermediate terms `its`, starting from the initial term `t₀`.
 
 ```jldoctest
 julia> intermediate_couplings([IntermediateTerm(T"2S", 1), IntermediateTerm(T"2D", 1)])
-2-element Array{Array{Term,1},1}:
+2-element Vector{Vector{Term}}:
  [¹S, ²S, ¹D]
  [¹S, ²S, ³D]
 ```
@@ -125,7 +125,7 @@ intermediate_couplings(its::Vector{<:IntermediateTerm{T}}, t₀::T=zero(T)) wher
 
 ```jldoctest
 julia> intermediate_couplings([1//2, 3//2])
-2-element Array{Array{HalfIntegers.Half{Int64},1},1}:
+2-element Vector{Vector{HalfIntegers.Half{Int64}}}:
  [0, 1/2, 1]
  [0, 1/2, 2]
 ```
