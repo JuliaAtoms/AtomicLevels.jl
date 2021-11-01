@@ -11,7 +11,7 @@
 │   parity(o) = odd
 │   degeneracy(o) = 6
 └   angular_momenta(o) = (5/2,)</code></pre><p>You can also create a range of orbitals quickly using the <a href="orbitals/#AtomicLevels.@os_str"><code>@os_str</code></a> (or <a href="orbitals/#AtomicLevels.@ros_str"><code>@ros_str</code></a>) string macros</p><pre><code class="language-julia-repl">julia&gt; os&quot;5[d] 6[s-p] k[7-10]&quot;
-7-element Array{Orbital,1}:
+7-element Vector{Orbital}:
  5d
  6s
  6p
@@ -24,10 +24,10 @@
 1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s² 4p⁶ 5s² 5p⁶</code></pre><p>Note that the <code>5p</code> shell was broken up into 2 <code>5p-</code> electrons and 4 <code>5p</code> electrons. If we are not filling the shell, occupancy of the spin-up and spin-down electrons has to be given separately.</p><pre><code class="language-julia-repl">julia&gt; Xe⁺ = rc&quot;[Kr] 5s2 5p-2 5p3&quot;
 [Kr]ᶜ 5s² 5p-² 5p³</code></pre><p>It is also possible to work with “continuum orbitals”, where the main quantum number is replaced by a <code>Symbol</code>.</p><pre><code class="language-julia-repl">julia&gt; Xe⁺e = rc&quot;[Kr] 5s2 5p-2 5p3 ks&quot;
 [Kr]ᶜ 5s² 5p-² 5p³ ks</code></pre><h3 id="Excitations"><a class="docs-heading-anchor" href="#Excitations">Excitations</a><a id="Excitations-1"></a><a class="docs-heading-anchor-permalink" href="#Excitations" title="Permalink"></a></h3><p>We can easily generate all possible excitations from a reference configuration. If no extra orbitals are specified, only those that are “open” within the reference set will be considered.</p><pre><code class="language-julia-repl">julia&gt; excited_configurations(rc&quot;[Kr] 5s2 5p-2 5p3&quot;)
-2-element Array{Configuration{RelativisticOrbital{Int64}},1}:
+2-element Vector{Configuration{RelativisticOrbital{Int64}}}:
  [Kr]ᶜ 5s² 5p-² 5p³
  [Kr]ᶜ 5s² 5p- 5p⁴</code></pre><p>By appending virtual orbitals, we can generate excitations to configurations beyond those spanned by the reference set.</p><pre><code class="language-julia-repl">julia&gt; excited_configurations(rc&quot;[Kr] 5s2 5p-2 5p3&quot;, ros&quot;5[d] 6[s-p]&quot;...)
-64-element Array{Configuration{RelativisticOrbital{Int64}},1}:
+64-element Vector{Configuration{RelativisticOrbital{Int64}}}:
  [Kr]ᶜ 5s² 5p-² 5p³
  [Kr]ᶜ 5s 5p-² 5p³ 5d-
  [Kr]ᶜ 5s 5p-² 5p³ 5d
@@ -50,7 +50,7 @@
  [Kr]ᶜ 5s² 5p-² 5p 6p²</code></pre><p>Again, using the “continuum orbitals”, it is possible to generate the state space accessible via one-photon transitions from the ground state.</p><pre><code class="language-julia-repl">julia&gt; Xe⁺e = excited_configurations(rc&quot;[Kr] 5s2 5p6&quot;, ros&quot;k[s-d]&quot;...,
                                      max_excitations=:singles,
                                      keep_parity=false)
-16-element Array{Configuration{RelativisticOrbital},1}:
+16-element Vector{Configuration{RelativisticOrbital}}:
  [Kr]ᶜ 5s² 5p⁴ 5p-²
  [Kr]ᶜ 5s 5p⁴ 5p-² ks
  [Kr]ᶜ 5s 5p⁴ 5p-² kp-
@@ -70,7 +70,7 @@
            b = bound(c)
            num_electrons(b) =&gt; b
        end
-16-element Array{Pair{Int64,Configuration{RelativisticOrbital}},1}:
+16-element Vector{Pair{Int64, Configuration{RelativisticOrbital}}}:
  44 =&gt; [Kr]ᶜ 5s² 5p⁴ 5p-²
  43 =&gt; [Kr]ᶜ 5s 5p⁴ 5p-²
  43 =&gt; [Kr]ᶜ 5s 5p⁴ 5p-²
@@ -92,7 +92,7 @@ julia&gt; map(Xe⁺e) do c
            b = continuum(c)
            num_electrons(b) =&gt; b
        end
-16-element Array{Pair{Int64,Configuration{RelativisticOrbital}},1}:
+16-element Vector{Pair{Int64, Configuration{RelativisticOrbital}}}:
  0 =&gt; ∅
  1 =&gt; ks
  1 =&gt; kp-
@@ -109,15 +109,15 @@ julia&gt; map(Xe⁺e) do c
  1 =&gt; kp
  1 =&gt; kd-
  1 =&gt; kd</code></pre><h3 id="Term-symbol-calculation"><a class="docs-heading-anchor" href="#Term-symbol-calculation">Term symbol calculation</a><a id="Term-symbol-calculation-1"></a><a class="docs-heading-anchor-permalink" href="#Term-symbol-calculation" title="Permalink"></a></h3><p><a href="https://en.wikipedia.org/wiki/Angular_momentum_coupling">Overview of angular momentum coupling on Wikipedia.</a></p><p><strong><span>$LS$</span>-coupling.</strong> This is done purely non-relativistic, i.e. <code>2p-</code> is considered equivalent to <code>2p</code>.</p><pre><code class="language-julia-repl">julia&gt; terms(c&quot;1s&quot;)
-1-element Array{Term,1}:
+1-element Vector{Term}:
  ²S
 
 julia&gt; terms(c&quot;[Kr] 5s2 5p5&quot;)
-1-element Array{Term,1}:
+1-element Vector{Term}:
  ²Pᵒ
 
 julia&gt; terms(c&quot;[Kr] 5s2 5p4 6s 7g&quot;)
-13-element Array{Term,1}:
+13-element Vector{Term}:
  ¹D
  ¹F
  ¹G
@@ -131,16 +131,16 @@ julia&gt; terms(c&quot;[Kr] 5s2 5p4 6s 7g&quot;)
  ⁵F
  ⁵G
  ⁵H</code></pre><p><strong><span>$jj$</span>-coupling</strong>. <span>$jj$</span>-coupling is implemented slightly differently, it calculates the possible <span>$J$</span> values resulting from coupling <code>n</code> equivalent electrons in all combinations allowed by the Pauli principle.</p><pre><code class="language-julia-repl">julia&gt; intermediate_terms(ro&quot;1s&quot;, 1)
-1-element Array{IntermediateTerm{HalfIntegers.Half{Int64},Seniority},1}:
+1-element Vector{IntermediateTerm{HalfIntegers.Half{Int64}, Seniority}}:
  ₁1/2
 
 julia&gt; intermediate_terms(ro&quot;5p&quot;, 2)
-2-element Array{IntermediateTerm{HalfIntegers.Half{Int64},Seniority},1}:
+2-element Vector{IntermediateTerm{HalfIntegers.Half{Int64}, Seniority}}:
  ₀0
  ₂2
 
 julia&gt; intermediate_terms(ro&quot;7g&quot;, 3)
-10-element Array{IntermediateTerm{HalfIntegers.Half{Int64},Seniority},1}:
+10-element Vector{IntermediateTerm{HalfIntegers.Half{Int64}, Seniority}}:
  ₁9/2
  ₃3/2
  ₃5/2
@@ -151,11 +151,11 @@ julia&gt; intermediate_terms(ro&quot;7g&quot;, 3)
  ₃15/2
  ₃17/2
  ₃21/2</code></pre><h3 id="Configuration-state-functions"><a class="docs-heading-anchor" href="#Configuration-state-functions">Configuration state functions</a><a id="Configuration-state-functions-1"></a><a class="docs-heading-anchor-permalink" href="#Configuration-state-functions" title="Permalink"></a></h3><p>CSFs are formed from electronic configurations and their possible term couplings (along with intermediate terms, resulting from unfilled subshells).</p><pre><code class="language-julia-repl">julia&gt; sort(vcat(csfs(rc&quot;3s 3p2&quot;)..., csfs(rc&quot;3s 3p- 3p&quot;)...))
-7-element Array{CSF{RelativisticOrbital{Int64},HalfIntegers.Half{Int64},Seniority},1}:
+7-element Vector{RelativisticCSF{RelativisticOrbital{Int64}, Seniority}}:
  3s(₁1/2|1/2) 3p²(₀0|1/2)+
  3s(₁1/2|1/2) 3p-(₁1/2|1) 3p(₁3/2|1/2)+
  3s(₁1/2|1/2) 3p²(₂2|3/2)+
  3s(₁1/2|1/2) 3p-(₁1/2|0) 3p(₁3/2|3/2)+
  3s(₁1/2|1/2) 3p-(₁1/2|1) 3p(₁3/2|3/2)+
  3s(₁1/2|1/2) 3p²(₂2|5/2)+
- 3s(₁1/2|1/2) 3p-(₁1/2|1) 3p(₁3/2|5/2)+</code></pre></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="orbitals/">Orbitals »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 17 June 2021 07:39">Thursday 17 June 2021</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ 3s(₁1/2|1/2) 3p-(₁1/2|1) 3p(₁3/2|5/2)+</code></pre></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="orbitals/">Orbitals »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 1 November 2021 08:40">Monday 1 November 2021</span>. Using Julia version 1.6.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
