@@ -3,9 +3,9 @@
         config = Configuration([o"1s", o"2s", o"2p", o"3s", o"3p"], [2,2,6,2,6], [:closed])
         rconfig = Configuration([ro"1s", ro"2s", ro"2p", ro"3s", ro"3p"], [2,2,6,2,6], [:closed], sorted=true)
 
-        @test config.orbitals ==
+        @test orbitals(config) ==
             [o"1s", o"2s", o"2p", o"3s", o"3p"]
-        @test rconfig.orbitals ==
+        @test orbitals(rconfig) ==
             [ro"1s", ro"2s", ro"2p-", ro"2p", ro"3s", ro"3p-", ro"3p"]
 
         @test config.occupancy == [2, 2, 6, 2, 6]

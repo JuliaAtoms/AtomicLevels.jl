@@ -75,6 +75,25 @@ Base.isless(a::CSF, b::CSF) = last(a.terms) < last(b.terms)
 num_electrons(csf::CSF) = num_electrons(csf.config)
 
 """
+    orbitals(csf::CSF{O}) -> Vector
+
+Access the underlying list of orbitals
+
+```jldoctest
+julia> csf = first(csfs(rc"1s2 2p-2"))
+1s²   2p-²
+     0     0
+      0     0+
+
+julia> orbitals(csf)
+2-element Vector{RelativisticOrbital{Int64}}:
+ 1s
+ 2p-
+```
+"""
+orbitals(csf::CSF) = orbitals(csf.config)
+
+"""
     csfs(::Configuration) -> Vector{CSF}
     csfs(::Vector{Configuration}) -> Vector{CSF}
 

@@ -30,6 +30,7 @@ using .ATSPParser
         @test csf == csf
         @test csf != CSF(rc"1s2 2p- 2p", [IntermediateTerm(0,Seniority(0)), IntermediateTerm(1//2,Seniority(1)), IntermediateTerm(3//2,Seniority(1))], [0, 1//2, 1])
         @test num_electrons(csf) == 4
+        @test orbitals(csf) == [ro"1s", ro"2p-", ro"2p"]
 
         @test CSF(c"1s2 2p", [IntermediateTerm(T"1S",Seniority(0)), IntermediateTerm(T"2Po", Seniority(1))], [T"1S", T"2Po"]) isa NonRelativisticCSF
     end
