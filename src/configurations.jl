@@ -628,6 +628,25 @@ Base.in(orb::O, conf::Configuration{O}) where {O<:AbstractOrbital} =
     orb ∈ conf.orbitals
 
 """
+    orbitals(c::Configuration{O}) -> Vector{O}
+
+Access the underlying list of orbitals
+
+```jldoctest
+julia> orbitals(c"1s2 2s2")
+2-element Vector{Orbital{Int64}}:
+ 1s
+ 2s
+
+julia> orbitals(rc"1s2 2p-2")
+2-element Vector{RelativisticOrbital{Int64}}:
+ 1s
+ 2p-
+```
+"""
+orbitals(conf::Configuration) = conf.orbitals
+
+"""
     filter(f, c::Configuration) -> Configuration
 
 Filter out the orbitals from configuration `c` for which the predicate `f` returns `false`.
@@ -1303,6 +1322,6 @@ Calculates the number of Slater determinants corresponding to the configuration.
 multiplicity(c::Configuration) = prod(binomial.(degeneracy.(c.orbitals), c.occupancy))
 
 export Configuration, @c_str, @rc_str, @sc_str, @rsc_str, @scs_str, @rscs_str, issimilar,
-    num_electrons, core, peel, active, inactive, bound, continuum, parity, ⊗, @rcs_str,
+    num_electrons, orbitals, core, peel, active, inactive, bound, continuum, parity, ⊗, @rcs_str,
     SpinConfiguration, spin_configurations, substitutions, close!,
     nonrelconfiguration, relconfigurations
