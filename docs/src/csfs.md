@@ -99,6 +99,7 @@ CSF
 NonRelativisticCSF
 RelativisticCSF
 csfs
+orbitals(::CSF)
 ```
 
 ## Index

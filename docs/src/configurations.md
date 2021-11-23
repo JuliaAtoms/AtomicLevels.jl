@@ -67,6 +67,7 @@ issimilar
 Base.:(==)(a::Configuration{<:O}, b::Configuration{<:O}) where {O<:AbstractOrbital}
 num_electrons(::Configuration)
 num_electrons(::Configuration, ::AtomicLevels.AbstractOrbital)
+orbitals(::Configuration)
 Base.delete!
 Base.:(+)
 Base.:(-)
