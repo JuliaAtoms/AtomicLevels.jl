@@ -1182,7 +1182,7 @@ macro rsc_str(conf_str, suffix="")
     parse(SpinConfiguration{SpinOrbital{RelativisticOrbital}}, conf_str, sorted=suffix=="s")
 end
 
-function Base.show(io::IO, c::SpinConfiguration)
+function Base.show(io::IO, c::SpinConfiguration{O}) where {O<:SpinOrbital}
     ascii = get(io, :ascii, false)
     nc = length(c)
     if nc == 0
@@ -1190,28 +1190,28 @@ function Base.show(io::IO, c::SpinConfiguration)
         return
     end
 
-    orbitals = Dict{Orbital, Vector{<:SpinOrbital}}()
-    core_orbitals = sort(unique(map(o -> o.orb, core(c).orbitals)))
-    core_cfg = Configuration(core_orbitals, ones(Int, length(core_orbitals))) |> fill |> close
+    core_orbitals = sort(unique(map(o -> o.orb, orbitals(core(c)))))
 
-    if !isempty(core_cfg)
+    if !isempty(core_orbitals)
+        core_cfg = Configuration(core_orbitals, ones(Int, length(core_orbitals))) |> fill |> close
         show(io, core_cfg)
         write(io, " ")
     end
     # if !c.sorted
     # In the unsorted case, we do not yet contract subshells for
     # printing; to be implemented.
-    so = string.(peel(c).orbitals)
+    so = string.(orbitals(peel(c)))
     write(io, join(so, " "))
     return
     # end
-    # for orb in peel(c).orbitals
-    #     orbitals[orb.orb] = push!(get(orbitals, orb.orb, SpinOrbital[]), orb)
+    # os = Dict{Orbital, Vector{O}}()
+    # for orb in orbitals(peel(c))
+    #     os[orb.orb] = push!(get(os, orb.orb, SpinOrbital[]), orb)
     # end
-    # map(sort(collect(keys(orbitals)))) do orb
+    # map(sort(collect(keys(os)))) do orb
     #     ℓ = orb.ℓ
     #     g = degeneracy(orb)
-    #     sub_shell = orbitals[orb]
+    #     sub_shell = os[orb]
     #     if length(sub_shell) == g
     #         format("{1:s}{2:s}", orb, to_superscript(g))
     #     else
