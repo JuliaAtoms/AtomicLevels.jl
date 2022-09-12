@@ -232,6 +232,20 @@
              c"" => "∅"]) do (c,s)
                  @test "$(c)" == s
              end
+
+        # Test pretty-printing of vectors of spin-configurations; if
+        # there is a mix of integer and symbolic principal quantum
+        # numbers, the underlying orbital type of the SpinOrbital
+        # becomes a UnionAll, which complicates printing of the core
+        # configuration (if any).
+        @test string.([sc"1s₀α"]) == ["1s₀α"]
+        @test string.([sc"1s₀α 1s₀β"]) == ["1s₀α 1s₀β"]
+        @test string.([sc"1s₀α ks₀β"]) == ["1s₀α ks₀β"]
+        @test string.([sc"[He]c 2s₀α 2s₀β", sc"[He]c ks₀α ks₀β"]) == ["[He]ᶜ 2s₀α 2s₀β", "[He]ᶜ ks₀α ks₀β"]
+        @test string.([rsc"[He]c 2s(1/2) 2s(-1/2)", sc"[He]c ks₀α ks₀β"]) == ["[He]ᶜ 2s(1/2) 2s(-1/2)", "[He]ᶜ ks₀α ks₀β"]
+        @test string.([rsc"[He]c 2s(1/2) 2s(-1/2)", rsc"[He]c ks(1/2) ks(-1/2)"]) == ["[He]ᶜ 2s(1/2) 2s(-1/2)", "[He]ᶜ ks(1/2) ks(-1/2)"]
+        @test string.([sc"2s₀α 2s₀β", sc"ks₀α ks₀β"]) == ["2s₀α 2s₀β", "ks₀α ks₀β"]
+        @test string.([rsc"2s(1/2) 2s(-1/2)", rsc"ks(1/2) ks(-1/2)"]) == ["2s(1/2) 2s(-1/2)", "ks(1/2) ks(-1/2)"]
     end
 
     @testset "Orbital substitutions" begin
