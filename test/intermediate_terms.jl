@@ -58,11 +58,11 @@ using Test
     end
 
     @testset "Term enumeration" begin
-        @test !allunique(intermediate_terms(c"2p2 4f11")[2])
+        @test !allunique(intermediate_terms(Seniority, c"2p2 4f11")[2])
         @test allunique(intermediate_terms(SeniorityEnumeration, c"2p2 4f11")[2])
         @test allunique(intermediate_terms(TermEnumeration, c"2p2 4f11")[2])
 
-        @test !allunique(intermediate_terms(rc"5g4")[1])
+        @test !allunique(intermediate_terms(Seniority, rc"5g4")[1])
         @test allunique(intermediate_terms(SeniorityEnumeration, rc"5g4")[1])
         @test allunique(intermediate_terms(TermEnumeration, rc"5g4")[1])
     end
@@ -103,7 +103,7 @@ using Test
                                              5 => vcat(1, (5:2:19), 25)./2]]
 
         for (cfgs,cases) in ref_table
-            ref = [reduce(vcat, [[IntermediateTerm(convert(HalfInt, J), Seniority(ν))
+            ref = [reduce(vcat, [[IntermediateTerm(convert(HalfInt, J), SeniorityEnumeration(ν))
                                   for J in Js]
                                  for (ν,Js) in cases])]
             for cfg in cfgs
