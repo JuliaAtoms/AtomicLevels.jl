@@ -75,10 +75,12 @@ using .ATSPParser
         end
 
         @testset "Term disambiguation" begin
-            @test_throws ArgumentError csfs(c"2p2 4f11")
+            @test_throws ArgumentError csfs(c"2p2 4f11", Seniority)
+            @test allunique(csfs(c"2p2 4f11", SeniorityEnumeration))
             @test allunique(csfs(c"2p2 4f11", TermEnumeration))
 
-            @test_throws ArgumentError csfs(rc"5g4")
+            @test_throws ArgumentError csfs(rc"5g4", Seniority)
+            @test allunique(csfs(rc"5g4", SeniorityEnumeration))
             @test allunique(csfs(rc"5g4", TermEnumeration))
         end
     end

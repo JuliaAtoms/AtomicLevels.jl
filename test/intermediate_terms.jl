@@ -102,10 +102,15 @@ using Test
                      [rc"5g5", rc"6h-5"] => [1 => [9/2], 3 => vcat((3:2:17), 21)./2,
                                              5 => vcat(1, (5:2:19), 25)./2]]
 
+        # On-the-fly generation of extra disambiguating quantum number
+        # α, in case there is more than one J in Js for the same
+        # seniority ν.
+        getα(Js,J,i) = count(==(J), Js) == 1 ? 0 : i-findfirst(==(J), Js)+1
+
         for (cfgs,cases) in ref_table
-            ref = [reduce(vcat, [[IntermediateTerm(convert(HalfInt, J), SeniorityEnumeration(ν))
-                                  for J in Js]
-                                 for (ν,Js) in cases])]
+            ref = [sort(reduce(vcat, [[IntermediateTerm(convert(HalfInt, J), SeniorityEnumeration(ν,getα(Js,J,i)))
+                                       for (i,J) in enumerate(Js)]
+                                      for (ν,Js) in cases]))]
             for cfg in cfgs
                 @test intermediate_terms(cfg) == ref
             end
