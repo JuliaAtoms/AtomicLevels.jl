@@ -187,7 +187,7 @@ function Base.isless(t1::Term, t2::Term)
     @< t1.parity t2.parity
 end
 
-Base.hash(t::Term) = hash((t.L,t.S,t.parity))
+Base.hash(t::Term, h::UInt) = hash((t.L,t.S,t.parity), h)
 
 include("xu2006.jl")
 
