@@ -180,6 +180,8 @@ function isbound end
 isbound(::Orbital{Int}) = true
 isbound(::Orbital{Symbol}) = false
 
+isrelativistic(::Orbital) = false
+
 """
     angular_momenta(orbital)
 
@@ -319,4 +321,5 @@ end
 
 export AbstractOrbital, Orbital,
     @o_str, @os_str,
-    degeneracy, symmetry, isbound, angular_momenta, angular_momentum_ranges
+    degeneracy, symmetry, isbound, isrelativistic,
+    angular_momenta, angular_momentum_ranges

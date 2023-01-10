@@ -74,6 +74,9 @@ Base.isless(a::CSF, b::CSF) = last(a.terms) < last(b.terms)
 
 num_electrons(csf::CSF) = num_electrons(csf.config)
 
+isrelativistic(::NonRelativisticCSF) = false
+isrelativistic(::RelativisticCSF) = true
+
 """
     orbitals(csf::CSF{O}) -> Vector
 
@@ -92,6 +95,68 @@ julia> orbitals(csf)
 ```
 """
 orbitals(csf::CSF) = orbitals(csf.config)
+
+"""
+    term(csf::CSF)
+
+Return the final term of `csf`.
+
+```jldoctest
+julia> c = first(csfs(c"1s 2p"))
+1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-
+
+julia> term(c)
+¹Pᵒ
+
+julia> c = first(csfs(rc"1s2 2p-2"))
+1s²   2p-²
+     0     0
+      0     0+
+
+julia> term(c)
+0
+
+julia> c = first(csfs(rc"1s2 2p-"))
+1s²   2p-
+     0   1/2
+      0   1/2-
+
+julia> term(c)
+1/2
+```
+"""
+term(csf::CSF) = last(csf.terms)
+
+"""
+    parity(csf::CSF) -> Parity
+
+Return the parity of `csf`.
+
+```jldoctest
+julia> c = first(csfs(c"1s 2p"))
+1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-
+
+julia> parity(c)
+odd
+
+julia> c = first(csfs(rc"1s2 2p-2"))
+1s²   2p-²
+     0     0
+      0     0+
+
+julia> parity(c)
+even
+
+julia> c = first(csfs(rc"1s2 2p-"))
+1s²   2p-
+     0   1/2
+      0   1/2-
+
+julia> parity(c)
+odd
+```
+"""
+parity(csf::CSF) = parity(csf.config)
 
 """
     csfs(::Configuration) -> Vector{CSF}
@@ -184,4 +249,4 @@ function Base.show(io::IO, ::MIME"text/plain", csf::RelativisticCSF)
     print(io, iseven(parity(csf.config)) ? "+" : "-")
 end
 
-export CSF, NonRelativisticCSF, RelativisticCSF, csfs
+export CSF, NonRelativisticCSF, RelativisticCSF, csfs, term

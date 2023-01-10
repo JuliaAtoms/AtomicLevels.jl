@@ -179,6 +179,8 @@ symmetry(orb::RelativisticOrbital) = orb.κ
 isbound(::RelativisticOrbital{Int}) = true
 isbound(::RelativisticOrbital{Symbol}) = false
 
+isrelativistic(::RelativisticOrbital) = true
+
 """
     angular_momenta(orbital)
 

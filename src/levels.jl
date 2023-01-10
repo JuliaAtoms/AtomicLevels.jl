@@ -109,6 +109,10 @@ julia> levels.(csfs(rc"1s 2p-"))
 """
 levels(csf::CSF) = sort([Level(csf,J) for J in J_range(last(csf.terms))])
 
+parity(l::Level) = parity(l.csf)
+orbitals(l::Level) = orbitals(l.csf)
+isrelativistic(l::Level) = isrelativistic(l.csf)
+
 # * State
 
 @doc raw"""
@@ -177,5 +181,9 @@ julia> states(c)
 ```
 """
 states(csf::CSF) = states.(levels(csf))
+
+parity(s::State) = parity(s.level)
+orbitals(s::State) = orbitals(s.level)
+isrelativistic(s::State) = isrelativistic(s.level)
 
 export Level, weight, J_range, levels, State, states

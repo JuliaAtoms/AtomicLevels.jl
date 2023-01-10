@@ -15,3 +15,6 @@ function from_superscript(s)
                                    '⁰' => '0')
     map(Base.Fix1(getindex, inverse_superscript_map), s)
 end
+
+UnicodeFun.to_subscript(j::Half) =
+    isinteger(j) ? to_subscript(j.twice÷2) : to_subscript(j.twice)*","*to_subscript(2)

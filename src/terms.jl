@@ -120,6 +120,24 @@ end
 Base.zero(::Type{Term}) = T"1S"
 
 """
+    parity(t::Term) -> Parity
+
+Return the parity of `t`.
+
+```jldoctest
+julia> parity(T"1S")
+even
+
+julia> parity(T"1So")
+odd
+
+julia> parity(T"2Do")
+odd
+```
+"""
+parity(t::Term) = t.parity
+
+"""
     multiplicity(t::Term)
 
 Returns the spin multiplicity of the [`Term`](@ref) `t`, i.e. the

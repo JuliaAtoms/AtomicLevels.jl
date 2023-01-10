@@ -98,6 +98,7 @@ parity(so::SpinOrbital) = parity(so.orb)
 symmetry(so::SpinOrbital) = (symmetry(so.orb), so.m...)
 
 isbound(so::SpinOrbital) = isbound(so.orb)
+isrelativistic(so::SpinOrbital) = isrelativistic(so.orb)
 
 Base.promote_type(::Type{SO}, ::Type{SO}) where {SO<:SpinOrbital} = SO
 
