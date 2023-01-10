@@ -77,7 +77,7 @@ intermediate_terms
 ### Disambiguating quantum numbers
 
 The [`IntermediateTerm`](@ref) type does not specify how to interpret the disambiguating
-quantum number(s) ``ν``, or even what the type of it should be. In AtomicLevels, we use two
+quantum number(s) ``ν``, or even what the type of it should be. In AtomicLevels, we use four
 different types, depending on the situation:
 
 * **A simple `Integer`.** In this case, the quantum number ``\nu`` must be in the range
@@ -87,14 +87,24 @@ different types, depending on the situation:
 
   AtomicLevels does not prescribe any further interpretation for the quantum number.
   It can be used as a simple counter to distinguish the different terms, or the user can
-  define their own mapping from the set of integers to physical states.
+  define their own mapping from the set of integers to physical
+  states. See also [`TermEnumeration`](@ref) which can be used to wrap
+  this integer.
 
 * **`Seniority`.** In this case the number is interpreted to be _Racah's seniority
   number_. This gives the intermediate term a specific physical interpretation, but only
   works for certain subshells. See the [`Seniority`](@ref) type for more information.
 
+* **`SeniorityEnumeration`.** To further disambiguate those terms
+  which are degenerate for a given seniority ``\nu``, an additional,
+  ad-hoc, quantum number ``\alpha`` is added to the classification,
+  which simply enumerates the multiplet.  See the
+  [`SeniorityEnumeration`](@ref) type for more information.
+
 ```@docs
 Seniority
+SeniorityEnumeration
+TermEnumeration
 ```
 
 ## Term couplings

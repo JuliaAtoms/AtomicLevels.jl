@@ -100,6 +100,7 @@ NonRelativisticCSF
 RelativisticCSF
 csfs
 orbitals(::CSF)
+term(::CSF)
 ```
 
 ## Index
