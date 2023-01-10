@@ -44,7 +44,7 @@ istermvalid(term, s::Seniority) =
 # play it safe.
 assert_unique_classification(orb::Orbital, occupation, term::Term, s::Seniority) =
     istermvalid(term, s) &&
-    (orb.ℓ < 3 || occupation == degeneracy(orb))
+    (orb.ℓ < 3 || occupation == degeneracy(orb) || occupation ≤ 2)
 
 function assert_unique_classification(orb::RelativisticOrbital, occupation, J::HalfInteger, s::Seniority)
     ν = s.ν
@@ -58,8 +58,70 @@ function assert_unique_classification(orb::RelativisticOrbital, occupation, J::H
           orb.j > half(9)) # Again, too strict.
 end
 
+# ** Seniority + enumeration
 
-# * Intermediate terms, seniority
+"""
+    SeniorityEnumeration(ν, α)
+
+In addition to [`Seniority`](@ref), an extra quantum number `α` is
+used to enumerate equivalent terms.
+"""
+struct SeniorityEnumeration
+    ν::Int
+    α::Int
+end
+
+function Base.isless(a::SeniorityEnumeration, b::SeniorityEnumeration)
+    @< a.ν b.ν
+    @< a.α b.α
+end
+Base.iseven(s::SeniorityEnumeration) = iseven(s.ν)
+Base.isodd(s::SeniorityEnumeration) = isodd(s.ν)
+
+Base.:(==)(a::Seniority, b::SeniorityEnumeration) =
+    a.ν == b.ν && b.α == 0
+
+Base.:(==)(a::SeniorityEnumeration, b::Seniority) =
+    a.ν == b.ν && a.α == 0
+
+function Base.show(io::IO, s::SeniorityEnumeration)
+    write(io, to_subscript(s.ν))
+    iszero(s.α) || write(io, ";", to_subscript(s.α))
+end
+
+istermvalid(term, s::SeniorityEnumeration) =
+    iseven(multiplicity(term)) ⊻ iseven(s)
+
+assert_unique_classification(orb::Orbital, occupation, term::Term, s::SeniorityEnumeration) =
+    istermvalid(term, s)
+
+assert_unique_classification(orb::RelativisticOrbital, occupation, J::HalfInteger, s::SeniorityEnumeration) =
+    istermvalid(J, s)
+
+# * Term enumeration
+
+"""
+    TermEnumeration(ν)
+
+`TermEnumeration` is an extra quantum number that disambiguates
+between terms belonging to a subshell with a specific occupancy, that
+are assigned the same term symbols. In contrast with
+[`Seniority`](@ref), `TermEnumeration` is not an eigenvalue of any
+operator, and cannot be used to fix e.g. phases of matrix elements. On
+the other hand, no limitation on the occupancy of a subshell exists.
+"""
+struct TermEnumeration
+    ν::Int
+end
+
+Base.isless(a::TermEnumeration, b::TermEnumeration) = a.ν < b.ν
+
+Base.show(io::IO, s::TermEnumeration) = write(io, "₍", to_subscript(s.ν), "₎")
+
+assert_unique_classification(orb, occupation, term, s::TermEnumeration) =
+    s.ν ∈ 1:count_terms(orb, occupation, term)
+
+# * Intermediate terms
 """
     struct IntermediateTerm{T,S}
 
@@ -130,8 +192,24 @@ function Base.isless(a::IntermediateTerm, b::IntermediateTerm)
     @< a.term b.term
 end
 
+Base.:(==)(a::IntermediateTerm, b::IntermediateTerm) =
+    a.ν == b.ν && a.term == b.term
+
+# ** Seniority[,Enumeration]
+
+_new_intermediate_terms(t,ν,nn,::Type{Seniority}) = repeat([IntermediateTerm(t, Seniority(ν))], nn)
+
+function _new_intermediate_terms(t,ν,nn,::Type{SeniorityEnumeration})
+    if nn == 1
+        [IntermediateTerm(t, SeniorityEnumeration(ν, 0))]
+    else
+        [IntermediateTerm(t, SeniorityEnumeration(ν, α))
+         for α = 1:nn]
+    end
+end
+
 """
-    intermediate_terms(orb::Orbital, w::Int=one(Int))
+    intermediate_terms([DisambiguatingQN=SeniorityEnumeration], orb::Orbital, w::Int=one(Int))
 
 Generates all [`IntermediateTerm`](@ref) for a given non-relativstic
 orbital `orb` and occupation `w`.
@@ -169,12 +247,12 @@ julia> intermediate_terms(o"3d", 3)
 In the second case, we see both `₁²D` and `₃²D`, since there are two
 ways of coupling 3 `d` electrons to a `²D` symmetry.
 """
-function intermediate_terms(orb::Union{<:Orbital,<:RelativisticOrbital}, w::Int=one(Int))
+function intermediate_terms(::Type{S}, orb::Union{<:Orbital,<:RelativisticOrbital}, w::Int=one(Int)) where {S<:Union{Seniority,SeniorityEnumeration}}
     g = degeneracy(orb)
     w > g÷2 && (w = g - w)
     ts = terms(orb, w)
     its = map(unique(ts)) do t
-        its = IntermediateTerm{typeof(t),Seniority}[]
+        its = IntermediateTerm{typeof(t),S}[]
         previously_seen = 0
 
         # We have to loop in reverse, since odd occupation numbers
@@ -182,15 +260,32 @@ function intermediate_terms(orb::Union{<:Orbital,<:RelativisticOrbital}, w::Int=
         for ν ∈ reverse(w:-2:0)
             nn = count_terms(orb, ν, t) - previously_seen
             previously_seen += nn
-            append!(its, repeat([IntermediateTerm(t, Seniority(ν))], nn))
+            append!(its, _new_intermediate_terms(t, ν, nn, S))
         end
         its
     end
     sort(vcat(its...))
 end
 
+# ** TermEnumeration
+
+function intermediate_terms(::Type{TermEnumeration}, orb::Union{<:Orbital,<:RelativisticOrbital}, w::Int=one(Int))
+    g = degeneracy(orb)
+    w > g÷2 && (w = g - w)
+    ts = unique(terms(orb, w))
+
+    sort(reduce(vcat, [[IntermediateTerm(t, TermEnumeration(ν))
+                        for ν = 1:count_terms(orb, w, t)]
+                       for t in ts]))
+end
+
+# ** Interface
+
+intermediate_terms(orb::Union{<:Orbital,<:RelativisticOrbital}, args...) =
+    intermediate_terms(SeniorityEnumeration, orb, args...)
+
 """
-    intermediate_terms(config)
+    intermediate_terms([DisambiguatingQN=Seniority], config)
 
 Generate the intermediate terms for each subshell of `config`.
 
@@ -208,13 +303,17 @@ julia> intermediate_terms(rc"3d2 5g3")
  [₁9/2, ₃3/2, ₃5/2, ₃7/2, ₃9/2, ₃11/2, ₃13/2, ₃15/2, ₃17/2, ₃21/2]
 ```
 """
-function intermediate_terms(config::Configuration)
+function intermediate_terms(DQN::Type, config::Configuration)
     map(config) do (orb,occupation,state)
-        intermediate_terms(orb,occupation)
+        intermediate_terms(DQN, orb,occupation)
     end
 end
+
+intermediate_terms(config::Configuration) =
+    intermediate_terms(SeniorityEnumeration, config)
+
 
 assert_unique_classification(orb, occupation, it::IntermediateTerm) =
     assert_unique_classification(orb, occupation, it.term, it.ν)
 
-export IntermediateTerm, intermediate_terms, Seniority
+export IntermediateTerm, intermediate_terms, Seniority, SeniorityEnumeration, TermEnumeration

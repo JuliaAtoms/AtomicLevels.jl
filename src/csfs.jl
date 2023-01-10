@@ -167,15 +167,16 @@ configurations.
 """
 function csfs end
 
-function csfs(config::Configuration)
-    map(allchoices(intermediate_terms(peel(config)))) do subshell_terms
+function csfs(config::Configuration, DQN::Type=SeniorityEnumeration)
+    map(allchoices(intermediate_terms(DQN, peel(config)))) do subshell_terms
         map(intermediate_couplings(subshell_terms)) do coupled_terms
             CSF(config, subshell_terms, coupled_terms[2:end])
         end
-    end |> c -> vcat(c...) |> sort
+    end |> c -> reduce(vcat, c) |> sort
 end
 
-csfs(configs::Vector{Configuration{O}}) where O = vcat(map(csfs, configs)...)
+csfs(configs::Vector{Configuration{O}}, DQN::Type=SeniorityEnumeration) where O =
+    reduce(vcat, map(Base.Fix2(csfs, DQN), configs))
 
 Base.length(csf::CSF) = length(peel(csf.config))
 Base.getindex(csf::CSF, i::Integer) =

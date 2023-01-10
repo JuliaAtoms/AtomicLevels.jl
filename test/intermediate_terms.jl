@@ -57,6 +57,16 @@ using Test
         end
     end
 
+    @testset "Term enumeration" begin
+        @test !allunique(intermediate_terms(c"2p2 4f11")[2])
+        @test allunique(intermediate_terms(SeniorityEnumeration, c"2p2 4f11")[2])
+        @test allunique(intermediate_terms(TermEnumeration, c"2p2 4f11")[2])
+
+        @test !allunique(intermediate_terms(rc"5g4")[1])
+        @test allunique(intermediate_terms(SeniorityEnumeration, rc"5g4")[1])
+        @test allunique(intermediate_terms(TermEnumeration, rc"5g4")[1])
+    end
+
     @testset "jj coupling" begin
         # Taken from Table A.10 of
         #
