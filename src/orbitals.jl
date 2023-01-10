@@ -133,9 +133,8 @@ false
 ```
 """
 function Base.isless(a::Orbital, b::Orbital)
-    nisless(a.n, b.n) && return true
-    a.n == b.n && a.ℓ < b.ℓ && return true
-    false
+    @< a.n b.n nisless
+    @< a.ℓ b.ℓ
 end
 
 """

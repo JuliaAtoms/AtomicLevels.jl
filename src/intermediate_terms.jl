@@ -125,9 +125,10 @@ function Base.show(io::IO, iterm::IntermediateTerm)
     show(io, iterm.term)
 end
 
-Base.isless(a::IntermediateTerm, b::IntermediateTerm) =
-    a.ν < b.ν ||
-    a.ν == b.ν && a.term < b.term
+function Base.isless(a::IntermediateTerm, b::IntermediateTerm)
+    @< a.ν b.ν
+    @< a.term b.term
+end
 
 """
     intermediate_terms(orb::Orbital, w::Int=one(Int))

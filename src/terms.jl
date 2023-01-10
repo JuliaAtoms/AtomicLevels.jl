@@ -161,14 +161,13 @@ julia> weight(T"³P")
 """
 weight(t::Term) = (2t.L + 1) * multiplicity(t)
 
-import Base.==
-==(t1::Term, t2::Term) = ((t1.L == t2.L) && (t1.S == t2.S) && (t1.parity == t2.parity))
+Base.:(==)(t1::Term, t2::Term) = ((t1.L == t2.L) && (t1.S == t2.S) && (t1.parity == t2.parity))
 
-import Base.<
-<(t1::Term, t2::Term) = ((t1.S < t2.S) || (t1.S == t2.S) && (t1.L < t2.L)
-                         || (t1.S == t2.S) && (t1.L == t2.L) && (t1.parity < t2.parity))
-import Base.isless
-isless(t1::Term, t2::Term) = (t1 < t2)
+function Base.isless(t1::Term, t2::Term)
+    @< t1.S t2.S
+    @< t1.L t2.L
+    @< t1.parity t2.parity
+end
 
 Base.hash(t::Term) = hash((t.L,t.S,t.parity))
 

@@ -158,11 +158,19 @@ end
 degeneracy(orb::RelativisticOrbital{N}) where N = 2*abs(orb.κ) # 2j + 1 = 2|κ|
 
 function Base.isless(a::RelativisticOrbital, b::RelativisticOrbital)
-    nisless(a.n, b.n) && return true
-    aℓ, bℓ = κ2ℓ(a.κ), κ2ℓ(b.κ)
-    a.n == b.n && aℓ < bℓ && return true
-    a.n == b.n && aℓ == bℓ && abs(a.κ) < abs(b.κ) && return true
-    false
+    @< a.n b.n nisless
+    @< κ2ℓ(a.κ) κ2ℓ(b.κ)
+    @< abs(a.κ) abs(b.κ)
+end
+
+function Base.isless(a::RelativisticOrbital, b::Orbital)
+    @< a.n b.n nisless
+    @< κ2ℓ(a.κ) b.ℓ
+end
+
+function Base.isless(a::Orbital, b::RelativisticOrbital)
+    @< a.n b.n nisless
+    @< a.ℓ κ2ℓ(b.κ)
 end
 
 parity(orb::RelativisticOrbital) = p"odd"^κ2ℓ(orb.κ)
