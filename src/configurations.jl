@@ -937,7 +937,7 @@ non-relativistic orbital with `n` and `ℓ` quantum numbers, with given occupanc
 
 ```jldoctest; filter = r"#s[0-9]+"
 julia> AtomicLevels.rconfigurations_from_orbital(3, 1, 2)
-3-element Vector{Configuration{var"#s00"} where var"#s00"<:RelativisticOrbital}:
+3-element Vector{Configuration{<:RelativisticOrbital}}:
  3p-²
  3p- 3p
  3p²
@@ -979,7 +979,7 @@ non-relativistic version of the `orbital` with a given occupancy.
 
 ```jldoctest; filter = r"#s[0-9]+"
 julia> AtomicLevels.rconfigurations_from_orbital(o"3p", 2)
-3-element Vector{Configuration{var"#s00"} where var"#s00"<:RelativisticOrbital}:
+3-element Vector{Configuration{<:RelativisticOrbital}}:
  3p-²
  3p- 3p
  3p²
@@ -1037,7 +1037,7 @@ and `occupancy` are integers, and `ℓ` is in spectroscopic notation.
 
 ```jldoctest; filter = r"#s[0-9]+"
 julia> rcs"3p2"
-3-element Vector{Configuration{var"#s00"} where var"#s00"<:RelativisticOrbital}:
+3-element Vector{Configuration{<:RelativisticOrbital}}:
  3p-²
  3p- 3p
  3p²
@@ -1064,7 +1064,7 @@ julia> spin_configurations(c"1s2"s)
  1s₀α 1s₀β
 
 julia> spin_configurations(c"1s ks")
-4-element Vector{SpinConfiguration{SpinOrbital{var"#s00", Tuple{Int64, HalfIntegers.Half{Int64}}} where var"#s00"<:Orbital}}:
+4-element Vector{SpinConfiguration{SpinOrbital{<:Orbital, Tuple{Int64, HalfIntegers.Half{Int64}}}}}:
  1s₀α ks₀α
  1s₀β ks₀α
  1s₀α ks₀β

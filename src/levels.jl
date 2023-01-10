@@ -92,17 +92,17 @@ Generate all permissible [`Level`](@ref)s given `csf`.
 
 ```jldoctest
 julia> levels.(csfs(c"1s 2p"))
-2-element Vector{Vector{Level{Orbital{Int64}, Term, Seniority}}}:
+2-element Vector{Vector{Level{Orbital{Int64}, Term, SeniorityEnumeration}}}:
  [|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1⟩]
  [|1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 0⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2⟩]
 
 julia> levels.(csfs(rc"1s 2p"))
-2-element Vector{Vector{Level{RelativisticOrbital{Int64}, HalfIntegers.Half{Int64}, Seniority}}}:
+2-element Vector{Vector{Level{RelativisticOrbital{Int64}, HalfIntegers.Half{Int64}, SeniorityEnumeration}}}:
  [|1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1⟩]
  [|1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2⟩]
 
 julia> levels.(csfs(rc"1s 2p-"))
-2-element Vector{Vector{Level{RelativisticOrbital{Int64}, HalfIntegers.Half{Int64}, Seniority}}}:
+2-element Vector{Vector{Level{RelativisticOrbital{Int64}, HalfIntegers.Half{Int64}, SeniorityEnumeration}}}:
  [|1s(₁1/2|1/2) 2p-(₁1/2|0)-, J = 0⟩]
  [|1s(₁1/2|1/2) 2p-(₁1/2|1)-, J = 1⟩]
 ```
@@ -153,7 +153,7 @@ julia> l = Level(first(csfs(c"1s 2p")), 1)
 |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1⟩
 
 julia> states(l)
-3-element Vector{State{Orbital{Int64}, Term, Seniority}}:
+3-element Vector{State{Orbital{Int64}, Term, SeniorityEnumeration}}:
  |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = -1⟩
  |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 0⟩
  |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 1⟩
@@ -176,7 +176,7 @@ julia> c = first(csfs(c"1s 2p"))
 1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-
 
 julia> states(c)
-1-element Vector{Vector{State{Orbital{Int64}, Term, Seniority}}}:
+1-element Vector{Vector{State{Orbital{Int64}, Term, SeniorityEnumeration}}}:
  [|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = -1⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 0⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = 1⟩]
 ```
 """
