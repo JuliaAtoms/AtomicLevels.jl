@@ -72,7 +72,7 @@ jobs:
             Pkg.develop(PackageSpec(path=pwd()))
             Pkg.instantiate()'
       - run: |
-          julia --project=docs -e '
+          julia --project=docs --color=yes -e '
             using Documenter: DocMeta, doctest
             using AtomicLevels
             DocMeta.setdocmeta!(AtomicLevels, :DocTestSetup, :(using AtomicLevels); recursive=true)
