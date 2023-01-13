@@ -46,7 +46,7 @@ function assert_orbital_ℓj(ℓ::Integer, j::Real)
 end
 
 """
-    struct RelativisticOrbital{N <: AtomicLevels.MQ} <: AbstractOrbital
+    struct RelativisticOrbital{N <: AtomicLevels.MQ} <: SpatialOrbital
 
 Label for an atomic orbital with a principal quantum number `n::N` and well-defined total
 angular momentum ``j``. The angular component of the orbital is labelled by the ``(\\ell, j)``
@@ -109,7 +109,7 @@ julia> RelativisticOrbital(:K, 2, 3//2)
 Kd-
 ```
 """
-struct RelativisticOrbital{N<:MQ} <: AbstractOrbital
+struct RelativisticOrbital{N<:MQ} <: SpatialOrbital
     n::N
     κ::Int
     function RelativisticOrbital(n::Integer, κ::Integer)

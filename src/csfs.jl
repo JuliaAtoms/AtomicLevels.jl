@@ -29,7 +29,7 @@ or non-relativistic orbitals.
 * If it is a configuration of [`RelativisticOrbital`](@ref)s, both `subshell_terms` and
   `terms` should both be a list of half-integer values.
 """
-struct CSF{O<:AbstractOrbital, T<:Union{Term,HalfInteger}, S}
+struct CSF{O<:SpatialOrbital, T<:Union{Term,HalfInteger}, S}
     config::Configuration{<:O}
     subshell_terms::Vector{IntermediateTerm{T,S}}
     terms::Vector{T}

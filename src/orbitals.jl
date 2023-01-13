@@ -11,6 +11,15 @@ abstract type AbstractOrbital end
 Base.Broadcast.broadcastable(x::AbstractOrbital) = Ref(x)
 
 """
+    abstract type SpatialOrbital
+
+Abstract supertype of all spatial orbital types, i.e. those where
+projection quantum numbers are _not_ specified, as opposed to
+[`SpinOrbital`](@ref)s.
+"""
+abstract type SpatialOrbital <: AbstractOrbital end
+
+"""
     const MQ = Union{Int,Symbol}
 
 Defines the possible types that may represent the main quantum number. It can either be an
@@ -34,7 +43,7 @@ end
 # * Non-relativistic orbital
 
 """
-    struct Orbital{N <: AtomicLevels.MQ} <: AbstractOrbital
+    struct Orbital{N <: AtomicLevels.MQ} <: SpatialOrbital
 
 Label for an atomic orbital with a principal quantum number `n::N` and orbital angular
 momentum `ℓ`.
@@ -66,7 +75,7 @@ julia> Orbital(:K, 2)
 Kd
 ```
 """
-struct Orbital{N<:MQ} <: AbstractOrbital
+struct Orbital{N<:MQ} <: SpatialOrbital
     n::N
     ℓ::Int
     function Orbital(n::Int, ℓ::Int)
@@ -278,7 +287,7 @@ macro o_str(orb_str)
     parse(Orbital, orb_str)
 end
 
-function orbitals_from_string(::Type{O}, orbs_str::AbstractString) where {O<:AbstractOrbital}
+function orbitals_from_string(::Type{O}, orbs_str::AbstractString) where {O<:SpatialOrbital}
     map(split(orbs_str)) do orb_str
         m = match(r"^([0-9]+|.)\[([a-z]|[0-9]+)(-([a-z]|[0-9]+)){0,1}\]$", strip(orb_str))
         m === nothing && throw(ArgumentError("Invalid orbitals string: $(orb_str)"))
@@ -319,7 +328,7 @@ macro os_str(orbs_str)
     orbitals_from_string(Orbital, orbs_str)
 end
 
-export AbstractOrbital, Orbital,
+export AbstractOrbital, SpatialOrbital, Orbital,
     @o_str, @os_str,
     degeneracy, symmetry, isbound, isrelativistic,
     angular_momenta, angular_momentum_ranges

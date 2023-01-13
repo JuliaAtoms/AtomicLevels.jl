@@ -296,7 +296,7 @@ julia> terms(c"[Ne] 3d3")
  ⁴F
 ```
 """
-function terms(config::Configuration{O}) where {O<:AbstractOrbital}
+function terms(config::Configuration)
     ts = map(config) do (orb,occ,state)
         terms(orb,occ)
     end
