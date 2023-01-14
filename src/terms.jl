@@ -120,6 +120,24 @@ end
 Base.zero(::Type{Term}) = T"1S"
 
 """
+    parity(t::Term) -> Parity
+
+Return the parity of `t`.
+
+```jldoctest
+julia> parity(T"1S")
+even
+
+julia> parity(T"1So")
+odd
+
+julia> parity(T"2Do")
+odd
+```
+"""
+parity(t::Term) = t.parity
+
+"""
     multiplicity(t::Term)
 
 Returns the spin multiplicity of the [`Term`](@ref) `t`, i.e. the
@@ -161,16 +179,15 @@ julia> weight(T"³P")
 """
 weight(t::Term) = (2t.L + 1) * multiplicity(t)
 
-import Base.==
-==(t1::Term, t2::Term) = ((t1.L == t2.L) && (t1.S == t2.S) && (t1.parity == t2.parity))
+Base.:(==)(t1::Term, t2::Term) = ((t1.L == t2.L) && (t1.S == t2.S) && (t1.parity == t2.parity))
 
-import Base.<
-<(t1::Term, t2::Term) = ((t1.S < t2.S) || (t1.S == t2.S) && (t1.L < t2.L)
-                         || (t1.S == t2.S) && (t1.L == t2.L) && (t1.parity < t2.parity))
-import Base.isless
-isless(t1::Term, t2::Term) = (t1 < t2)
+function Base.isless(t1::Term, t2::Term)
+    @< t1.S t2.S
+    @< t1.L t2.L
+    @< t1.parity t2.parity
+end
 
-Base.hash(t::Term) = hash((t.L,t.S,t.parity))
+Base.hash(t::Term, h::UInt) = hash((t.L,t.S,t.parity), h)
 
 include("xu2006.jl")
 
@@ -279,7 +296,7 @@ julia> terms(c"[Ne] 3d3")
  ⁴F
 ```
 """
-function terms(config::Configuration{O}) where {O<:AbstractOrbital}
+function terms(config::Configuration)
     ts = map(config) do (orb,occ,state)
         terms(orb,occ)
     end

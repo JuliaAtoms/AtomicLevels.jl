@@ -46,7 +46,7 @@ function assert_orbital_ℓj(ℓ::Integer, j::Real)
 end
 
 """
-    struct RelativisticOrbital{N <: AtomicLevels.MQ} <: AbstractOrbital
+    struct RelativisticOrbital{N <: AtomicLevels.MQ} <: SpatialOrbital
 
 Label for an atomic orbital with a principal quantum number `n::N` and well-defined total
 angular momentum ``j``. The angular component of the orbital is labelled by the ``(\\ell, j)``
@@ -109,7 +109,7 @@ julia> RelativisticOrbital(:K, 2, 3//2)
 Kd-
 ```
 """
-struct RelativisticOrbital{N<:MQ} <: AbstractOrbital
+struct RelativisticOrbital{N<:MQ} <: SpatialOrbital
     n::N
     κ::Int
     function RelativisticOrbital(n::Integer, κ::Integer)
@@ -158,11 +158,19 @@ end
 degeneracy(orb::RelativisticOrbital{N}) where N = 2*abs(orb.κ) # 2j + 1 = 2|κ|
 
 function Base.isless(a::RelativisticOrbital, b::RelativisticOrbital)
-    nisless(a.n, b.n) && return true
-    aℓ, bℓ = κ2ℓ(a.κ), κ2ℓ(b.κ)
-    a.n == b.n && aℓ < bℓ && return true
-    a.n == b.n && aℓ == bℓ && abs(a.κ) < abs(b.κ) && return true
-    false
+    @< a.n b.n nisless
+    @< κ2ℓ(a.κ) κ2ℓ(b.κ)
+    @< abs(a.κ) abs(b.κ)
+end
+
+function Base.isless(a::RelativisticOrbital, b::Orbital)
+    @< a.n b.n nisless
+    @< κ2ℓ(a.κ) b.ℓ
+end
+
+function Base.isless(a::Orbital, b::RelativisticOrbital)
+    @< a.n b.n nisless
+    @< a.ℓ κ2ℓ(b.κ)
 end
 
 parity(orb::RelativisticOrbital) = p"odd"^κ2ℓ(orb.κ)
@@ -170,6 +178,8 @@ symmetry(orb::RelativisticOrbital) = orb.κ
 
 isbound(::RelativisticOrbital{Int}) = true
 isbound(::RelativisticOrbital{Symbol}) = false
+
+isrelativistic(::RelativisticOrbital) = true
 
 """
     angular_momenta(orbital)

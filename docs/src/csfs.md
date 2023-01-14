@@ -44,7 +44,7 @@ In the multi-electron case, the states that you multiply together are the atomic
 
 2. Electrons are fermionic particles adhering to the [Pauli principle](https://en.wikipedia.org/wiki/Pauli_exclusion_principle).
 
-   This means that not all direct products of single-particle states are valid (the same single-particle state can not be repeated) or unique (anti-symmetry means that the order in the product does not matter). This, in turn, means that not all the coupled eigenstates predicted by the Clebsch-Gordan relation actually exist and you can not use the Clebsch–Gordan relation directly to determine their coefficients.
+   This means that not all direct products of single-particle states are valid (the same single-particle state can not be repeated) or unique (anti-symmetry means that the order in the product does not matter). This, in turn, means that not all the coupled eigenstates predicted by the Clebsch–Gordan relation actually exist and you can not use the Clebsch–Gordan relation directly to determine their coefficients.
 
 To work within those constraints, AtomicLevels specifies a _coupling scheme_. That is, the CSFs contain additional data that allows the states to be identified uniquely.
 
@@ -100,6 +100,7 @@ NonRelativisticCSF
 RelativisticCSF
 csfs
 orbitals(::CSF)
+term(::CSF)
 ```
 
 ## Index

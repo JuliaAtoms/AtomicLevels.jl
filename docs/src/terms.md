@@ -77,7 +77,7 @@ intermediate_terms
 ### Disambiguating quantum numbers
 
 The [`IntermediateTerm`](@ref) type does not specify how to interpret the disambiguating
-quantum number(s) ``ν``, or even what the type of it should be. In AtomicLevels, we use two
+quantum number(s) ``ν``, or even what the type of it should be. In AtomicLevels, we use four
 different types, depending on the situation:
 
 * **A simple `Integer`.** In this case, the quantum number ``\nu`` must be in the range
@@ -87,14 +87,24 @@ different types, depending on the situation:
 
   AtomicLevels does not prescribe any further interpretation for the quantum number.
   It can be used as a simple counter to distinguish the different terms, or the user can
-  define their own mapping from the set of integers to physical states.
+  define their own mapping from the set of integers to physical
+  states. See also [`TermEnumeration`](@ref) which can be used to wrap
+  this integer.
 
 * **`Seniority`.** In this case the number is interpreted to be _Racah's seniority
   number_. This gives the intermediate term a specific physical interpretation, but only
   works for certain subshells. See the [`Seniority`](@ref) type for more information.
 
+* **`SeniorityEnumeration`.** To further disambiguate those terms
+  which are degenerate for a given seniority ``\nu``, an additional,
+  ad-hoc, quantum number ``\alpha`` is added to the classification,
+  which simply enumerates the multiplet.  See the
+  [`SeniorityEnumeration`](@ref) type for more information.
+
 ```@docs
 Seniority
+SeniorityEnumeration
+TermEnumeration
 ```
 
 ## Term couplings
@@ -130,7 +140,7 @@ individual subshells:
 
 ```jldoctest intermediate_term_examples
 julia> its = intermediate_terms(c"3p2 4s 5p2")
-3-element Vector{Vector{IntermediateTerm{Term, Seniority}}}:
+3-element Vector{Vector{IntermediateTerm{Term, SeniorityEnumeration}}}:
  [₀¹S, ₂¹D, ₂³P]
  [₁²S]
  [₀¹S, ₂¹D, ₂³P]
@@ -222,7 +232,7 @@ each subshell of `3p² 4s 5p²`
 
 ```jldoctest intermediate_term_examples
 julia> last.(its)
-3-element Vector{IntermediateTerm{Term, Seniority}}:
+3-element Vector{IntermediateTerm{Term, SeniorityEnumeration}}:
  ₂³P
  ₁²S
  ₂³P
@@ -268,12 +278,12 @@ schemes has the following [`CSF`](@ref)s:
 
 ```jldoctest levels_and_states
 julia> csls = csfs(c"1s 2p")
-2-element Vector{NonRelativisticCSF{Orbital{Int64}, Seniority}}:
+2-element Vector{NonRelativisticCSF{Orbital{Int64}, SeniorityEnumeration}}:
  1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-
  1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-
 
 julia> csjj = vcat(csfs(rc"1s 2p"), csfs(rc"1s 2p-"))
-4-element Vector{RelativisticCSF{RelativisticOrbital{Int64}, Seniority}}:
+4-element Vector{RelativisticCSF{RelativisticOrbital{Int64}, SeniorityEnumeration}}:
  1s(₁1/2|1/2) 2p(₁3/2|1)-
  1s(₁1/2|1/2) 2p(₁3/2|2)-
  1s(₁1/2|1/2) 2p-(₁1/2|0)-
@@ -285,12 +295,12 @@ values of ``J``, i.e. ``0``, ``2\times 1``, and ``2``:
 
 ```jldoctest levels_and_states
 julia> levels.(csls)
-2-element Vector{Vector{Level{Orbital{Int64}, Term, Seniority}}}:
+2-element Vector{Vector{Level{Orbital{Int64}, Term, SeniorityEnumeration}}}:
  [|1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1⟩]
  [|1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 0⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1⟩, |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2⟩]
 
 julia> levels.(csjj)
-4-element Vector{Vector{Level{RelativisticOrbital{Int64}, HalfIntegers.Half{Int64}, Seniority}}}:
+4-element Vector{Vector{Level{RelativisticOrbital{Int64}, HalfIntegers.Half{Int64}, SeniorityEnumeration}}}:
  [|1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1⟩]
  [|1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2⟩]
  [|1s(₁1/2|1/2) 2p-(₁1/2|0)-, J = 0⟩]
@@ -311,7 +321,7 @@ schemes, sorting by ``M_J`` for clarity:
 
 ```jldoctest levels_and_states
 julia> sort(reduce(vcat, reduce(vcat, states.(csls))), by=s->s.M_J)
-12-element Vector{State{Orbital{Int64}, Term, Seniority}}:
+12-element Vector{State{Orbital{Int64}, Term, SeniorityEnumeration}}:
  |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = -2⟩
  |1s(₁²S|²S) 2p(₁²Pᵒ|¹Pᵒ)-, J = 1, M_J = -1⟩
  |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 1, M_J = -1⟩
@@ -326,7 +336,7 @@ julia> sort(reduce(vcat, reduce(vcat, states.(csls))), by=s->s.M_J)
  |1s(₁²S|²S) 2p(₁²Pᵒ|³Pᵒ)-, J = 2, M_J = 2⟩
 
 julia> sort(reduce(vcat, reduce(vcat, states.(csjj))), by=s->s.M_J)
-12-element Vector{State{RelativisticOrbital{Int64}, HalfIntegers.Half{Int64}, Seniority}}:
+12-element Vector{State{RelativisticOrbital{Int64}, HalfIntegers.Half{Int64}, SeniorityEnumeration}}:
  |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = -2⟩
  |1s(₁1/2|1/2) 2p(₁3/2|1)-, J = 1, M_J = -1⟩
  |1s(₁1/2|1/2) 2p(₁3/2|2)-, J = 2, M_J = -1⟩

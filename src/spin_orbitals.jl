@@ -15,18 +15,15 @@ function parse_projection(m::AbstractString)
 end
 
 """
-    struct SpinOrbital{O<:Orbital} <: AbstractOrbital
+    struct SpinOrbital{O<:Orbital,M<:Tuple} <: AbstractOrbital
 
 Spin orbitals are fully characterized orbitals, i.e. the projections
 of all angular momenta are specified.
 """
-struct SpinOrbital{O<:AbstractOrbital,M<:Tuple} <: AbstractOrbital
+struct SpinOrbital{O<:SpatialOrbital,M<:Tuple} <: AbstractOrbital
     orb::O
     m::M
-    function SpinOrbital(orb::O, m::Tuple) where O
-        O <: SpinOrbital &&
-            throw(ArgumentError("Cannot create SpinOrbital from $O"))
-
+    function SpinOrbital(orb::O, m::Tuple) where {O<:SpatialOrbital}
         am = angular_momentum_ranges(orb)
         aml = angular_momentum_labels(orb)
         nam = length(am)
@@ -72,9 +69,9 @@ end
 degeneracy(::SpinOrbital) = 1
 
 # We cannot order spin-orbitals of differing orbital types
-Base.isless(a::SpinOrbital{O,M}, b::SpinOrbital{O,N}) where {O<:AbstractOrbital,M,N} = false
+Base.isless(a::SpinOrbital{<:SpatialOrbital,M}, b::SpinOrbital{<:SpatialOrbital,N}) where {M,N} = false
 
-function Base.isless(a::SpinOrbital{<:O,M}, b::SpinOrbital{<:O,M}) where {O,M}
+function Base.isless(a::SpinOrbital{O,M}, b::SpinOrbital{O,M}) where {O<:SpatialOrbital,M}
     a.orb < b.orb && return true
     a.orb > b.orb && return false
 
@@ -98,6 +95,7 @@ parity(so::SpinOrbital) = parity(so.orb)
 symmetry(so::SpinOrbital) = (symmetry(so.orb), so.m...)
 
 isbound(so::SpinOrbital) = isbound(so.orb)
+isrelativistic(so::SpinOrbital) = isrelativistic(so.orb)
 
 Base.promote_type(::Type{SO}, ::Type{SO}) where {SO<:SpinOrbital} = SO
 
@@ -130,7 +128,7 @@ end
 
 # * Orbital construction from strings
 
-function Base.parse(::Type{O}, orb_str) where {OO<:AbstractOrbital,O<:SpinOrbital{OO}}
+function Base.parse(::Type{O}, orb_str) where {OO<:SpatialOrbital,O<:SpinOrbital{OO}}
     m = match(r"^(.*)\((.*)\)$", orb_str)
     # For non-relativistic spin-orbitals, we also support specifying
     # the m_ℓ quantum number using Unicode subscripts and the spin
@@ -230,7 +228,7 @@ julia> spin_orbitals(ro"2p")
 ```
 
 """
-function spin_orbitals(orb::O) where {O<:AbstractOrbital}
+function spin_orbitals(orb::SpatialOrbital)
     map(reduce(vcat, Iterators.product(angular_momentum_ranges(orb)...))) do m
         SpinOrbital(orb, m...)
     end |> sort

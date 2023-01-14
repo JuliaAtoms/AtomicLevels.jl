@@ -24,6 +24,7 @@ generic orbitals can dispatch on that.
 Orbital
 RelativisticOrbital
 AbstractOrbital
+SpatialOrbital
 ```
 
 The [`SpinOrbital`](@ref) type can be used to fully qualify all the quantum numbers (that
