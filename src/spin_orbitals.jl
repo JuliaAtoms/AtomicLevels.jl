@@ -71,10 +71,19 @@ end
 
 degeneracy(::SpinOrbital) = 1
 
-# We cannot order spin-orbitals of differing orbital types
-Base.isless(a::SpinOrbital{O,M}, b::SpinOrbital{O,N}) where {O<:AbstractOrbital,M,N} = false
-
 function Base.isless(a::SpinOrbital{<:O,M}, b::SpinOrbital{<:O,M}) where {O,M}
+    a.orb < b.orb && return true
+    a.orb > b.orb && return false
+
+    for (ma,mb) in zip(a.m,b.m)
+        ma < mb && return true
+        ma > mb && return false
+    end
+    # All projections were equal
+    return false
+end
+
+function Base.isless(a::SpinOrbital{O,M}, b::SpinOrbital{O,M}) where {O,M}
     a.orb < b.orb && return true
     a.orb > b.orb && return false
 
