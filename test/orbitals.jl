@@ -66,6 +66,8 @@ using Random
         @test parse(Orbital, "1s") == Orbital(1, 0)
         @test parse(Orbital{Int}, "1s") == Orbital(1, 0)
         @test parse(Orbital{Symbol}, "ks") == Orbital(:k, 0)
+        @test parse(Orbital, "[abc]s") == Orbital(Symbol("[abc]"), 0)
+        @test parse(RelativisticOrbital, "[abc]p") == RelativisticOrbital(Symbol("[abc]"), 1, 3/2)
 
         @test ro"1s"   == RelativisticOrbital(1, -1) # κ=-1 => s orbital
         @test ro"2p-"  == RelativisticOrbital(2,  1, half(1))

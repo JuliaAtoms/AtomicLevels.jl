@@ -211,7 +211,7 @@ end
 # * Orbital construction from strings
 
 function Base.parse(::Type{<:RelativisticOrbital}, orb_str)
-    m = match(r"^([0-9]+|.)([a-z]|\[[0-9]+\])([-]{0,1})$", orb_str)
+    m = match(r"^([0-9]+|.|\[.+\])([a-z]|\[[0-9]+\])([-]{0,1})$", orb_str)
     isnothing(m) && throw(ArgumentError("Invalid orbital string: $(orb_str)"))
     n = parse_orbital_n(m)
     ℓ = parse_orbital_ℓ(m)
