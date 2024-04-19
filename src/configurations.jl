@@ -493,12 +493,14 @@ Base.getindex(conf::Configuration{O}, i::Integer) where O =
 Base.getindex(conf::Configuration{O}, i::Union{<:UnitRange{<:Integer},<:AbstractVector{<:Integer}}) where O =
     Configuration(Tuple{O,Int,Symbol}[conf[ii] for ii in i], sorted=conf.sorted)
 
-Base.iterate(conf::Configuration{O}, (el, i)=(length(conf)>0 ? conf[1] : nothing,1)) where O =
-    i > length(conf) ? nothing : (el, (conf[i==length(conf) ? i : i+1],i+1))
+Base.iterate(conf::Configuration, i=1) =
+    i > length(conf) ? nothing : (conf[i],i+1)
 
 Base.length(conf::Configuration) = length(conf.orbitals)
+Base.firstindex(conf::Configuration) = 1
 Base.lastindex(conf::Configuration) = length(conf)
-Base.eltype(conf::Configuration{O}) where O = (O,Int,Symbol)
+Base.eachindex(conf::Configuration) = Base.OneTo(length(conf))
+Base.eltype(conf::Configuration{O}) where O = Tuple{O,Int,Symbol}
 
 function Base.write(io::IO, conf::Configuration{O}) where O
     write(io, 'c')

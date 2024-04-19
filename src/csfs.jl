@@ -113,8 +113,12 @@ end
 csfs(configs::Vector{Configuration{O}}) where O = vcat(map(csfs, configs)...)
 
 Base.length(csf::CSF) = length(peel(csf.config))
+Base.firstindex(csf::CSF) = 1
+Base.lastindex(csf::CSF) = length(csf)
+Base.eachindex(csf::CSF) = Base.OneTo(length(csf))
 Base.getindex(csf::CSF, i::Integer) =
     (peel(csf.config)[i],csf.subshell_terms[i],csf.terms[i])
+Base.eltype(csf::CSF{<:Any,T,S}) where {T,S} = Tuple{eltype(csf.config),IntermediateTerm{T,S},T}
 
 Base.iterate(csf::CSF, (el, i)=(length(csf)>0 ? csf[1] : nothing,1)) =
     i > length(csf) ? nothing : (el, (csf[i==length(csf) ? i : i+1],i+1))

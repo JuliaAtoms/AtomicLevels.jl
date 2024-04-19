@@ -74,4 +74,16 @@ using .ATSPParser
                 "[Kr]ᶜ 5s²(₀0|0) 5p-(₁1/2|1/2) 5p⁴(₀0|1/2) kd(₁5/2|3)-"
         end
     end
+
+    @testset "Access subshells" begin
+        c = rc"1s 2p"
+
+        for (i,csf) in enumerate(csfs(c))
+            @test length(csf) == 2
+            @test csf[begin] == ((ro"1s", 1, :open), IntermediateTerm(half(1), Seniority(1)), half(1))
+            # It just so happens that for this particular configuration, the accumulated intermediate term is J = 1, 2
+            @test csf[end] == ((ro"2p", 1, :open), IntermediateTerm(half(3), Seniority(1)), i)
+            @test collect(csf) == [csf[i] for i in eachindex(csf)]
+        end
+    end
 end
