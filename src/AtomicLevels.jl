@@ -1,7 +1,7 @@
 module AtomicLevels
 
 using UnicodeFun
-using Formatting
+using Format
 using Parameters
 using BlockBandedMatrices
 using WignerSymbols
