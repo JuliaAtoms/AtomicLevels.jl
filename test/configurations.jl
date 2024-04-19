@@ -174,9 +174,14 @@
         @test bound(rc"[Kr] 5s2 5p-2 5p2 ks ld") == rc"[Kr] 5s2 5p-2 5p2"
         @test continuum(rc"[Kr] 5s2 5p-2 5p2 ks ld") == rc"ks ld"
 
-        @test c"[Ne]"[1] == (o"1s",2,:closed)
-        @test c"[Ne]"[1:2] == c"1s2c 2s2c"
-        @test c"[Ne]"[end-1:end] == c"2s2c 2p6c"
+        let c = c"[Ne]"
+            @test c[1] == (o"1s",2,:closed)
+            @test c[1:2] == c"1s2c 2s2c"
+            @test c[end-1:end] == c"2s2c 2p6c"
+            @test c[begin+1:end-1] == c"2s2c"
+            @test eachindex(c) === Base.OneTo(3)
+            @test collect(c) == [c[i] for i in eachindex(c)]
+        end
 
         @test c"1s2 2p kp"[2:3] == c"2p kp"
 
