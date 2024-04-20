@@ -45,8 +45,8 @@ makedocs(
             )
         ))
     ),
-    strict = true,
     doctest = false
 )
 
-deploydocs(repo = "github.com/JuliaAtoms/AtomicLevels.jl.git")
+deploydocs(repo = "github.com/JuliaAtoms/AtomicLevels.jl.git",
+           push_preview = true)
