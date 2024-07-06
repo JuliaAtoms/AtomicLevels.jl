@@ -4,6 +4,8 @@ using UnicodeFun
 using Format
 using Parameters
 using BlockBandedMatrices
+using BlockArrays
+using FillArrays
 using WignerSymbols
 using HalfIntegers
 using Combinatorics
