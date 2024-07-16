@@ -253,7 +253,7 @@ function parse_orbital_ℓ(m::RegexMatch,i=2)
 end
 
 function Base.parse(::Type{<:Orbital}, orb_str)
-    m = match(r"^([0-9]+|.)([a-z]|\[[0-9]+\])$", orb_str)
+    m = match(r"^([0-9]+|.|\[.+\])([a-z]|\[[0-9]+\])$", orb_str)
     isnothing(m) && throw(ArgumentError("Invalid orbital string: $(orb_str)"))
     n = parse_orbital_n(m)
     ℓ = parse_orbital_ℓ(m)

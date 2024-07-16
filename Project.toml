@@ -1,7 +1,7 @@
 name = "AtomicLevels"
 uuid = "10933b4c-d60f-11e8-1fc6-bd9035a249a1"
 authors = ["Stefanos Carlström <stefanos.carlstrom@gmail.com>"]
-version = "0.1.11"
+version = "0.1.12"
 
 [deps]
 BlockArrays = "8e7c35d0-a365-5155-bbbb-fb81a777f24e"
@@ -15,7 +15,7 @@ UnicodeFun = "1cfade01-22cf-5700-b092-accc4b62d6e1"
 WignerSymbols = "9f57e263-0b3d-5e2e-b1be-24f2bb48858b"
 
 [compat]
-BlockArrays = "1"
+BlockArrays = "0.16,1"
 BlockBandedMatrices = "0.8, 0.9, 0.10, 0.11, 0.12, 0.13"
 Combinatorics = "1"
 FillArrays = "1"
