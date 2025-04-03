@@ -37,7 +37,7 @@ struct CSF{O<:AbstractOrbital, T<:Union{Term,HalfInteger}, S}
     function CSF(config::Configuration{O},
                  subshell_terms::Vector{IntermediateTerm{T,S}},
                  terms::Vector{T}) where {O<:Union{<:Orbital,<:RelativisticOrbital},
-                                          T<:Union{Term,HalfInt}, S}
+                                          T<:Union{Term,HalfInteger}, S}
         length(subshell_terms) == length(peel(config)) ||
             throw(ArgumentError("Need to provide $(length(peel(config))) subshell terms for $(config)"))
         length(terms) == length(peel(config)) ||
@@ -53,7 +53,7 @@ struct CSF{O<:AbstractOrbital, T<:Union{Term,HalfInteger}, S}
     end
 
     CSF(config, subshell_terms::Vector{<:IntermediateTerm}, terms::Vector{<:Real}) =
-        CSF(config, subshell_terms, convert.(HalfInt, terms))
+        CSF(config, subshell_terms, convert.(HalfInteger, terms))
 end
 
 """

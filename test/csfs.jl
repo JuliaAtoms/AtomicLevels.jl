@@ -33,6 +33,13 @@ using .ATSPParser
         @test orbitals(csf) == [ro"1s", ro"2p-", ro"2p"]
 
         @test CSF(c"1s2 2p", [IntermediateTerm(T"1S",Seniority(0)), IntermediateTerm(T"2Po", Seniority(1))], [T"1S", T"2Po"]) isa NonRelativisticCSF
+
+        # Test for a potential stackoverflow in CSF constructors (see #100).
+        @test CSF(
+            rc"1s 2s 2p2",
+            [IntermediateTerm(HalfUInt(j), Seniority(2j)) for j in [1//2, 1//2, 0]],
+            HalfUInt[1//2, 0, 0]
+        ) isa CSF
     end
 
     @testset "CSF list generation" begin
