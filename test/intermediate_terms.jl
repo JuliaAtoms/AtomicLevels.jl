@@ -19,7 +19,11 @@ using Test
             @test it.ν == it.nu
             @test it.nu == ν
             @test !hasproperty(it, :foo)
-            @test_throws ErrorException it.foo
+            if VERSION < v"1.12"
+                @test_throws ErrorException it.foo
+            else
+                @test_throws FieldError it.foo
+            end
         end
 
         @testset "Seniority" begin
