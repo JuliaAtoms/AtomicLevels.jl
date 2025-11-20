@@ -3,6 +3,7 @@ module AtomicLevels
 using UnicodeFun
 using Format
 using Parameters
+using LinearAlgebra
 using BlockBandedMatrices
 using BlockArrays
 using FillArrays
@@ -26,6 +27,7 @@ include("couple_terms.jl")
 include("csfs.jl")
 include("jj2lsj.jl")
 include("levels.jl")
+include("cfps.jl")
 
 module Utils
 include("utils/print_states.jl")
