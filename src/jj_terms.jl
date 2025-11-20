@@ -1,5 +1,6 @@
 """
     terms(o::RelativisticOrbital, w = 1) -> Vector{HalfInt}
+    terms(j, w = 1) -> Vector{HalfInt}
 
 Returns a sorted list of valid ``J`` values of `w` equivalent ``jj``-coupled particles on
 orbital `o` (i.e. `oʷ`).
@@ -20,6 +21,15 @@ julia> terms(ro"3d-", 3)
 1-element Vector{HalfIntegers.Half{Int64}}:
  3/2
 
+julia> terms(half(7), 3)
+6-element Vector{Half{Int64}}:
+  3/2
+  5/2
+  7/2
+  9/2
+ 11/2
+ 15/2
+
 julia> terms(ro"4f", 4)
 8-element Vector{HalfIntegers.Half{Int64}}:
  0
@@ -32,8 +42,10 @@ julia> terms(ro"4f", 4)
  8
 ```
 """
-function terms(orb::RelativisticOrbital, w::Int=one(Int))
-    j = κ2j(orb.κ)
+terms(orb::RelativisticOrbital, w::Int=one(Int)) =
+    terms(κ2j(orb.κ), w)
+
+function terms(j::HalfInt, w::Int=one(Int))
     0 <= w <= 2*j+1 || throw(DomainError(w, "w must be 0 <= w <= 2j+1 (=$(2j+1)) for j=$j"))
     # We can equivalently calculate the JJ terms for holes, so we'll do that when we have
     # fewer holes than particles on this shell
